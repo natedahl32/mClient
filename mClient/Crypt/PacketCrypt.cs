@@ -50,13 +50,26 @@ namespace mClient.Crypt
 
         private bool Initialised;
 
+        private WoWCrypt wowDecrypt;
+        private WoWCrypt wowEncrypt;
+
+        byte[] mSessionKey;
+
         public void Init()
         {
+            wowDecrypt = new WoWCrypt();
+            wowDecrypt.Init(mSessionKey);
+
+            wowEncrypt = new WoWCrypt();
+            wowEncrypt.Init(mSessionKey);
+
             Initialised = true;
         }
 
 		public PacketCrypt(byte[] sessionKey)
 		{
+            mSessionKey = sessionKey;
+
 			var encryptHash = s_encryptServerDataHMAC.ComputeHash(sessionKey);
 			var decryptHash = s_decryptClientDataHMAC.ComputeHash(sessionKey);
 
@@ -82,14 +95,16 @@ namespace mClient.Crypt
 
 		public void Decrypt(byte[] data, int start, int count)
 		{
-            if(Initialised)
-			    decryptClientData.Process(data, start, count);
+            if (Initialised)
+                wowDecrypt.Decrypt(data, count); // no start option?
+			    //decryptClientData.Process(data, start, count);
 		}
 
 		public void Encrypt(byte[] data, int start, int count)
 		{
             if (Initialised)
-			    encryptServerData.Process(data, start, count);
+                wowEncrypt.Encrypt(data, count); // no start option?
+			    //encryptServerData.Process(data, start, count);
 		}
 	}
 }

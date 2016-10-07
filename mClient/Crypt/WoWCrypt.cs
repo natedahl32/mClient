@@ -24,9 +24,9 @@ namespace mClient.Crypt
 	public class WoWCrypt
 	{
 		private bool mInitialised = false;
-		
-		// Encryption state
-		private byte mEncPrev;
+
+        // Encryption state
+        private byte mEncPrev;
 		public int mEncIndex;
 		// Decryption state
 		public byte mDecPrev; 
