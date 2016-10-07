@@ -108,6 +108,7 @@ namespace mClient.Network
                      }
                      catch (Exception ex)    // Server dc'd us most likely ;P
                      {
+                        Log.WriteLine(LogType.Error, "Error occurred reading packet! {0}", ex.Message);
                      }
                  }
              }

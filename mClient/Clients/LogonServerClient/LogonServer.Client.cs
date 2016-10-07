@@ -304,9 +304,9 @@ namespace mClient.Clients
             {
                 for (int i = 0; i < realmscount; i++)
                 {
-                    realms[i].Type = packetIn.ReadByte();
+                    realms[i].Type = packetIn.ReadUInt32();
                     realms[i].Color = packetIn.ReadByte();
-                    packetIn.ReadByte(); // unk
+                    //packetIn.ReadByte(); // unk // does not happen in classic
                     realms[i].Name = packetIn.ReadString();
                     realms[i].Address = packetIn.ReadString();
                     realms[i].Population = packetIn.ReadFloat();

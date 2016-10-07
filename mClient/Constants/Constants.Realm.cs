@@ -116,7 +116,7 @@ namespace mClient.Constants
 
     public struct Realm
     {
-        public byte Type;
+        public UInt32 Type;
         public byte Color;
         public byte NameLen;
         public string Name;

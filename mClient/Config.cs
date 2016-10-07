@@ -15,14 +15,15 @@ namespace mClient
 
         static Config()
         {
-            Login = "";
-            Password = "";
-            Host = "";
+            Login = "kazadoom";
+            Password = "ponyboy32";
+            Host = "127.0.0.1";
 
-            Version.major = 3;
-            Version.minor = 3;
-            Version.update = 3;
-            Version.build = 11723;
+            // Classic client build
+            Version.major = 1;
+            Version.minor = 12;
+            Version.update = 1;
+            Version.build = 5875;
 
 
             Retail = false;

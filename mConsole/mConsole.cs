@@ -8,7 +8,6 @@ using mClient.Clients;
 using mClient.Constants;
 using mClient.Shared;
 using mConsole.Commands;
-using CursesSharp;
 
 namespace mConsole
 {
@@ -17,33 +16,18 @@ namespace mConsole
         static byte[] k;
         static LogonServerClient lclient;
         static WorldServerClient wclient;
-        static Window mainDisplay;
         
         public static void Main(string[] args)
         {
             Console.WindowWidth = 100;
-            Curses.InitScr();
-            Curses.StartColor();
-            Curses.InitPair(1, Colors.WHITE, Colors.BLACK);
-            mainDisplay = new Window(Console.WindowHeight, Console.WindowWidth, 0, 0);
-            mainDisplay.EnableScroll = true;
-            Window commandInput = new Window(1, Console.WindowWidth, Console.WindowHeight - 1, 0);
-            commandInput.Color = 1;
-            mainDisplay.Color = 1;
             mCore.Init(EventHandler);
             CommandHandler.Initialize();
 
-                     
-
             while (true)
             {
-                commandInput.Clear();
-                commandInput.Add(">");
-                String command = commandInput.GetString();
+                Console.Write(">");
+                string command = Console.ReadLine();
                 CommandHandler.HandleCommand(command);
-                commandInput.Refresh();
-                
-
             }
         
             
@@ -92,8 +76,7 @@ namespace mConsole
                     HandleCharlist((Character[])e.eventArgs[0]);
                     break;
                 case EventType.EVENT_LOG:
-                    mainDisplay.Add((String)e.eventArgs[0]+"\n\r");
-                    mainDisplay.Refresh();
+                    Console.WriteLine((String)e.eventArgs[0] + "\n\r");
                     Console.ForegroundColor = ConsoleColor.Gray;
                     break;
                 case EventType.EVENT_CHAT_MSG:

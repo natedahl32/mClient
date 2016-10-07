@@ -18,7 +18,8 @@ namespace mClient.Clients
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_AUTH_CHALLENGE)]
         public void HandleAuthChallange(PacketIn packet)
         {
-            packet.ReadUInt32();
+            // Clasic server does not send an int32 before the seed
+            //packet.ReadUInt32();
             ServerSeed = packet.ReadUInt32();
             ClientSeed = (UInt32)0;
             DoAuthSession();
@@ -129,9 +130,9 @@ namespace mClient.Clients
                 packet.Write((UInt32)Config.Version.build);
                 packet.Write((UInt32)0);
                 packet.Write(mUsername);
-                packet.Write((UInt32)0);
+                //packet.Write((UInt32)0); // not used in classic cmangos
                 packet.Write(ClientSeed);
-                packet.Write((UInt64)0);
+                //packet.Write((UInt64)0); // not used in classic cmangos
                 packet.Write(Digest);
 
 
