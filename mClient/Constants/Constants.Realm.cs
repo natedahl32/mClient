@@ -111,7 +111,9 @@ namespace mClient.Constants
         public byte Class;
         public byte Level;
         public UInt32 MapID;
-        
+        public byte Gender;
+        public UInt32 GuildId;
+        public UInt32 CharacterFlags;
     }
 
     public struct Realm

@@ -34,4 +34,16 @@ namespace mClient.Constants
         World = 2,
         Count
     }
+
+    public enum QueryQueueType
+    {
+        Creature,
+        Object,
+        Name
+    }
+
+    public static class ConstantValues
+    {
+        public const int MAXIMUM_PLAYERS_IN_GROUP = 5;
+    }
 }

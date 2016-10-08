@@ -91,7 +91,7 @@ namespace mClient.Clients
             }
             else
             {
-                 //Log.WriteLine(LogType.Normal, "Unhandled packet: {0}", packet.PacketId.ToString());
+                 Log.WriteLine(LogType.Normal, "Unhandled packet: {0}", packet.PacketId.ToString());
             }
         }
 

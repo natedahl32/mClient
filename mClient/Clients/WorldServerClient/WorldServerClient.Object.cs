@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using System.Timers;
-using System.Collections;
-using System;
+﻿using System;
+using System.Linq;
 
 using mClient.Network;
 using mClient.Shared;
@@ -266,6 +263,29 @@ namespace mClient.Clients
             }
         }
 
+        public Object GetOrQueueObject(QueryQueue query)
+        {
+            Object obj = null;
+            WoWGuid fguid = new WoWGuid(query.Guid);
+            if (objectMgr.objectExists(fguid))
+            {
+                obj = objectMgr.getObject(fguid);
+                return obj;
+            }
+
+            // Object does not exist, queue the query
+            mQueryQueue.Add(query);
+            if (query.QueryType == QueryQueueType.Creature)
+                CreatureQuery(fguid, query.Entry);
+            else if (query.QueryType == QueryQueueType.Object)
+                ObjectQuery(fguid, query.Entry);
+            else if (query.QueryType == QueryQueueType.Name)
+                QueryName(fguid);
+
+            // No object was found but it was queued up. Return nothing.
+            return null;
+        }
+
         public void CreatureQuery(WoWGuid guid, UInt32 entry)
 		{
 			PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_CREATURE_QUERY);
@@ -299,27 +319,36 @@ namespace mClient.Clients
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_CREATURE_QUERY_RESPONSE)]
         public void Handle_CreatureQuery(PacketIn packet)
         {
-                Entry entry = new Entry();
-                entry.entry = packet.ReadUInt32();
-                entry.name = packet.ReadString();
-                entry.blarg = packet.ReadBytes(3);
-                entry.subname = packet.ReadString();
-                entry.flags = packet.ReadUInt32();
-                entry.subtype = packet.ReadUInt32();
-                entry.family = packet.ReadUInt32();
-                entry.rank = packet.ReadUInt32();
+            Entry entry = new Entry();
+            entry.entry = packet.ReadUInt32();
+            entry.name = packet.ReadString();
+            entry.blarg = packet.ReadBytes(3);
+            entry.subname = packet.ReadString();
+            entry.flags = packet.ReadUInt32();
+            entry.subtype = packet.ReadUInt32();
+            entry.family = packet.ReadUInt32();
+            entry.rank = packet.ReadUInt32();
 
-                foreach (Object obj in objectMgr.getObjectArray())
+            foreach (Object obj in objectMgr.getObjectArray())
+            {
+                if (obj.Fields != null)
                 {
-                    if (obj.Fields != null)
+                    if (obj.Fields[(int)UpdateFields.OBJECT_FIELD_ENTRY] == entry.entry)
                     {
-                        if (obj.Fields[(int)UpdateFields.OBJECT_FIELD_ENTRY] == entry.entry)
+                        obj.Name = entry.name;
+                        objectMgr.updateObject(obj);
+
+                        // Get any query associated with this object and invoke the callbacks
+                        var query = mQueryQueue.Where(q => q.Guid == obj.Guid.GetOldGuid() && q.QueryType == QueryQueueType.Creature).SingleOrDefault();
+                        if (query != null)
                         {
-                            obj.Name = entry.name;
-                            objectMgr.updateObject(obj);
+                            foreach (var callback in query.Callbacks)
+                                callback.Invoke(obj);
+                            mQueryQueue.Remove(query);
                         }
                     }
                 }
+            }
 
                 
 
@@ -331,39 +360,53 @@ namespace mClient.Clients
 		public  void Handle_NameQuery(PacketIn packet)
 		{
 
-                WoWGuid guid = new WoWGuid(packet.ReadUInt64());
-                string name = packet.ReadString();
-                packet.ReadByte();
-                Race Race = (Race)packet.ReadUInt32();
-                Gender Gender = (Gender)packet.ReadUInt32();
-                Classname Class = (Classname)packet.ReadUInt32();
+            WoWGuid guid = new WoWGuid(packet.ReadUInt64());
+            string name = packet.ReadString();
+            packet.ReadByte();
+            Race Race = (Race)packet.ReadUInt32();
+            Gender Gender = (Gender)packet.ReadUInt32();
+            Classname Class = (Classname)packet.ReadUInt32();
 
-              
-                if (objectMgr.objectExists(guid))    // Update existing Object
-                {
-                    Object obj = objectMgr.getObject(guid);
-                    obj.Name = name;
-                    objectMgr.updateObject(obj);
-                }
-                else                // Create new Object        -- FIXME: Add to new 'names only' list?
-                {
-                    Object obj = new Object(guid);
-                    obj.Name = name;
-                    objectMgr.addObject(obj);
+            Object obj = null;
+            if (objectMgr.objectExists(guid))    // Update existing Object
+            {
+                obj = objectMgr.getObject(guid);
+                obj.Name = name;
+                objectMgr.updateObject(obj);
+            }
+            else                // Create new Object        -- FIXME: Add to new 'names only' list?
+            {
+                obj = new Object(guid);
+                obj.Name = name;
+                objectMgr.addObject(obj);
 
-                    /* Process chat message if we looked them up now */
-                    for (int i = 0; i < ChatQueued.Count; i++)
+                /* Process chat message if we looked them up now */
+                for (int i = 0; i < ChatQueued.Count; i++)
+                {
+                    ChatQueue message = (ChatQueue)ChatQueued[i];
+                    if (message.GUID.GetOldGuid() == guid.GetOldGuid())
                     {
-                        ChatQueue message = (ChatQueue)ChatQueued[i];
-                        if (message.GUID.GetOldGuid() == guid.GetOldGuid())
-                        {
-                            Log.WriteLine(LogType.Chat, "[{1}] {0}", message.Message, name);
-                            ChatQueued.Remove(message);
-                        }
-                    }
+                        // Process the chat event
+                        object[] param = new object[] { (ChatMsg)message.Type, message.Channel, name, message.Message };
+                        mCore.Event(new Event(EventType.EVENT_CHAT_MSG, "0", param));
 
+                        // The event takes care of this now
+                        //Log.WriteLine(LogType.Chat, "[{1}] {0}", message.Message, name);
+                        ChatQueued.Remove(message);
+                    }
                 }
-		}
+
+            }
+
+            // Get any query associated with this object and invoke the callbacks
+            var query = mQueryQueue.Where(q => q.Guid == obj.Guid.GetOldGuid() && q.QueryType == QueryQueueType.Name).SingleOrDefault();
+            if (query != null)
+            {
+                foreach (var callback in query.Callbacks)
+                    callback.Invoke(obj);
+                mQueryQueue.Remove(query);
+            }
+        }
         
     }
 

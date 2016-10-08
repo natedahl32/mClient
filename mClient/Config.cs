@@ -15,8 +15,8 @@ namespace mClient
 
         static Config()
         {
-            Login = "kazadoom";
-            Password = "ponyboy32";
+            Login = "bot1";
+            Password = "bot1";
             Host = "127.0.0.1";
 
             // Classic client build

@@ -54,27 +54,37 @@ namespace mClient.Clients
             {
 
 
-                characterList[i].GUID = packet.ReadUInt64();
-                characterList[i].Name = packet.ReadString();
-                characterList[i].Race = packet.ReadByte();
-                characterList[i].Class = packet.ReadByte();
-                packet.ReadByte();
-                packet.ReadUInt32();
-                packet.ReadByte();
-                packet.ReadByte();
-                packet.ReadUInt32();
-                characterList[i].MapID = packet.ReadUInt32();
-                packet.ReadFloat();
-                packet.ReadFloat();
-                packet.ReadFloat();
-                packet.ReadUInt32();
-                packet.ReadUInt32();
-                packet.ReadByte();
+                characterList[i].GUID = packet.ReadUInt64();    // guid
+                characterList[i].Name = packet.ReadString();    // name
+                characterList[i].Race = packet.ReadByte();      // race
+                characterList[i].Class = packet.ReadByte();     // class
+                characterList[i].Gender = packet.ReadByte();    // gender
+                packet.ReadUInt32();                            // skin + face + hair style + hair color
+                packet.ReadByte();                              // facial hair
+                characterList[i].Level = packet.ReadByte();     // level
+                packet.ReadUInt32();                            // zone
+                characterList[i].MapID = packet.ReadUInt32();   // map
+                packet.ReadFloat();                             // x
+                packet.ReadFloat();                             // y
+                packet.ReadFloat();                             // z
+                characterList[i].GuildId = packet.ReadUInt32(); // guild id
+                characterList[i].CharacterFlags = packet.ReadUInt32(); // character flags
+                packet.ReadByte();                              // first login flag
 
+                packet.ReadUInt32();                            // pet display id
+                packet.ReadUInt32();                            // pet level
+                packet.ReadUInt32();                            // pet family
+
+                // inventory slots
+                for (int j = 0; j < (int)Constants.EquipmentSlots.EQUIPMENT_SLOT_END; j++)
+                {
+                    packet.ReadUInt32();
+                    packet.ReadByte();
+                }
+
+                // first bag display id and first bag inventory type
                 packet.ReadUInt32();
-                packet.ReadUInt32();
-                packet.ReadUInt32();
-                packet.ReadBytes(9 * 20);
+                packet.ReadByte();
             }
 
             Log.WriteLine(LogType.Success, "Received info about {0} characters", count);
@@ -106,8 +116,8 @@ namespace mClient.Clients
             combatMgr.Start();
             terrainMgr.ChangeMap(chr.MapID);
 
+            CreatePlayer(objectMgr.getPlayerObject(), chr);
             Log.WriteLine(LogType.Success, "Logged into world as {0}.", chr.Name);
-            
         }
 
 

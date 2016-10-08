@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Threading;
 
 namespace mClient.Shared
 {
     public static class Log
     {
+        static ReaderWriterLock packetLock = new ReaderWriterLock();
+        static int writerTimeouts = 0;
+
         public static void WriteLine(LogType type, string format, params object[] parameters)
         {          
 
@@ -18,10 +22,23 @@ namespace mClient.Shared
             {
                 if (type == LogType.Packet)
                 {
-                    StreamWriter packetFile = File.AppendText("log_packets.txt");
-                    packetFile.WriteLine(parameters[0].ToString());
-                    packetFile.Flush();
-                    packetFile.Close();
+                    try
+                    {
+                        packetLock.AcquireWriterLock(1000);
+                        try
+                        {
+                            using (var packetFile = File.AppendText("log_packets.txt"))
+                                packetFile.WriteLine(parameters[0].ToString());
+                        }
+                        finally
+                        {
+                            packetLock.ReleaseWriterLock();
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        Interlocked.Increment(ref writerTimeouts);
+                    }
                 }
             }
 

@@ -15,6 +15,7 @@ using mClient.Network;
 using mClient.Crypt;
 using mClient.Constants;
 using mClient.Terrain;
+using mClient.World;
 
 namespace mClient.Clients
 {
@@ -53,7 +54,13 @@ namespace mClient.Clients
         public MovementMgr movementMgr = null;
         public CombatMgr combatMgr = null;
         public TerrainMgr terrainMgr = null;
-        
+
+        // Player
+        public Player player = null;
+
+        // Queues
+        public List<QueryQueue> mQueryQueue = new List<QueryQueue>();
+
         //
         public Realm realm;
         public Character[] Charlist = new Character[0];
@@ -114,11 +121,19 @@ namespace mClient.Clients
             pHandler.Initialize();
         }
 
+        void CreatePlayer(Object playerObject, Character c)
+        {
+            // Make sure we don't already have a player here
+            if (player != null) throw new ApplicationException("Player already exists. Cannot create another player!");
+
+            player = new Player(playerObject, c.Race, c.Class, c.Level, c.MapID, c.Gender, c.GuildId, c.CharacterFlags);
+        }
+
         void PingLoop()
         {
-            aTimer.Elapsed += new ElapsedEventHandler(Ping);
-            aTimer.Interval = 1000000;
-            aTimer.Enabled = true;
+            uTimer.Elapsed += new ElapsedEventHandler(Ping);
+            uTimer.Interval = 1000000;
+            uTimer.Enabled = true;
 
             Ping_Seq = 1;
             Latency = 1;
@@ -128,8 +143,8 @@ namespace mClient.Clients
         {
             while(!mSocket.Connected)
             {
-                aTimer.Enabled = false;
-                aTimer.Stop();
+                uTimer.Enabled = false;
+                uTimer.Stop();
                 return;
             }
 

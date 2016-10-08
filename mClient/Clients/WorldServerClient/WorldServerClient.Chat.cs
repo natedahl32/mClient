@@ -30,28 +30,58 @@ namespace mClient.Clients
                 
                 string channel = null;
                 UInt64 guid = 0;
+                UInt64 senderGuid = 0;
                 WoWGuid fguid = null, fguid2 = null;
                 string username = null;
 
                 byte Type = packet.ReadByte();
                 UInt32 Language = packet.ReadUInt32();
 
-                guid = packet.ReadUInt64();
-                fguid = new WoWGuid(guid);
-                packet.ReadInt32();
+                UInt32 SenderNameLength = 0;
+                string senderName = string.Empty;
 
-                if ((ChatMsg)Type == ChatMsg.Channel)
+                // based on message type, read the packets in
+                switch ((ChatMsg)Type)
                 {
-                    channel = packet.ReadString();
+                    case ChatMsg.MonsterWhisper:
+                    case ChatMsg.RaidBossWhisper:
+                    case ChatMsg.RaidBossEmote:
+                    case ChatMsg.MonsterEmote:
+                        SenderNameLength = packet.ReadUInt32();
+                        senderName = Encoding.Default.GetString(packet.ReadBytes((int)SenderNameLength));
+                        guid = packet.ReadUInt64();
+                        break;
+                    case ChatMsg.Say:
+                    case ChatMsg.Party:
+                    case ChatMsg.Yell:
+                        packet.ReadUInt64();
+                        senderGuid = packet.ReadUInt64();
+                        break;
+                    case ChatMsg.MonsterSay:
+                    case ChatMsg.MonsterYell:
+                        senderGuid = packet.ReadUInt64();
+                        SenderNameLength = packet.ReadUInt32();
+                        senderName = Encoding.Default.GetString(packet.ReadBytes((int)SenderNameLength));
+                        guid = packet.ReadUInt64();
+                        break;
+                    case ChatMsg.Channel:
+                        channel = packet.ReadString();
+                        packet.ReadUInt32();
+                        senderGuid = packet.ReadUInt64();
+                        break;
+                    default:
+                        senderGuid = packet.ReadUInt64();
+                        break;
                 }
 
-                if (Type == 47)
-                    return;
-                fguid2 = new WoWGuid(packet.ReadUInt64());
+                //guid = packet.ReadUInt64();
+                fguid = new WoWGuid(senderGuid);
 
                 UInt32 Length = packet.ReadUInt32();
                 string Message = Encoding.Default.GetString(packet.ReadBytes((int)Length));
-                
+                // chat tag
+                packet.ReadByte();
+
                 //Message = Regex.Replace(Message, @"\|H[a-zA-z0-9:].|h", ""); // Why do i should need spells and quest linked? ;>
                 Message = Regex.Replace(Message, @"\|[rc]{1}[a-zA-z0-9]{0,8}", ""); // Colorfull chat message also isn't the most important thing.
 
@@ -80,13 +110,12 @@ namespace mClient.Clients
                     que.Message = Message;
                     que.AFK = afk;
                     ChatQueued.Add(que);
-                    QueryName(guid);
+                    QueryName(senderGuid);
                     return;
                 }
 
                 object[] param = new object[] { (ChatMsg)Type, channel, username, Message };
                 mCore.Event(new Event(EventType.EVENT_CHAT_MSG, "0", param)); 
-                //Log.WriteLine(LogType.Chat, "[{1}] {0}", Message, username);
             }
             catch (Exception ex)
             {

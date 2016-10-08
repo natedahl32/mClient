@@ -7,16 +7,43 @@ namespace mClient.Constants
 {
     public enum ChatMsg
     {
-        System = 0,    //28,   CHAT_MSG_SYSTEM                 = 0x00,         0
-        Say = 1,
-        Party = 2,
-        Raid = 3,
-        Guild = 4,
-        Yell = 6,
-        Whisper = 7,
-        Channel = 17,
-        System2 = 28,
-
+        Addon       = -1,
+        Say         = 0,
+        Party       = 1,
+        Raid        = 2,
+        Guild       = 3,
+        Officer     = 4,
+        Yell        = 5,
+        Whisper     = 6,
+        WhisperInform = 7,
+        Emote       = 8,
+        TextEmote   = 9,
+        System      = 10,
+        MonsterSay  = 11,
+        MonsterYell = 12,
+        MonsterEmote = 13,
+        Channel     = 14,
+        ChannelJoin = 15,
+        ChannelLeave = 16,
+        ChannelList = 17,
+        ChannelNotice = 18,
+        ChannelNoticeUser = 19,
+        Afk         = 20,
+        Dnd         = 21,
+        Ignored     = 22,
+        Skill       = 23,
+        Loot        = 24,
+        MonsterWhisper = 26,
+        MonsterParty = 48,
+        BgSystemNeutral = 82,
+        BgSystemAlliance = 83,
+        BgSystemHorde = 84,
+        RaidLeader  = 87,
+        RaidWarning = 88,
+        RaidBossWhisper = 89,
+        RaidBossEmote = 90,
+        Battleground = 92,
+        BattlegroundLeader = 93
     };
 
     public enum Languages
