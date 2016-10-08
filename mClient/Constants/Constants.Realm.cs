@@ -114,6 +114,10 @@ namespace mClient.Constants
         public byte Gender;
         public UInt32 GuildId;
         public UInt32 CharacterFlags;
+
+        public float X;
+        public float Y;
+        public float Z;
     }
 
     public struct Realm

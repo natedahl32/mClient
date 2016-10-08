@@ -10,6 +10,7 @@ namespace mClient.Shared
     public static class Log
     {
         static ReaderWriterLock packetLock = new ReaderWriterLock();
+        static ReaderWriterLock networkLock = new ReaderWriterLock();
         static int writerTimeouts = 0;
 
         public static void WriteLine(LogType type, string format, params object[] parameters)
@@ -36,6 +37,26 @@ namespace mClient.Shared
                         }
                     }
                     catch(Exception e)
+                    {
+                        Interlocked.Increment(ref writerTimeouts);
+                    }
+                }
+                else if (type == LogType.Network)
+                {
+                    try
+                    {
+                        networkLock.AcquireWriterLock(1000);
+                        try
+                        {
+                            using (var networkFile = File.AppendText("network.txt"))
+                                networkFile.WriteLine(parameters[0].ToString());
+                        }
+                        finally
+                        {
+                            networkLock.ReleaseWriterLock();
+                        }
+                    }
+                    catch (Exception e)
                     {
                         Interlocked.Increment(ref writerTimeouts);
                     }

@@ -92,6 +92,7 @@ namespace mClient.Clients
                 var lootMethod = inpacket.ReadByte();
                 var masterLooterGuid = inpacket.ReadUInt64();
                 var lootThreshold = inpacket.ReadByte();
+                player.CurrentGroup.UpdateGroupData(masterLooterGuid, lootMethod, lootThreshold);
             }
         }
 

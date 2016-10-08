@@ -27,10 +27,11 @@ namespace mClient.Clients
         UInt32 lastUpdateTime;
         ObjectMgr objectMgr;
         TerrainMgr terrainMgr;
-
+        WorldServerClient mClient;
 
         public MovementMgr(WorldServerClient Client)
         {
+            mClient = Client;
             objectMgr = Client.objectMgr;
             terrainMgr = Client.terrainMgr;
         }
@@ -84,13 +85,19 @@ namespace mClient.Clients
                             {
                                 if (dist > 1)
                                 {
+                                    bool isMoving = Flag.IsMoveFlagSet(MovementFlags.MOVEMENTFLAG_FORWARD);
                                     Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_FORWARD);
                                     UpdatePosition(diff);
                                     lastUpdateTime = timeNow;
+                                    if (!isMoving)
+                                        mClient.SendMovementPacket(WorldServerOpCode.MSG_MOVE_START_FORWARD, timeNow);
                                 }
                                 else
                                 {
+                                    Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_NONE);
                                     Waypoints.Remove(Waypoint);
+                                    if (Waypoints.Count == 0)
+                                        mClient.SendMovementPacket(WorldServerOpCode.MSG_MOVE_STOP, timeNow);
                                 }
                             }
                             else
@@ -99,10 +106,16 @@ namespace mClient.Clients
                                 objectMgr.getPlayerObject().Position.O = angle;
                             }
                         }
+                        else
+                        {
+                            Waypoints.Remove(Waypoint);
+                        }
                     }
                     else
                     {
                         Flag.Clear();
+                        if (!Flag.IsMoveFlagSet(MovementFlags.MOVEMENTFLAG_NONE))
+                            mClient.SendMovementPacket(WorldServerOpCode.MSG_MOVE_STOP, timeNow);
                         Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_NONE);
                     }
                 }
@@ -174,7 +187,7 @@ namespace mClient.Clients
 
     public class MovementFlag
     {
-        public uint MoveFlags;
+        public UInt32 MoveFlags;
 
         public void Clear()
         {
@@ -191,6 +204,7 @@ namespace mClient.Clients
         }
         public bool IsMoveFlagSet(MovementFlags flag)
         {
+            if (MoveFlags == 0 && (uint)flag == 0) return true;
             return ((MoveFlags & (uint)flag) >= 1) ? true : false;
         }
     }

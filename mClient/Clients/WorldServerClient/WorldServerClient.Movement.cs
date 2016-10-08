@@ -50,8 +50,9 @@ namespace mClient.Clients
             Object obj = objectMgr.getObject(guid);
             if (obj != null)
             {
-                    packet.ReadBytes(9);
-                    obj.Position= new Coordinate(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
+                packet.ReadUInt32();    // MoveFlags
+                packet.ReadUInt32();    // Time
+                obj.Position= new Coordinate(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
             }
         }
 
@@ -74,14 +75,23 @@ namespace mClient.Clients
             if (objectMgr.getPlayerObject().Position == null)
                 return;
 
-            PacketOut packet = new PacketOut(WorldServerOpCode.MSG_MOVE_HEARTBEAT);
+            SendMovementPacket(WorldServerOpCode.MSG_MOVE_HEARTBEAT);
+        }
+
+        public void SendMovementPacket(WorldServerOpCode movementOpCode, UInt32 time = 0)
+        {
+            PacketOut packet = new PacketOut(movementOpCode);
             packet.Write(movementMgr.Flag.MoveFlags);
-            packet.Write((byte)0);
-            packet.Write((UInt32)MM_GetTime());
-            packet.Write((float)objectMgr.getPlayerObject().Position.X);
-            packet.Write((float)objectMgr.getPlayerObject().Position.Y);
-            packet.Write((float)objectMgr.getPlayerObject().Position.Z);
-            packet.Write((float)objectMgr.getPlayerObject().Position.O);
+            //packet.Write((byte)0);
+            if (time == 0)
+                packet.Write((UInt32)MM_GetTime());
+            else
+                packet.Write(time);
+            var obj = objectMgr.getPlayerObject();
+            packet.Write((float)obj.Position.X);
+            packet.Write((float)obj.Position.Y);
+            packet.Write((float)obj.Position.Z);
+            packet.Write((float)obj.Position.O);
             packet.Write((UInt32)0);
             Send(packet);
         }

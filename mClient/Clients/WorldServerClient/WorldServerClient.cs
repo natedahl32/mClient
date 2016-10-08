@@ -34,6 +34,7 @@ namespace mClient.Clients
         
         private System.Timers.Timer aTimer = new System.Timers.Timer();
         private System.Timers.Timer uTimer = new System.Timers.Timer();
+        private System.Timers.Timer lTimer = new System.Timers.Timer();
         private UInt32 Ping_Seq;
         private UInt32 Ping_Req_Time;
         private UInt32 Ping_Res_Time;
@@ -69,9 +70,9 @@ namespace mClient.Clients
         {
             mUsername = user.ToUpper();
             objectMgr = new ObjectMgr();
+            terrainMgr = new TerrainMgr();
             movementMgr = new MovementMgr(this);
             combatMgr = new CombatMgr(this);
-            terrainMgr = new TerrainMgr();
             realm = rl;
             mKey = key;
         }
@@ -192,6 +193,19 @@ namespace mClient.Clients
             aTimer.Elapsed += new ElapsedEventHandler(Heartbeat);
             aTimer.Interval = 3000;
             aTimer.Enabled = true;
+
+            // Also start our logic timer
+            lTimer.Elapsed += new ElapsedEventHandler(Logic);
+            lTimer.Interval = 300;
+            lTimer.Enabled = true;
+        }
+
+        void Logic(object source, ElapsedEventArgs e)
+        {
+            if (player == null)
+                return;
+
+            player.UpdateLogic(this);
         }
 
         public void HandlePacket(PacketIn packet)

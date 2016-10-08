@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Threading;
 
 namespace mClient.Shared
 {
     /// <summary>DataBase Client (DBC) File. This is a base class. Inherited classes provide nicer interfaces :)</summary>
     public class DBCFile
     {
+        static Dictionary<string, ReaderWriterLock> dbcLocks = new Dictionary<string, ReaderWriterLock>();
+        static int readerTimeouts = 0;
+
         // The parsed table.
         private byte[][][] data;
         private byte[] stringTable;
@@ -81,51 +85,73 @@ namespace mClient.Shared
 
         private void loadFile(String name)
         {
-            FileStream st = new FileStream(@"dbc\"+name+"", FileMode.Open);
-            BinaryReader bin = new BinaryReader(st);
+            // Get lock
+            if (!dbcLocks.ContainsKey(name))
+                dbcLocks.Add(name, new ReaderWriterLock());
+            var fileLock = dbcLocks[name];
 
-            // Read in Chunk Header Name
-            BlizChunkHeader tempHeader = new BlizChunkHeader(bin.ReadChars(4), 0);
-
-            // No BlizFileHeader Flip() for DBC files
-
-            // Validate DBC Header
-            if (!tempHeader.Is("WDBC"))
-                throw new Exception("Not a DBC file.");
-
-            wdbc_header = new WDBC_header();
-
-            // Read in DBC header (the rest of it)
-            wdbc_header.nRecords = bin.ReadUInt32();
-            wdbc_header.nFields = bin.ReadUInt32();
-            wdbc_header.recordSize = bin.ReadUInt32();
-            wdbc_header.stringSize = bin.ReadUInt32();
-
-
-            if (wdbc_header.nFields * 4 != wdbc_header.recordSize)
-                throw new Exception("Non-standard DBC file.");
-
-
-            // Read in each record
-            data = new byte[wdbc_header.nRecords][][];
-
-            for (int i = 0; i < wdbc_header.nRecords; i++)
+            try
             {
-                data[i] = new byte[wdbc_header.nFields][];
-
-                for (int j = 0; j < wdbc_header.nFields; j++)
+                fileLock.AcquireReaderLock(3000);
+                try
                 {
-                    data[i][j] = bin.ReadBytes(4);
+                    using (var st = new FileStream(@"dbc\" + name + "", FileMode.Open))
+                    {
+                        //FileStream st = new FileStream(@"dbc\" + name + "", FileMode.Open);
+                        BinaryReader bin = new BinaryReader(st);
+
+                        // Read in Chunk Header Name
+                        BlizChunkHeader tempHeader = new BlizChunkHeader(bin.ReadChars(4), 0);
+
+                        // No BlizFileHeader Flip() for DBC files
+
+                        // Validate DBC Header
+                        if (!tempHeader.Is("WDBC"))
+                            throw new Exception("Not a DBC file.");
+
+                        wdbc_header = new WDBC_header();
+
+                        // Read in DBC header (the rest of it)
+                        wdbc_header.nRecords = bin.ReadUInt32();
+                        wdbc_header.nFields = bin.ReadUInt32();
+                        wdbc_header.recordSize = bin.ReadUInt32();
+                        wdbc_header.stringSize = bin.ReadUInt32();
+
+
+                        if (wdbc_header.nFields * 4 != wdbc_header.recordSize)
+                            throw new Exception("Non-standard DBC file.");
+
+
+                        // Read in each record
+                        data = new byte[wdbc_header.nRecords][][];
+
+                        for (int i = 0; i < wdbc_header.nRecords; i++)
+                        {
+                            data[i] = new byte[wdbc_header.nFields][];
+
+                            for (int j = 0; j < wdbc_header.nFields; j++)
+                            {
+                                data[i][j] = bin.ReadBytes(4);
+                            }
+                        }
+
+
+                        // Read in string table
+                        if (wdbc_header.stringSize > 0)
+                        {
+                            stringTable = bin.ReadBytes((int)wdbc_header.stringSize);
+                        }
+                    }
+                }
+                finally
+                {
+                    fileLock.ReleaseReaderLock();
                 }
             }
-
-
-            // Read in string table
-            if (wdbc_header.stringSize > 0)
+            catch (Exception e)
             {
-                stringTable = bin.ReadBytes((int)wdbc_header.stringSize);
+                Interlocked.Increment(ref readerTimeouts);
             }
-
 
         }
 

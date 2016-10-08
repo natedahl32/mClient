@@ -64,9 +64,9 @@ namespace mClient.Clients
                 characterList[i].Level = packet.ReadByte();     // level
                 packet.ReadUInt32();                            // zone
                 characterList[i].MapID = packet.ReadUInt32();   // map
-                packet.ReadFloat();                             // x
-                packet.ReadFloat();                             // y
-                packet.ReadFloat();                             // z
+                characterList[i].X = packet.ReadFloat();        // x
+                characterList[i].Y = packet.ReadFloat();        // y
+                characterList[i].Z = packet.ReadFloat();        // z
                 characterList[i].GuildId = packet.ReadUInt32(); // guild id
                 characterList[i].CharacterFlags = packet.ReadUInt32(); // character flags
                 packet.ReadByte();                              // first login flag

@@ -51,6 +51,21 @@ namespace mClient.World
         private UInt64 LeaderGuid { get; set; }
 
         /// <summary>
+        /// Gets or sets the guid of the master lotter of the group
+        /// </summary>
+        private UInt64 MasterLooterGuid { get; set; }
+
+        /// <summary>
+        /// Gets the loot method of the group
+        /// </summary>
+        public byte LootMethod { get; private set; }
+
+        /// <summary>
+        /// Gets the loot threshold of the group
+        /// </summary>
+        public byte LootThreshold { get; private set; }
+
+        /// <summary>
         /// Gets the leader of the group
         /// </summary>
         public Player Leader
@@ -58,6 +73,17 @@ namespace mClient.World
             get
             {
                 return mPlayersInGroup.Where(p => p.Guid.GetOldGuid() == LeaderGuid).SingleOrDefault();
+            }
+        }
+
+        /// <summary>
+        /// Gets the master looter of the group
+        /// </summary>
+        public Player MasterLooter
+        {
+            get
+            {
+                return mPlayersInGroup.Where(p => p.Guid.GetOldGuid() == MasterLooterGuid).SingleOrDefault();
             }
         }
 
@@ -98,6 +124,29 @@ namespace mClient.World
             var leaderByName = mPlayersInGroup.Where(p => p.Name == name).SingleOrDefault();
             if (leaderByName != null)
                 LeaderGuid = leaderByName.Guid.GetOldGuid();
+        }
+
+        /// <summary>
+        /// Updates group data
+        /// </summary>
+        /// <param name="masterLooterGuid"></param>
+        /// <param name="lootMethod"></param>
+        /// <param name="lootThreshold"></param>
+        public void UpdateGroupData(UInt64 masterLooterGuid, byte lootMethod, byte lootThreshold)
+        {
+            this.MasterLooterGuid = masterLooterGuid;
+            this.LootMethod = lootMethod;
+            this.LootThreshold = lootThreshold;
+        }
+
+        /// <summary>
+        /// Checks if a player guid is in the group
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        public bool IsInGroup(UInt64 guid)
+        {
+            return mPlayersInGroup.Any(p => p.Guid.GetOldGuid() == guid);
         }
 
         #endregion

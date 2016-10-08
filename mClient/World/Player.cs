@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using mClient.Clients;
 
 namespace mClient.World
 {
@@ -21,6 +22,9 @@ namespace mClient.World
         // Group the player is in and group member data for this player
         private Group mGroup = null;
         private GroupMemberData mGroupData = null;
+
+        // Movement declarations
+        private PObject mFollowTarget = null;
 
         #endregion
 
@@ -147,6 +151,29 @@ namespace mClient.World
         #region Public Methods 
 
         /// <summary>
+        /// Updates the players logic
+        /// </summary>
+        public void UpdateLogic(WorldServerClient client)
+        {
+            // If I am in a group set my follow target to be the group leader
+            if (CurrentGroup != null && CurrentGroup.Leader != null)
+                mFollowTarget = CurrentGroup.Leader.PlayerObject;
+
+            // If we have a follow target and we don't currently have a waypoint. Set a waypoint for the current targets position.
+            if (mFollowTarget != null)
+            {
+                client.movementMgr.Waypoints.Clear();
+                if (mFollowTarget.Position != null)
+                {
+                    // Only add the waypoint if we are within distance of the person we are following
+                    var distance = client.movementMgr.CalculateDistance(mFollowTarget.Position);
+                    if (distance > 1 && distance < 40)
+                        client.movementMgr.Waypoints.Add(mFollowTarget.Position);
+                }
+            }
+        }
+
+        /// <summary>
         /// Adds an item proficiency for the player
         /// </summary>
         /// <param name="itemClass"></param>
@@ -187,6 +214,7 @@ namespace mClient.World
         {
             mGroup = null;
             mGroupData = null;
+            mFollowTarget = null;
         }
 
         #endregion
