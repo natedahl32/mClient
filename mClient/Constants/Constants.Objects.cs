@@ -12,7 +12,7 @@ namespace mClient.Constants
         Hunter = 3,
         Rogue = 4,
         Priest = 5,
-        DeathKnight = 6,
+        //DeathKnight = 6,
         Shaman = 7,
         Mage = 8,
         Warlock = 9,

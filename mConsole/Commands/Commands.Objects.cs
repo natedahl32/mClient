@@ -41,8 +41,8 @@ namespace mConsole
                 mClient.Clients.Object test = wclient.objectMgr.getObjectArray()[i];
                 for (int x = 1; x < (int)UpdateFields.FIELDS_MAX; x++ )
                 {
-                    if (test.Fields[x] != 0)
-                        Log.WriteLine(LogType.Normal, "{0} = {1}", (UpdateFields)x, test.Fields[x]);
+                    if (test.Fields.ToList()[x] != 0)
+                        Log.WriteLine(LogType.Normal, "{0} = {1}", (UpdateFields)x, test.Fields.ToList()[x]);
                 }
                 
             }

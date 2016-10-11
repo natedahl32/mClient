@@ -1,4 +1,5 @@
 ﻿using mClient.Constants;
+using mClient.DBC;
 using mClient.Network;
 using mClient.Shared;
 
@@ -38,10 +39,14 @@ namespace mClient.Clients
             var dummy = inpacket.ReadByte();
             var spellCount = inpacket.ReadUInt16();
 
+            SpellTable spells = new SpellTable();
+
             for (int i = 0; i < spellCount; i++)
             {
                 var spell = inpacket.ReadUInt16();
                 var dummy2 = inpacket.ReadUInt16();
+                // Add spell to the player
+                player.AddSpell(spell);
             }
 
             var spellCooldownCount = inpacket.ReadUInt16();
@@ -55,8 +60,6 @@ namespace mClient.Clients
                 var cooldown = inpacket.ReadUInt32();
                 var cooldownCategory = inpacket.ReadUInt32();
             }
-
-            // TODO: Update the players spells. Need to figure what the hell is sent here.
         }
     }
 }

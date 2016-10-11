@@ -12,6 +12,52 @@ namespace mClient.Clients
 {
     public partial class WorldServerClient
     {
+        #region Handlers
+
+        /// <summary>
+        /// Handles attack swings not in range
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_ATTACKSWING_NOTINRANGE)]
+        public void HandleAttackSwingNotInRange(PacketIn packet)
+        {
+            // We are trying to attack but we aren't close enough, get closer
+            player.PlayerAI.NotInMeleeRange = true;
+        }
+
+        /// <summary>
+        /// Handles attacks where we are facing the wrong direction
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_ATTACKSWING_BADFACING)]
+        public void HandleAttackSwingBadFacing(PacketIn packet)
+        {
+            // TODO: Face the target!
+            var i = 0;
+        }
+
+        /// <summary>
+        /// Handles attacks where we are attacking a dead target
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_ATTACKSWING_DEADTARGET)]
+        public void HandleAttackSwingDeadTarget(PacketIn packet)
+        {
+            // TODO: Change targets and remove the target from the enemy list
+            var i = 0;
+        }
+
+        /// <summary>
+        /// Handles attacks where we can't attack our target
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_ATTACKSWING_CANT_ATTACK)]
+        public void HandleAttackSwingCantAttack(PacketIn packet)
+        {
+            // TODO: Not sure what to do here. Change targets?
+            var i = 0;
+        }
+
         /// <summary>
         /// Handles spell cast start
         /// </summary>
@@ -38,6 +84,7 @@ namespace mClient.Clients
                 // Get target guid
                 mask = packet.ReadByte();
                 WoWGuid targetGuid = new WoWGuid(mask, packet.ReadBytes(WoWGuid.BitCount8(mask)));
+                // TODO: Track healing spells here for Raids
             }
         }
 
@@ -48,7 +95,8 @@ namespace mClient.Clients
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_SPELL_GO)]
         public void HandleSpellGo(PacketIn packet)
         {
-            // TODO: Basically same packet structure as SPELL_START, I believe this one means it has completed though
+            // TODO: Basically same packet structure as SPELL_START, I believe this one means it has completed though.
+            // Not sure if we actually need this or not (probably for a healing manager)
         }
 
         /// <summary>
@@ -70,9 +118,22 @@ namespace mClient.Clients
         {
             var attackerGuid = packet.ReadUInt64();
             var victimGuid = packet.ReadUInt64();
+            
             // If the attacker is in our party, than start attacking as well
             if (player.CurrentGroup != null && player.CurrentGroup.IsInGroup(attackerGuid))
-                Attack(victimGuid);
+            {
+                var victim = new WoWGuid(victimGuid);
+                player.CurrentGroup.GetGroupMember(attackerGuid).AddEnemy(victim);
+                player.AddEnemy(victim);
+            }
+                
+            // If someone in the group is being attacked, add the attacker as an enemy
+            if (player.CurrentGroup != null && player.CurrentGroup.IsInGroup(victimGuid))
+            {
+                var attacker = new WoWGuid(attackerGuid);
+                player.CurrentGroup.GetGroupMember(victimGuid).AddEnemy(attacker);
+                player.AddEnemy(attacker);
+            }
         }
 
         /// <summary>
@@ -84,25 +145,39 @@ namespace mClient.Clients
         {
             var killingBlowGuid = packet.ReadUInt64();
             var victimGuid = packet.ReadUInt64();
-            // TODO: Use this data to remove any enemies from our list once they die
+            player.RemoveEnemy(victimGuid);
         }
+
+        /// <summary>
+        /// Handle attack state updates to monitor health
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_ATTACKERSTATEUPDATE)]
+        public void HandleAttackerStateUpdate(PacketIn packet)
+        {
+            var hitInfo = packet.ReadUInt32();
+
+            // Attacker
+            byte mask = packet.ReadByte();
+            WoWGuid attackerGuid = new WoWGuid(mask, packet.ReadBytes(WoWGuid.BitCount8(mask)));
+
+            // Target
+            mask = packet.ReadByte();
+            WoWGuid targetGuid = new WoWGuid(mask, packet.ReadBytes(WoWGuid.BitCount8(mask)));
+
+            // Damage applied (full damage taking into account absorbs, resists, and blocks
+            var fullDamageApplied = packet.ReadUInt32();
+
+            // Check if the target is us or someone in our party
+        }
+
+        #endregion
+
+        #region Actions
 
         public void Attack(Object target)
         {
             Attack(target.Guid.GetOldGuid());
-            //PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_SET_SELECTION);
-            //if (objectMgr.getPlayerObject() != null)
-            //{
-            //    packet.Write(target.Guid.GetNewGuid());
-            //}
-            //Send(packet);
-
-            //packet = new PacketOut(WorldServerOpCode.CMSG_ATTACKSWING);
-            //if (objectMgr.getPlayerObject() != null)
-            //{
-            //    packet.Write(target.Guid.GetNewGuid());
-            //}
-            //Send(packet);
         }
 
 
@@ -123,5 +198,6 @@ namespace mClient.Clients
             Send(packet);
         }
 
+        #endregion
     }
 }

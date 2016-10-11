@@ -110,6 +110,7 @@
     <Compile Include="Crypt\WoWCrypt.cs" />
     <Compile Include="DBC\DBCReader.cs" />
     <Compile Include="DBC\MapTable.cs" />
+    <Compile Include="DBC\SpellTable.cs" />
     <Compile Include="mCore.cs" />
     <Compile Include="Network\PacketHandling\PacketHandler.cs" />
     <Compile Include="Network\PacketHandling\PacketHandlerAtribute.cs" />
@@ -127,6 +128,7 @@
     <Compile Include="Shared\WoWGuid.cs" />
     <Compile Include="Utils\Log.cs" />
     <Compile Include="Utils\Time.cs" />
+    <Compile Include="World\AI\PlayerAI.cs" />
     <Compile Include="World\CombatMgr.cs" />
     <Compile Include="World\Group.cs" />
     <Compile Include="World\MovementMgr.cs" />

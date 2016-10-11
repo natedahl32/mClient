@@ -79,14 +79,14 @@ namespace mClient.Clients
                             client.Attack(target);
                             isFighting = true;
                         }
-                        else if (isFighting && target.Health < 0)
+                        else if (isFighting && target.CurrentHealth < 0)
                         {
                             isFighting = false;
                             Targets.Remove(target);
                         }
-                        else if (isFighting && target.Health > 0)
+                        else if (isFighting && target.CurrentHealth > 0)
                         {
-                            Console.WriteLine(target.Health);
+                            Console.WriteLine(target.CurrentHealth);
                         }
                     }
                 }

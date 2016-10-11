@@ -149,6 +149,16 @@ namespace mClient.World
             return mPlayersInGroup.Any(p => p.Guid.GetOldGuid() == guid);
         }
 
+        /// <summary>
+        /// Gets a player in the group by guid. Returns nothing if the player does not exist in the group
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        public Player GetGroupMember(UInt64 guid)
+        {
+            return mPlayersInGroup.Where(p => p.Guid.GetOldGuid() == guid).SingleOrDefault();
+        }
+
         #endregion
     }
 }

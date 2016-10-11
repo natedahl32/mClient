@@ -66,7 +66,11 @@ namespace mClient.Clients
             Object obj = objectMgr.getObject(guid);
             if (obj != null)
             {
-                    obj.Position = new Coordinate(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
+                obj.Position = new Coordinate(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
+            }
+            else
+            {
+                objectMgr.addObject(new Object(guid) { Type = ObjectType.Unit, Position = new Coordinate(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat()) });
             }
         }
 

@@ -331,21 +331,18 @@ namespace mClient.Clients
 
             foreach (Object obj in objectMgr.getObjectArray())
             {
-                if (obj.Fields != null)
+                if (obj.ObjectFieldEntry == entry.entry)
                 {
-                    if (obj.Fields[(int)UpdateFields.OBJECT_FIELD_ENTRY] == entry.entry)
-                    {
-                        obj.Name = entry.name;
-                        objectMgr.updateObject(obj);
+                    obj.Name = entry.name;
+                    objectMgr.updateObject(obj);
 
-                        // Get any query associated with this object and invoke the callbacks
-                        var query = mQueryQueue.Where(q => q.Guid == obj.Guid.GetOldGuid() && q.QueryType == QueryQueueType.Creature).SingleOrDefault();
-                        if (query != null)
-                        {
-                            foreach (var callback in query.Callbacks)
-                                callback.Invoke(obj);
-                            mQueryQueue.Remove(query);
-                        }
+                    // Get any query associated with this object and invoke the callbacks
+                    var query = mQueryQueue.Where(q => q.Guid == obj.Guid.GetOldGuid() && q.QueryType == QueryQueueType.Creature).SingleOrDefault();
+                    if (query != null)
+                    {
+                        foreach (var callback in query.Callbacks)
+                            callback.Invoke(obj);
+                        mQueryQueue.Remove(query);
                     }
                 }
             }

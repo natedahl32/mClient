@@ -13,10 +13,13 @@ namespace mClient.Clients
         #region Declarations
 
         private Coordinate mPosition = null;
+        private UInt32[] mFields;
 
         #endregion
 
         #region Properties
+
+        public IEnumerable<UInt32> Fields { get { return mFields.AsEnumerable(); } }
 
         public Coordinate Position
         {
@@ -26,12 +29,39 @@ namespace mClient.Clients
                 if (value == null)
                     return;
 
-                if (mPosition == null || mPosition.X != value.Y || mPosition.Y != value.Y || mPosition.Z != value.Z || mPosition.O != value.O)
-                {
-                    var newPosition = value;
-                }
                 mPosition = value;
             }
+        }
+
+        public UInt32 MaxHealth
+        {
+            get { return GetFieldValue((int)UpdateFields.UNIT_FIELD_MAXHEALTH); }
+        }
+
+        public UInt32 CurrentHealth
+        {
+            get { return GetFieldValue((int)UpdateFields.UNIT_FIELD_HEALTH); }
+        }
+
+        public UInt32 ObjectFieldEntry
+        {
+            get { return GetFieldValue((int)UpdateFields.OBJECT_FIELD_ENTRY); }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Gets a field value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private UInt32 GetFieldValue(int field)
+        {
+            if (mFields == null)
+                return 0;
+            return mFields[field];
         }
 
         #endregion
@@ -40,16 +70,10 @@ namespace mClient.Clients
 
         public WoWGuid Guid;
         public ObjectType Type;
-        public UInt32[] Fields;
+        
         //public MovementInfo Movement;
 
-        public UInt32 Health
-        {
-            get
-            {
-                return Fields[(int)UpdateFields.UNIT_FIELD_HEALTH];
-            }
-        }
+        
 
         public Object(WoWGuid guid)
         {
@@ -69,7 +93,7 @@ namespace mClient.Clients
 
         public void SetField(int x, UInt32 value)
         {
-            Fields[x] = value;
+            mFields[x] = value;
         }
 
         

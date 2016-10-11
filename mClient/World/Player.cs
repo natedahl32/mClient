@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using mClient.Clients;
+using mClient.World.AI;
 
 namespace mClient.World
 {
@@ -23,8 +24,14 @@ namespace mClient.World
         private Group mGroup = null;
         private GroupMemberData mGroupData = null;
 
-        // Movement declarations
-        private PObject mFollowTarget = null;
+        // Player AI
+        private PlayerAI mPlayerAI = null;
+
+        // Enemy
+        private List<WoWGuid> mEnemyList = new List<WoWGuid>();
+
+        // Spells
+        private List<UInt16> mSpellList = new List<UInt16>();
 
         #endregion
 
@@ -60,6 +67,8 @@ namespace mClient.World
         public Player(PObject playerObject, byte race, byte pClass, byte level, UInt32 mapId, byte gender, UInt32 guildId, UInt32 cFlags) :
             this(playerObject)
         {
+            this.mPlayerAI = new PlayerAI(this);
+
             this.Race = race;
             this.Class = pClass;
             this.Level = level;
@@ -146,6 +155,45 @@ namespace mClient.World
             get { return mProficiencies; }
         }
 
+        /// <summary>
+        /// Gets whether or not the player is in combat
+        /// </summary>
+        public bool IsInCombat { get { return mEnemyList.Count > 0; } }
+
+        /// <summary>
+        /// Gets all enemies currently in combat with the player
+        /// </summary>
+        public IEnumerable<WoWGuid> EnemyList { get { return mEnemyList; } }
+
+        /// <summary>
+        /// Gets the player AI for this player
+        /// </summary>
+        public PlayerAI PlayerAI { get { return mPlayerAI; } }
+
+        /// <summary>
+        /// Gets whether or not this is a melee character
+        /// </summary>
+        public bool IsMelee
+        {
+            get
+            {
+                // Pure melee
+                if (Class == (byte)Classname.Warrior ||
+                    Class == (byte)Classname.Rogue)
+                    return true;
+
+                // TODO: Depends on spec, will report them as melee for now
+                if (Class == (byte)Classname.Paladin ||
+                    Class == (byte)Classname.Druid ||
+                    Class == (byte)Classname.Shaman)
+                    return true;
+
+                // Anything else is never melee
+                return false;
+
+            }
+        }
+
         #endregion
 
         #region Public Methods 
@@ -155,22 +203,7 @@ namespace mClient.World
         /// </summary>
         public void UpdateLogic(WorldServerClient client)
         {
-            // If I am in a group set my follow target to be the group leader
-            if (CurrentGroup != null && CurrentGroup.Leader != null)
-                mFollowTarget = CurrentGroup.Leader.PlayerObject;
-
-            // If we have a follow target and we don't currently have a waypoint. Set a waypoint for the current targets position.
-            if (mFollowTarget != null)
-            {
-                client.movementMgr.Waypoints.Clear();
-                if (mFollowTarget.Position != null)
-                {
-                    // Only add the waypoint if we are within distance of the person we are following
-                    var distance = client.movementMgr.CalculateDistance(mFollowTarget.Position);
-                    if (distance > 1 && distance < 40)
-                        client.movementMgr.Waypoints.Add(mFollowTarget.Position);
-                }
-            }
+            if (mPlayerAI != null) mPlayerAI.HandlePlayerLogic(client);
         }
 
         /// <summary>
@@ -214,7 +247,38 @@ namespace mClient.World
         {
             mGroup = null;
             mGroupData = null;
-            mFollowTarget = null;
+            mPlayerAI.ClearFollowTarget();
+        }
+
+        /// <summary>
+        /// Adds an enemy guid to the list
+        /// </summary>
+        /// <param name="guid"></param>
+        public void AddEnemy(WoWGuid guid)
+        {
+            if (!mEnemyList.Any(e => e.GetOldGuid() == guid.GetOldGuid()))
+                mEnemyList.Add(guid);
+        }
+
+        /// <summary>
+        /// Removes an enemy guid from the list
+        /// </summary>
+        /// <param name="guid"></param>
+        public void RemoveEnemy(UInt64 guid)
+        {
+            var enemy = mEnemyList.Where(e => e.GetOldGuid() == guid).SingleOrDefault();
+            if (enemy != null)
+                mEnemyList.Remove(enemy);
+        }
+
+        /// <summary>
+        /// Adds a spell to the player
+        /// </summary>
+        /// <param name="spellId"></param>
+        public void AddSpell(UInt16 spellId)
+        {
+            if (!mSpellList.Contains(spellId))
+                mSpellList.Add(spellId);
         }
 
         #endregion
