@@ -36,16 +36,25 @@ namespace mClient.Clients
         public UInt32 MaxHealth
         {
             get { return GetFieldValue((int)UpdateFields.UNIT_FIELD_MAXHEALTH); }
+            private set { SetField((int)UpdateFields.UNIT_FIELD_MAXHEALTH, value); }
         }
 
         public UInt32 CurrentHealth
         {
             get { return GetFieldValue((int)UpdateFields.UNIT_FIELD_HEALTH); }
+            private set { SetField((int)UpdateFields.UNIT_FIELD_HEALTH, value); }
+        }
+
+        public UInt32 Level
+        {
+            get { return GetFieldValue((int)UpdateFields.UNIT_FIELD_LEVEL); }
+            private set { SetField((int)UpdateFields.UNIT_FIELD_LEVEL, value); }
         }
 
         public UInt32 ObjectFieldEntry
         {
             get { return GetFieldValue((int)UpdateFields.OBJECT_FIELD_ENTRY); }
+            private set { SetField((int)UpdateFields.OBJECT_FIELD_ENTRY, value); }
         }
 
         #endregion
@@ -78,6 +87,7 @@ namespace mClient.Clients
         public Object(WoWGuid guid)
         {
             this.Guid = guid;
+            mFields = new UInt32[(int)UpdateFields.UNIT_END];
         }
 
         public void SetPlayer(Character character)
@@ -89,6 +99,14 @@ namespace mClient.Clients
 
         public void UpdatePlayer(Object obj)
         {
+        }
+
+        public void Update(uint currentHealth, uint maxHealth, uint level, uint currentPower, uint maxPower)
+        {
+            this.CurrentHealth = currentHealth;
+            this.MaxHealth = maxHealth;
+            this.Level = level;
+            // TODO: Do we even need power?
         }
 
         public void SetField(int x, UInt32 value)

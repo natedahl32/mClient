@@ -11,6 +11,35 @@ namespace mClient.Clients
 {
     partial class WorldServerClient
     {
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_PARTY_MEMBER_STATS_FULL)]
+        public void HandlePartyMemberStatsFull(PacketIn packet)
+        {
+            // Get guid
+            byte mask = packet.ReadByte();
+            WoWGuid guid = new WoWGuid(mask, packet.ReadBytes(WoWGuid.BitCount8(mask)));
+
+            // Check if player is online or offline
+            var playerMask = packet.ReadUInt32();
+            var isOnline = (packet.ReadByte() == 1 ? true : false);
+            if (!isOnline) return;
+
+            var currentHP = packet.ReadUInt16();
+            var maxHP = packet.ReadUInt16();
+            var powerType = packet.ReadByte();
+            var currentPower = packet.ReadUInt16();
+            var maxPower = packet.ReadUInt16();
+            var level = packet.ReadUInt16();
+
+            var zoneId = packet.ReadUInt16();
+            var x = packet.ReadUInt16();
+            var y = packet.ReadUInt16();
+
+            // Find the party member and update their stats
+            var member = player.CurrentGroup.PlayersInGroup.Where(p => p.Guid.GetOldGuid() == guid.GetOldGuid()).SingleOrDefault();
+            if (member != null && member.PlayerObject != null)
+                member.PlayerObject.Update(currentHP, maxHP, level, currentPower, maxPower);
+        }
+
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_GROUP_INVITE)]
         public void HandleGroupInvite(PacketIn inpacket)
         {
@@ -97,6 +126,29 @@ namespace mClient.Clients
         }
 
         /// <summary>
+        /// Requests stats for all party members in the group
+        /// </summary>
+        private void RequestEntirePartyStats()
+        {
+            foreach (var p in player.CurrentGroup.PlayersInGroup)
+            {
+                if (p == null) continue;
+                RequestPartyStats(p.Guid.GetOldGuid());
+            }
+        }
+
+        /// <summary>
+        /// Request party stats for a member of the party
+        /// </summary>
+        /// <param name="guid"></param>
+        private void RequestPartyStats(UInt64 guid)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_REQUEST_PARTY_MEMBER_STATS);
+            packet.Write(guid);
+            Send(packet);
+        }
+
+        /// <summary>
         /// Adds the player to the group once the query has came back
         /// </summary>
         /// <param name="obj"></param>
@@ -121,6 +173,7 @@ namespace mClient.Clients
             var newMember = new Player(obj) { GroupData = data };
             player.CurrentGroup.AddPlayerToGroup(newMember);
             newMember.SetGroup(player.CurrentGroup);
+            RequestPartyStats(obj.Guid.GetOldGuid());
         }
     }
 }

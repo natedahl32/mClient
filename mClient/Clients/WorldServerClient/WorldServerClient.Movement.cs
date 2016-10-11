@@ -52,7 +52,13 @@ namespace mClient.Clients
             {
                 packet.ReadUInt32();    // MoveFlags
                 packet.ReadUInt32();    // Time
-                obj.Position= new Coordinate(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
+                var x = packet.ReadFloat();
+                var y = packet.ReadFloat();
+                var z = packet.ReadFloat();
+                var o = packet.ReadFloat();
+                obj.Position= new Coordinate(x, y, z, o);
+                if (guid.GetOldGuid() == player.PlayerObject.Guid.GetOldGuid())
+                    Log.WriteLine(LogType.Debug, "Received position: {0} {1} {2} {3}");
             }
         }
 
@@ -92,10 +98,15 @@ namespace mClient.Clients
             else
                 packet.Write(time);
             var obj = objectMgr.getPlayerObject();
-            packet.Write((float)obj.Position.X);
-            packet.Write((float)obj.Position.Y);
-            packet.Write((float)obj.Position.Z);
-            packet.Write((float)obj.Position.O);
+            var x = (float)obj.Position.X;
+            var y = (float)obj.Position.Y;
+            var z = (float)obj.Position.Z;
+            var o = (float)obj.Position.O;
+            Log.WriteLine(LogType.Debug, "{4} Position: {0} {1} {2} {3}", x, y, z, o, movementOpCode);
+            packet.Write(x);
+            packet.Write(y);
+            packet.Write(z);
+            packet.Write(o);
             packet.Write((UInt32)0);
             Send(packet);
         }

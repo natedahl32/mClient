@@ -277,6 +277,8 @@ namespace mClient.World
             var enemy = mEnemyList.Where(e => e.GetOldGuid() == guid).SingleOrDefault();
             if (enemy != null)
                 mEnemyList.Remove(enemy);
+            if (mEnemyList.Count == 0)
+                PlayerAI.NotInMeleeRange = false;
         }
 
         /// <summary>

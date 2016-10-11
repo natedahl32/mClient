@@ -134,6 +134,10 @@ namespace mClient.Clients
                 player.CurrentGroup.GetGroupMember(victimGuid).AddEnemy(attacker);
                 player.AddEnemy(attacker);
             }
+
+            // If it's us, reset the not in melee flag
+            if (attackerGuid == player.PlayerObject.Guid.GetOldGuid() || victimGuid == player.PlayerObject.Guid.GetOldGuid())
+                player.PlayerAI.NotInMeleeRange = false;
         }
 
         /// <summary>
