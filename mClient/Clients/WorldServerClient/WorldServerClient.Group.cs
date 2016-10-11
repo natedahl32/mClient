@@ -11,6 +11,32 @@ namespace mClient.Clients
 {
     partial class WorldServerClient
     {
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_PARTY_MEMBER_STATS_FULL)]
+        public void HandlePartyMemberStatsFull(PacketIn packet)
+        {
+            // Get guid
+            byte mask = packet.ReadByte();
+            WoWGuid guid = new WoWGuid(mask, packet.ReadBytes(WoWGuid.BitCount8(mask)));
+
+            // Check if player is online or offline
+            var playerMask = packet.ReadUInt32();
+            var isOnline = (packet.ReadByte() == 1 ? true : false);
+            if (!isOnline) return;
+
+            var currentHP = packet.ReadUInt16();
+            var maxHP = packet.ReadUInt16();
+            var powerType = packet.ReadByte();
+            var currentPower = packet.ReadUInt16();
+            var maxPower = packet.ReadUInt16();
+            var level = packet.ReadUInt16();
+
+            var zoneId = packet.ReadUInt16();
+            var x = packet.ReadUInt16();
+            var y = packet.ReadUInt16();
+
+
+        }
+
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_GROUP_INVITE)]
         public void HandleGroupInvite(PacketIn inpacket)
         {

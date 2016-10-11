@@ -11,6 +11,7 @@ namespace mClient.Shared
     {
         static ReaderWriterLock packetLock = new ReaderWriterLock();
         static ReaderWriterLock networkLock = new ReaderWriterLock();
+        static ReaderWriterLock debugkLock = new ReaderWriterLock();
         static int writerTimeouts = 0;
 
         public static void WriteLine(LogType type, string format, params object[] parameters)
@@ -29,7 +30,7 @@ namespace mClient.Shared
                         try
                         {
                             using (var packetFile = File.AppendText("log_packets.txt"))
-                                packetFile.WriteLine(parameters[0].ToString());
+                                packetFile.WriteLine(msg);
                         }
                         finally
                         {
@@ -49,11 +50,31 @@ namespace mClient.Shared
                         try
                         {
                             using (var networkFile = File.AppendText("network.txt"))
-                                networkFile.WriteLine(parameters[0].ToString());
+                                networkFile.WriteLine(msg);
                         }
                         finally
                         {
                             networkLock.ReleaseWriterLock();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Interlocked.Increment(ref writerTimeouts);
+                    }
+                }
+                else if (type == LogType.Debug)
+                {
+                    try
+                    {
+                        debugkLock.AcquireWriterLock(1000);
+                        try
+                        {
+                            using (var debugFile = File.AppendText("debug.txt"))
+                                debugFile.WriteLine(msg);
+                        }
+                        finally
+                        {
+                            debugkLock.ReleaseWriterLock();
                         }
                     }
                     catch (Exception e)
