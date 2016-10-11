@@ -191,7 +191,7 @@ namespace mClient.Clients
         public void StartHeartbeat()
         {
             aTimer.Elapsed += new ElapsedEventHandler(Heartbeat);
-            aTimer.Interval = 3000;
+            aTimer.Interval = 500;
             aTimer.Enabled = true;
 
             // Also start our logic timer

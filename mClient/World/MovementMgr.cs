@@ -96,6 +96,7 @@ namespace mClient.Clients
                                 {
                                     Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_NONE);
                                     Waypoints.Remove(Waypoint);
+                                    UpdatePosition(diff);
                                     if (Waypoints.Count == 0)
                                         mClient.SendMovementPacket(WorldServerOpCode.MSG_MOVE_STOP, timeNow);
                                 }
