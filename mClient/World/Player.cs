@@ -171,6 +171,14 @@ namespace mClient.World
         public PlayerAI PlayerAI { get { return mPlayerAI; } }
 
         /// <summary>
+        /// Gets whether or not the player is dead
+        /// </summary>
+        public bool IsDead
+        {
+            get { return mPlayerObject.CurrentHealth <= 0; }
+        }
+
+        /// <summary>
         /// Gets whether or not this is a melee character
         /// </summary>
         public bool IsMelee
