@@ -77,7 +77,7 @@ namespace mClient.Clients
                     }
                     else if (packet.PacketId.Service == ServiceType.World)
                     {
-                        //Log.WriteLine(LogType.Network, "Handling packet: {0}", handle.packetId);
+                        Log.WriteLine(LogType.Network, "Handling packet: {0}", handle.packetId);
                         handle.MethodInfo.Invoke(wClient, obj);
                         
                         

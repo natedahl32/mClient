@@ -34,7 +34,10 @@ namespace mClient.Clients
             var x = packet.ReadUInt16();
             var y = packet.ReadUInt16();
 
-
+            // Find the party member and update their stats
+            var member = player.CurrentGroup.PlayersInGroup.Where(p => p.Guid.GetOldGuid() == guid.GetOldGuid()).SingleOrDefault();
+            if (member != null && member.PlayerObject != null)
+                member.PlayerObject.Update(currentHP, maxHP, level, currentPower, maxPower);
         }
 
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_GROUP_INVITE)]
@@ -123,6 +126,29 @@ namespace mClient.Clients
         }
 
         /// <summary>
+        /// Requests stats for all party members in the group
+        /// </summary>
+        private void RequestEntirePartyStats()
+        {
+            foreach (var p in player.CurrentGroup.PlayersInGroup)
+            {
+                if (p == null) continue;
+                RequestPartyStats(p.Guid.GetOldGuid());
+            }
+        }
+
+        /// <summary>
+        /// Request party stats for a member of the party
+        /// </summary>
+        /// <param name="guid"></param>
+        private void RequestPartyStats(UInt64 guid)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_REQUEST_PARTY_MEMBER_STATS);
+            packet.Write(guid);
+            Send(packet);
+        }
+
+        /// <summary>
         /// Adds the player to the group once the query has came back
         /// </summary>
         /// <param name="obj"></param>
@@ -147,6 +173,7 @@ namespace mClient.Clients
             var newMember = new Player(obj) { GroupData = data };
             player.CurrentGroup.AddPlayerToGroup(newMember);
             newMember.SetGroup(player.CurrentGroup);
+            RequestPartyStats(obj.Guid.GetOldGuid());
         }
     }
 }
