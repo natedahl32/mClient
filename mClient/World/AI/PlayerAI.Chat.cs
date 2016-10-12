@@ -84,10 +84,7 @@ namespace mClient.World.AI
             // Nothing to do with an empty message
             if (string.IsNullOrEmpty(message)) return;
 
-            if (message.Trim().ToLower() == "stay")
-                Player.PlayerAI.ClearFollowTarget();
-            else if (message.Trim().ToLower() == "follow")
-                Player.PlayerAI.FollowTarget(senderGuid);
+            if (HandleChatCommands(senderGuid, senderName, message)) return;
         }
 
         /// <summary>
@@ -98,7 +95,10 @@ namespace mClient.World.AI
         /// <param name="message"></param>
         private void HandleWhisperMessage(WoWGuid senderGuid, string senderName, string message)
         {
+            // Nothing to do with an empty message
+            if (string.IsNullOrEmpty(message)) return;
 
+            if (HandleChatCommands(senderGuid, senderName, message)) return;
         }
 
         /// <summary>
@@ -122,6 +122,29 @@ namespace mClient.World.AI
         private void HandleCustomChannelMessage(WoWGuid senderGuid, string senderName, string message, string channel)
         {
 
+        }
+
+        /// <summary>
+        /// Handles all chat commands
+        /// </summary>
+        /// <param name="senderGuid"></param>
+        /// <param name="senderName"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        private bool HandleChatCommands(WoWGuid senderGuid, string senderName, string message)
+        {
+            if (message.Trim().ToLower() == "stay")
+            {
+                Player.PlayerAI.ClearFollowTarget();
+                return true;
+            }
+            else if (message.Trim().ToLower() == "follow")
+            {
+                Player.PlayerAI.FollowTarget(senderGuid);
+                return true;
+            }
+
+            return false;
         }
 
         #endregion
