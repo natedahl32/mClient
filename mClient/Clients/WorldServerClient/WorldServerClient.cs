@@ -60,6 +60,7 @@ namespace mClient.Clients
         public Player player = null;
 
         // Queues
+        protected System.Object mQueryQueueLock = new System.Object();
         public List<QueryQueue> mQueryQueue = new List<QueryQueue>();
 
         //

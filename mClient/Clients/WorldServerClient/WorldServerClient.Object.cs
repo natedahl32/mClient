@@ -273,8 +273,12 @@ namespace mClient.Clients
                 return obj;
             }
 
-            // Object does not exist, queue the query
-            mQueryQueue.Add(query);
+            lock(mQueryQueueLock)
+            {
+                // Object does not exist, queue the query
+                mQueryQueue.Add(query);
+            }
+            
             if (query.QueryType == QueryQueueType.Creature)
                 CreatureQuery(fguid, query.Entry);
             else if (query.QueryType == QueryQueueType.Object)
@@ -340,9 +344,12 @@ namespace mClient.Clients
                     var query = mQueryQueue.Where(q => q.Guid == obj.Guid.GetOldGuid() && q.QueryType == QueryQueueType.Creature).SingleOrDefault();
                     if (query != null)
                     {
-                        foreach (var callback in query.Callbacks)
-                            callback.Invoke(obj);
-                        mQueryQueue.Remove(query);
+                        lock(mQueryQueueLock)
+                        {
+                            foreach (var callback in query.Callbacks)
+                                callback.Invoke(obj);
+                            mQueryQueue.Remove(query);
+                        }
                     }
                 }
             }
@@ -377,21 +384,22 @@ namespace mClient.Clients
                 obj.Name = name;
                 objectMgr.addObject(obj);
 
+                // Now using the callbacks handler below
                 /* Process chat message if we looked them up now */
-                for (int i = 0; i < ChatQueued.Count; i++)
-                {
-                    ChatQueue message = (ChatQueue)ChatQueued[i];
-                    if (message.GUID.GetOldGuid() == guid.GetOldGuid())
-                    {
-                        // Process the chat event
-                        object[] param = new object[] { (ChatMsg)message.Type, message.Channel, name, message.Message };
-                        mCore.Event(new Event(EventType.EVENT_CHAT_MSG, "0", param));
+                //for (int i = 0; i < ChatQueued.Count; i++)
+                //{
+                //    ChatQueue message = (ChatQueue)ChatQueued[i];
+                //    if (message.GUID.GetOldGuid() == guid.GetOldGuid())
+                //    {
+                //        // Process the chat event
+                //        object[] param = new object[] { (ChatMsg)message.Type, message.Channel, name, message.Message };
+                //        mCore.Event(new Event(EventType.EVENT_CHAT_MSG, "0", param));
 
-                        // The event takes care of this now
-                        //Log.WriteLine(LogType.Chat, "[{1}] {0}", message.Message, name);
-                        ChatQueued.Remove(message);
-                    }
-                }
+                //        // The event takes care of this now
+                //        //Log.WriteLine(LogType.Chat, "[{1}] {0}", message.Message, name);
+                //        ChatQueued.Remove(message);
+                //    }
+                //}
 
             }
 
@@ -399,9 +407,12 @@ namespace mClient.Clients
             var query = mQueryQueue.Where(q => q.Guid == obj.Guid.GetOldGuid() && q.QueryType == QueryQueueType.Name).SingleOrDefault();
             if (query != null)
             {
-                foreach (var callback in query.Callbacks)
-                    callback.Invoke(obj);
-                mQueryQueue.Remove(query);
+                lock(mQueryQueueLock)
+                {
+                    foreach (var callback in query.Callbacks)
+                        callback.Invoke(obj);
+                    mQueryQueue.Remove(query);
+                }
             }
         }
         

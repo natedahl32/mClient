@@ -1,4 +1,5 @@
 ﻿using mClient.Constants;
+using mClient.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,6 +91,26 @@ namespace mClient.World
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// Gets a player in the group by guid
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        public Player GetPlayer(WoWGuid guid)
+        {
+            return GetPlayer(guid.GetOldGuid());
+        }
+
+        /// <summary>
+        /// Gets a player in the group by guid
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        public Player GetPlayer(UInt64 guid)
+        {
+            return mPlayersInGroup.Where(p => p.Guid.GetOldGuid() == guid).SingleOrDefault();
+        }
 
         /// <summary>
         /// Adds a player to the group

@@ -133,6 +133,7 @@
     <Compile Include="Shared\WoWGuid.cs" />
     <Compile Include="Utils\Log.cs" />
     <Compile Include="Utils\Time.cs" />
+    <Compile Include="World\AI\PlayerAI.Chat.cs" />
     <Compile Include="World\AI\PlayerAI.cs" />
     <Compile Include="World\CombatMgr.cs" />
     <Compile Include="World\Group.cs" />

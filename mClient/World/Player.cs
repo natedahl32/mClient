@@ -26,6 +26,7 @@ namespace mClient.World
 
         // Player AI
         private PlayerAI mPlayerAI = null;
+        private PlayerChatHandler mPlayerChatHandler = null;
 
         // Enemy
         private List<WoWGuid> mEnemyList = new List<WoWGuid>();
@@ -41,6 +42,7 @@ namespace mClient.World
         {
             if (playerObject == null) throw new ArgumentNullException("playerObject");
             mPlayerObject = playerObject;
+            mPlayerChatHandler = new PlayerChatHandler(this);
         }
 
         public Player(WoWGuid guid, string name)
@@ -50,6 +52,7 @@ namespace mClient.World
 
             mPlayerObject = new PObject(guid);
             mPlayerObject.Name = name;
+            mPlayerChatHandler = new PlayerChatHandler(this);
         }
 
         public Player(WoWGuid guid, string name, byte race, byte pClass, byte level, UInt32 mapId, byte gender, UInt32 guildId, UInt32 cFlags) : 
@@ -212,6 +215,14 @@ namespace mClient.World
         public void UpdateLogic(WorldServerClient client)
         {
             if (mPlayerAI != null) mPlayerAI.HandlePlayerLogic(client);
+        }
+
+        /// <summary>
+        /// Handles chat messages for this player
+        /// </summary>
+        public void HandleChatMessage(ChatMsg type, WoWGuid senderGuid, string senderName, string message, string channel)
+        {
+            mPlayerChatHandler.HandleChat(type, senderGuid, senderName, message, channel);
         }
 
         /// <summary>

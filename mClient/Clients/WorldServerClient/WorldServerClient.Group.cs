@@ -35,7 +35,7 @@ namespace mClient.Clients
             var y = packet.ReadUInt16();
 
             // Find the party member and update their stats
-            var member = player.CurrentGroup.PlayersInGroup.Where(p => p.Guid.GetOldGuid() == guid.GetOldGuid()).SingleOrDefault();
+            var member = player.CurrentGroup.GetPlayer(guid);
             if (member != null && member.PlayerObject != null)
                 member.PlayerObject.Update(currentHP, maxHP, level, currentPower, maxPower);
         }

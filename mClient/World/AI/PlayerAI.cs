@@ -90,8 +90,8 @@ namespace mClient.World.AI
             }
 
             // If I am in a group set my follow target to be the group leader
-            if (Player.CurrentGroup != null && Player.CurrentGroup.Leader != null)
-                mFollowTarget = Player.CurrentGroup.Leader.PlayerObject;
+            //if (Player.CurrentGroup != null && Player.CurrentGroup.Leader != null)
+            //    mFollowTarget = Player.CurrentGroup.Leader.PlayerObject;
 
 
             FollowTarget(client);
@@ -103,6 +103,15 @@ namespace mClient.World.AI
         public void ClearFollowTarget()
         {
             mFollowTarget = null;
+        }
+
+        /// <summary>
+        /// Follow a particular target
+        /// </summary>
+        /// <param name="guid"></param>
+        public void FollowTarget(WoWGuid guid)
+        {
+            // TOOD: ObjectManager needs to be static so we can pull an object from here
         }
 
         #endregion

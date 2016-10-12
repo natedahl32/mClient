@@ -19,7 +19,8 @@ namespace mClient.Clients
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_CHANNEL_NOTIFY)]
         public void HandleChannelNotify(PacketIn packet)
         {
-            Log.WriteLine(LogType.Success, "Dostalem takie gowno: {0}", packet.ReadByte());
+            // ????
+            //Log.WriteLine(LogType.Success, "Dostalem takie gowno: {0}", packet.ReadByte());
         }
 
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_MESSAGECHAT)]
@@ -109,10 +110,17 @@ namespace mClient.Clients
                     que.Length = Length;
                     que.Message = Message;
                     que.AFK = afk;
-                    ChatQueued.Add(que);
-                    QueryName(senderGuid);
-                    return;
+
+                    // Create a new query for the player
+                    var query = new QueryQueue(QueryQueueType.Name, guid) { ExtraData = que };
+                    query.AddCallback((o) => HandleChatQuery(o));
+                    var obj = GetOrQueueObject(query);
+                    if (obj == null)
+                        return; // handled by callback
                 }
+
+                // Have the player handle the chat message
+                player.HandleChatMessage((ChatMsg)Type, fguid, username, Message, channel);
 
                 object[] param = new object[] { (ChatMsg)Type, channel, username, Message };
                 mCore.Event(new Event(EventType.EVENT_CHAT_MSG, "0", param)); 
@@ -123,6 +131,21 @@ namespace mClient.Clients
                 Log.WriteLine(LogType.Error, "Message: {0}", ex.Message);
                 Log.WriteLine(LogType.Error, "Stacktrace: {0}", ex.StackTrace);
             }
+        }
+
+        private void HandleChatQuery(Object obj)
+        {
+            // Get the query for this object
+            var query = mQueryQueue.Where(q => q.Guid == obj.Guid.GetOldGuid() && q.QueryType == QueryQueueType.Name).SingleOrDefault();
+
+            // Get the group member data stored in the query
+            var data = query.ExtraData as ChatQueue;
+
+            // Have the player handle the chat message
+            player.HandleChatMessage((ChatMsg)data.Type, obj.Guid, obj.Name, data.Message, data.Channel);
+
+            object[] param = new object[] { (ChatMsg)data.Type, data.Channel, obj.Name, data.Message };
+            mCore.Event(new Event(EventType.EVENT_CHAT_MSG, "0", param));
         }
 
         public void SendChatMsg(ChatMsg Type, Languages Language, string Message)
@@ -165,7 +188,7 @@ namespace mClient.Clients
     
    
 
-    public struct ChatQueue
+    public class ChatQueue
     {
         public WoWGuid GUID;
         public byte Type;

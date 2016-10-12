@@ -10,7 +10,10 @@ using mClient.Shared;
 
 namespace mClient.Clients
 {
-    /// <summary>Keeps track of the world. Keeps track of all Objects, including the player as well as providing methods to move (or warp) the player and provides collision detection and pathing.</summary>
+    /// <summary>
+    /// Keeps track of the world. 
+    /// Keeps track of all Objects, including the player as well as providing methods to move (or warp) the player and provides collision detection and pathing.
+    /// </summary>
     public class ObjectMgr
     {
         public UInt32 MapID;
