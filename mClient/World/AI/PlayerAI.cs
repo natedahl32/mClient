@@ -110,6 +110,22 @@ namespace mClient.World.AI
         #region Private Methods
 
         /// <summary>
+        /// Set the target selection for any combat related AI actions
+        /// </summary>
+        /// <param name="target"></param>
+        private void SetTargetSelection(PObject target)
+        {
+            // Either coming from a non existing target or going to a non existing target
+            if (target == null || mTargetSelection == null)
+                mIsAttackingTarget = false;
+            // Switching targets
+            if (target.Guid.GetOldGuid() != mTargetSelection.Guid.GetOldGuid())
+                mIsAttackingTarget = false;
+
+            mTargetSelection = target;
+        }
+
+        /// <summary>
         /// Handles the AI loop
         /// </summary>
         private void Loop()
@@ -125,7 +141,7 @@ namespace mClient.World.AI
                     {
 
                         // TODO: Use our target, NOT first enemy in the list
-                        mTargetSelection = Client.objectMgr.getObject(Player.EnemyList.FirstOrDefault());
+                        SetTargetSelection(Client.objectMgr.getObject(Player.EnemyList.FirstOrDefault()));
 
                         // If we are a melee player check melee range
                         // If we are not in melee range, set the target as the follow target
@@ -138,7 +154,12 @@ namespace mClient.World.AI
                             // TOOD: Spell Casters should cast a spell here. BUT first we need to check range on the target
                             // TOOD: We need a state here. We can't keep sending this packet, we only need
                             // to send it once.
-                            Client.Attack(mTargetSelection.Guid.GetOldGuid());
+                            if (!mIsAttackingTarget && mTargetSelection != null)
+                            {
+                                Client.Attack(mTargetSelection.Guid.GetOldGuid());
+                                mIsAttackingTarget = true;
+                            }
+                            
                             continue;
                         }
                     }

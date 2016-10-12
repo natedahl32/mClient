@@ -58,8 +58,8 @@ namespace mClient.Clients
                 var z = packet.ReadFloat();
                 var o = packet.ReadFloat();
                 obj.Position= new Coordinate(x, y, z, o);
-                if (guid.GetOldGuid() == player.PlayerObject.Guid.GetOldGuid())
-                    Log.WriteLine(LogType.Debug, "Received position: {0} {1} {2} {3}");
+                //if (guid.GetOldGuid() == player.PlayerObject.Guid.GetOldGuid())
+                //    Log.WriteLine(LogType.Debug, "Received position: {0} {1} {2} {3}");
             }
         }
 
@@ -104,7 +104,7 @@ namespace mClient.Clients
             var y = (float)obj.Position.Y;
             var z = (float)obj.Position.Z;
             var o = (float)obj.Position.O;
-            Log.WriteLine(LogType.Debug, "{4} Position: {0} {1} {2} {3}", x, y, z, o, movementOpCode);
+            //Log.WriteLine(LogType.Debug, "{4} Position: {0} {1} {2} {3}", x, y, z, o, movementOpCode);
             packet.Write(x);
             packet.Write(y);
             packet.Write(z);
