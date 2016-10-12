@@ -11,23 +11,36 @@ using mClient.Network;
 using mClient.Shared;
 using mClient.Constants;
 using mClient.Terrain;
+using PObject = mClient.Clients.Object;
 
 namespace mClient.Clients
 {
     public class MovementMgr
     {
+        #region Declarations
+
         [DllImport("winmm.dll", EntryPoint = "timeGetTime")]
         public static extern uint MM_GetTime();
 
         private System.Timers.Timer aTimer = new System.Timers.Timer();
         Thread loop = null;
         public MovementFlag Flag = new MovementFlag();
-        public List<Coordinate> Waypoints = new List<Coordinate>();
+
+        private System.Object mWaypointsLock = new System.Object();
+        private List<Coordinate> mWaypoints = new List<Coordinate>();
+
+        // Movement variables
+        private PObject mFollowTarget = null;
+
         Coordinate oldLocation;
         UInt32 lastUpdateTime;
         ObjectMgr objectMgr;
         TerrainMgr terrainMgr;
         WorldServerClient mClient;
+
+        #endregion
+
+        #region Constructors
 
         public MovementMgr(WorldServerClient Client)
         {
@@ -35,6 +48,21 @@ namespace mClient.Clients
             objectMgr = Client.objectMgr;
             terrainMgr = Client.terrainMgr;
         }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets the follow target currently set
+        /// </summary>
+        public PObject FollowTarget
+        {
+            get { return mFollowTarget; }
+            set { mFollowTarget = value; }
+        }
+
+        #endregion
 
         public void Start()
         {
@@ -67,15 +95,22 @@ namespace mClient.Clients
             {
                 try
                 {
+                    // If we have a follow target, do our best to follow them
+                    if (mFollowTarget != null)
+                    {
+                        HandleFollowTarget();
+                        continue;
+                    }
+
                     Coordinate Waypoint;
                     float angle, dist;
 
                     UInt32 timeNow = MM_GetTime();
                     UInt32 diff = (timeNow - lastUpdateTime);
                     lastUpdateTime = timeNow;
-                    if (Waypoints.Count != 0)
+                    if (mWaypoints.Count != 0)
                     {
-                        Waypoint = Waypoints.First();
+                        Waypoint = mWaypoints.FirstOrDefault();
 
                         if (Waypoint != null)
                         {
@@ -95,9 +130,9 @@ namespace mClient.Clients
                                 else
                                 {
                                     Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_NONE);
-                                    Waypoints.Remove(Waypoint);
+                                    RemoveWaypoint(Waypoint);
                                     UpdatePosition(diff);
-                                    if (Waypoints.Count == 0)
+                                    if (mWaypoints.Count == 0)
                                         mClient.SendMovementPacket(WorldServerOpCode.MSG_MOVE_STOP, timeNow);
                                 }
                             }
@@ -109,7 +144,7 @@ namespace mClient.Clients
                         }
                         else
                         {
-                            Waypoints.Remove(Waypoint);
+                            RemoveWaypoint(Waypoint);
                         }
                     }
                     else
@@ -183,6 +218,85 @@ namespace mClient.Clients
         {
             return TerrainMgr.CalculateDistance(objectMgr.getPlayerObject().Position, c1);
         }
+
+        #region Private Methods
+
+        /// <summary>
+        /// Handles following a target movement
+        /// </summary>
+        private void HandleFollowTarget()
+        {
+            // Make sure the follow target has a coordinate
+            if (mFollowTarget.Position == null)
+                return;
+
+            var targetPosition = mFollowTarget.Position;
+            var angle = TerrainMgr.CalculateAngle(objectMgr.getPlayerObject().Position, targetPosition);
+            var dist = TerrainMgr.CalculateDistance(objectMgr.getPlayerObject().Position, targetPosition);
+
+            UInt32 timeNow = MM_GetTime();
+            UInt32 diff = (timeNow - lastUpdateTime);
+            lastUpdateTime = timeNow;
+
+            // if the angle is not correct, send a set facing packet and face the client in the right direction
+            if (angle != objectMgr.getPlayerObject().Position.O)
+                objectMgr.getPlayerObject().Position.O = angle;
+
+            // check if we are within distance of the target position or not
+            if (dist > 2 && dist < 100)
+            {
+                bool isMoving = Flag.IsMoveFlagSet(MovementFlags.MOVEMENTFLAG_FORWARD);
+                Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_FORWARD);
+                UpdatePosition(diff);
+                lastUpdateTime = timeNow;
+                if (!isMoving)
+                    mClient.SendMovementPacket(WorldServerOpCode.MSG_MOVE_START_FORWARD, timeNow);
+            }
+            else
+            {
+                bool isMoving = Flag.IsMoveFlagSet(MovementFlags.MOVEMENTFLAG_FORWARD);
+                Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_NONE);
+                UpdatePosition(diff);
+                if (isMoving)
+                    mClient.SendMovementPacket(WorldServerOpCode.MSG_MOVE_STOP, timeNow);
+            }
+        }
+
+        /// <summary>
+        /// Clears all waypoints
+        /// </summary>
+        private void ClearWaypoints()
+        {
+            lock (mWaypointsLock)
+                mWaypoints.Clear();
+        }
+
+
+        /// <summary>
+        /// Adds a new waypoint
+        /// </summary>
+        /// <param name="waypoint"></param>
+        private void AddWaypoint(Coordinate waypoint)
+        {
+            if (waypoint != null)
+                lock (mWaypoints)
+                    mWaypoints.Add(waypoint);
+        }
+
+        /// <summary>
+        /// Removes an existing waypoint
+        /// </summary>
+        /// <param name="waypoint"></param>
+        private void RemoveWaypoint(Coordinate waypoint)
+        {
+            if (mWaypoints.Contains(waypoint))
+            {
+                lock (mWaypointsLock)
+                    mWaypoints.Remove(waypoint);
+            }
+        }
+
+        #endregion
     }
 
 
@@ -197,12 +311,20 @@ namespace mClient.Clients
 
         public void SetMoveFlag(MovementFlags flag)
         {
+            if (flag == 0)
+            {
+                MoveFlags = (uint)flag;
+                return;
+            }
+
             MoveFlags |= (uint)flag;
         }
+
         public void UnSetMoveFlag(MovementFlags flag)
         {
             MoveFlags &= ~(uint)flag;
         }
+
         public bool IsMoveFlagSet(MovementFlags flag)
         {
             if (MoveFlags == 0 && (uint)flag == 0) return true;

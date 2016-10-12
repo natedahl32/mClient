@@ -30,6 +30,7 @@ namespace mClient.Clients
             var auraSlot = inpacket.ReadByte();
             var auraDuration = inpacket.ReadUInt32();
 
+            Log.WriteLine(LogType.Debug, "Update Aura Duration for slot {0} with duration {1}", auraSlot, auraDuration);
             // TODO: Update the players auras
         }
 

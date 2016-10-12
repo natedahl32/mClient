@@ -72,7 +72,7 @@ namespace mClient.Clients
                         float dist = TerrainMgr.CalculateDistance(objectMgr.getPlayerObject().Position, target.Position);
                         if (dist > 1)
                         {
-                            movementMgr.Waypoints.Add(target.Position);
+                            movementMgr.FollowTarget = target;
                         }
                         else if (dist < 1 && !isFighting)
                         {

@@ -1,12 +1,10 @@
 ﻿using mClient.Clients;
 using PObject = mClient.Clients.Object;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using mClient.Shared;
-using mClient.Terrain;
-using mClient.Constants;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace mClient.World.AI
 {
@@ -17,23 +15,26 @@ namespace mClient.World.AI
 
         #region Declarations
 
-        private Player mPlayer;
+        private Thread mAILoop = null;
+        private UInt32 lastUpdateTime;
 
-        // Movement variables
-        private PObject mFollowTarget = null;
+        private Player mPlayer;
+        private WorldServerClient mClient;
 
         // Combat variables
-        private WoWGuid mTargetSelection = null;
+        private PObject mTargetSelection = null;
         private bool mIsAttackingTarget = false;
 
         #endregion
 
         #region Constructors
 
-        public PlayerAI(Player player)
+        public PlayerAI(Player player, WorldServerClient client)
         {
             if (player == null) throw new ArgumentNullException("player");
+            if (client == null) throw new ArgumentNullException("client");
             mPlayer = player;
+            mClient = client;
 
             // Defaults
             NotInMeleeRange = false;
@@ -42,6 +43,11 @@ namespace mClient.World.AI
         #endregion
 
         #region Properties
+
+        /// <summary>
+        /// Gets or sets the world server client associated with this Player AI
+        /// </summary>
+        public WorldServerClient Client { get { return mClient; } }
 
         /// <summary>
         /// Gets the player this AI belongs to
@@ -61,40 +67,24 @@ namespace mClient.World.AI
         #region Public Methods
 
         /// <summary>
-        /// Handle player logic
+        /// Starts the AI thread
         /// </summary>
-        /// <param name="client"></param>
-        public void HandlePlayerLogic(WorldServerClient client)
+        public void StartAI()
         {
-            // If I'm in combat, handle the situation first before I do anything else
-            if (Player.IsInCombat)
+            try
             {
-                // TOOD: Need a combat module
+                lastUpdateTime = MM_GetTime();
 
-                // If we are not in melee range, set the target as the follow target
-                // TODO: Use our target, NOT first enemy in the list
-                if (NotInMeleeRange)
-                {
-                    mFollowTarget = client.objectMgr.getObject(Player.EnemyList.FirstOrDefault());
-                    if (mFollowTarget != null)
-                    {
-                        FollowTarget(client);
-                        return;
-                    }
-                }
-                else
-                {
-                    client.Attack(Player.EnemyList.FirstOrDefault().GetOldGuid());
-                    return;
-                }
+                mAILoop = new Thread(Loop);
+                mAILoop.IsBackground = true;
+                mAILoop.Start();
             }
-
-            // If I am in a group set my follow target to be the group leader
-            //if (Player.CurrentGroup != null && Player.CurrentGroup.Leader != null)
-            //    mFollowTarget = Player.CurrentGroup.Leader.PlayerObject;
-
-
-            FollowTarget(client);
+            catch (Exception ex)
+            {
+                Log.WriteLine(LogType.Error, "Exception Occured");
+                Log.WriteLine(LogType.Error, "Message: {0}", ex.Message);
+                Log.WriteLine(LogType.Error, "Stacktrace: {0}", ex.StackTrace);
+            }
         }
 
         /// <summary>
@@ -102,16 +92,17 @@ namespace mClient.World.AI
         /// </summary>
         public void ClearFollowTarget()
         {
-            mFollowTarget = null;
+            Client.movementMgr.FollowTarget = null;
         }
 
         /// <summary>
         /// Follow a particular target
         /// </summary>
         /// <param name="guid"></param>
-        public void FollowTarget(WoWGuid guid)
+        public void SetFollowTarget(PObject obj)
         {
-            // TOOD: ObjectManager needs to be static so we can pull an object from here
+            if (obj != null)
+                Client.movementMgr.FollowTarget = obj;
         }
 
         #endregion
@@ -119,30 +110,65 @@ namespace mClient.World.AI
         #region Private Methods
 
         /// <summary>
-        /// Makes the player follow their follow target
+        /// Set the target selection for any combat related AI actions
         /// </summary>
-        private void FollowTarget(WorldServerClient client)
+        /// <param name="target"></param>
+        private void SetTargetSelection(PObject target)
         {
-            // If we have a follow target and we don't currently have a waypoint. Set a waypoint for the current targets position.
-            if (mFollowTarget != null)
+            // Either coming from a non existing target or going to a non existing target
+            if (target == null || mTargetSelection == null)
+                mIsAttackingTarget = false;
+            // Switching targets
+            if (target.Guid.GetOldGuid() != mTargetSelection.Guid.GetOldGuid())
+                mIsAttackingTarget = false;
+
+            mTargetSelection = target;
+        }
+
+        /// <summary>
+        /// Handles the AI loop
+        /// </summary>
+        private void Loop()
+        {
+            while (true)
             {
-                client.movementMgr.Waypoints.Clear();
-                if (mFollowTarget.Position != null)
+                try
                 {
-                    // Only add the waypoint if we are within distance of the person we are following
-                    var distance = client.movementMgr.CalculateDistance(mFollowTarget.Position);
-                    if (distance > 1 && distance < 100)
-                        client.movementMgr.Waypoints.Add(mFollowTarget.Position);
-                    else
+                    // TOOD: This will just be a tick on the behavior tree in the future
+
+                    // If I'm in combat, handle the situation first before I do anything else
+                    if (Player.IsInCombat)
                     {
-                        var angle = TerrainMgr.CalculateAngle(client.objectMgr.getPlayerObject().Position, mFollowTarget.Position);
-                        if (client.objectMgr.getPlayerObject().Position.O != angle)
+
+                        // TODO: Use our target, NOT first enemy in the list
+                        SetTargetSelection(Client.objectMgr.getObject(Player.EnemyList.FirstOrDefault()));
+
+                        // If we are a melee player check melee range
+                        // If we are not in melee range, set the target as the follow target
+                        if (NotInMeleeRange && Player.IsMelee)
                         {
-                            client.objectMgr.getPlayerObject().Position.O = angle;
-                            UInt32 timeNow = MM_GetTime();
-                            client.SendMovementPacket(WorldServerOpCode.MSG_MOVE_SET_FACING, timeNow);
+                            Client.movementMgr.FollowTarget = mTargetSelection;
+                        }
+                        else
+                        {
+                            // TOOD: Spell Casters should cast a spell here. BUT first we need to check range on the target
+                            // TOOD: We need a state here. We can't keep sending this packet, we only need
+                            // to send it once.
+                            if (!mIsAttackingTarget && mTargetSelection != null)
+                            {
+                                Client.Attack(mTargetSelection.Guid.GetOldGuid());
+                                mIsAttackingTarget = true;
+                            }
+                            
+                            continue;
                         }
                     }
+                }
+                catch (Exception ex)
+                {
+                    Log.WriteLine(LogType.Error, "Exception Occured");
+                    Log.WriteLine(LogType.Error, "Message: {0}", ex.Message);
+                    Log.WriteLine(LogType.Error, "Stacktrace: {0}", ex.StackTrace);
                 }
             }
         }

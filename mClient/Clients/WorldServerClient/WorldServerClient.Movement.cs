@@ -41,6 +41,7 @@ namespace mClient.Clients
         [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_START_SWIM)]
         [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_STOP_SWIM)]
         [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_HEARTBEAT)]
+        [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_SET_FACING)]
         public void HandleAnyMove(PacketIn packet)
         {
             byte mask = packet.ReadByte();
@@ -57,8 +58,8 @@ namespace mClient.Clients
                 var z = packet.ReadFloat();
                 var o = packet.ReadFloat();
                 obj.Position= new Coordinate(x, y, z, o);
-                if (guid.GetOldGuid() == player.PlayerObject.Guid.GetOldGuid())
-                    Log.WriteLine(LogType.Debug, "Received position: {0} {1} {2} {3}");
+                //if (guid.GetOldGuid() == player.PlayerObject.Guid.GetOldGuid())
+                //    Log.WriteLine(LogType.Debug, "Received position: {0} {1} {2} {3}");
             }
         }
 
@@ -76,7 +77,8 @@ namespace mClient.Clients
             }
             else
             {
-                objectMgr.addObject(new Object(guid) { Type = ObjectType.Unit, Position = new Coordinate(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat()) });
+                obj = new Object(guid) { Type = ObjectType.Unit, Position = new Coordinate(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat()) };
+                objectMgr.addObject(obj);
             }
         }
 
@@ -102,7 +104,7 @@ namespace mClient.Clients
             var y = (float)obj.Position.Y;
             var z = (float)obj.Position.Z;
             var o = (float)obj.Position.O;
-            Log.WriteLine(LogType.Debug, "{4} Position: {0} {1} {2} {3}", x, y, z, o, movementOpCode);
+            //Log.WriteLine(LogType.Debug, "{4} Position: {0} {1} {2} {3}", x, y, z, o, movementOpCode);
             packet.Write(x);
             packet.Write(y);
             packet.Write(z);
