@@ -120,7 +120,7 @@ namespace mClient.Clients
                 }
 
                 // Have the player handle the chat message
-                player.HandleChatMessage((ChatMsg)Type, fguid, username, Message, channel);
+                player.HandleChatMessage(this, (ChatMsg)Type, fguid, username, Message, channel);
 
                 object[] param = new object[] { (ChatMsg)Type, channel, username, Message };
                 mCore.Event(new Event(EventType.EVENT_CHAT_MSG, "0", param)); 
@@ -142,7 +142,7 @@ namespace mClient.Clients
             var data = query.ExtraData as ChatQueue;
 
             // Have the player handle the chat message
-            player.HandleChatMessage((ChatMsg)data.Type, obj.Guid, obj.Name, data.Message, data.Channel);
+            player.HandleChatMessage(this, (ChatMsg)data.Type, obj.Guid, obj.Name, data.Message, data.Channel);
 
             object[] param = new object[] { (ChatMsg)data.Type, data.Channel, obj.Name, data.Message };
             mCore.Event(new Event(EventType.EVENT_CHAT_MSG, "0", param));

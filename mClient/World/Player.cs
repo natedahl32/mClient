@@ -52,7 +52,6 @@ namespace mClient.World
 
             mPlayerObject = new PObject(guid);
             mPlayerObject.Name = name;
-            mPlayerChatHandler = new PlayerChatHandler(this);
         }
 
         public Player(WoWGuid guid, string name, byte race, byte pClass, byte level, UInt32 mapId, byte gender, UInt32 guildId, UInt32 cFlags) : 
@@ -67,10 +66,10 @@ namespace mClient.World
             this.CharacterFlags = cFlags;
         }
 
-        public Player(PObject playerObject, byte race, byte pClass, byte level, UInt32 mapId, byte gender, UInt32 guildId, UInt32 cFlags) :
+        public Player(PObject playerObject, byte race, byte pClass, byte level, UInt32 mapId, byte gender, UInt32 guildId, UInt32 cFlags, WorldServerClient client) :
             this(playerObject)
         {
-            this.mPlayerAI = new PlayerAI(this);
+            this.mPlayerAI = new PlayerAI(this, client);
 
             this.Race = race;
             this.Class = pClass;
@@ -210,19 +209,11 @@ namespace mClient.World
         #region Public Methods 
 
         /// <summary>
-        /// Updates the players logic
-        /// </summary>
-        public void UpdateLogic(WorldServerClient client)
-        {
-            if (mPlayerAI != null) mPlayerAI.HandlePlayerLogic(client);
-        }
-
-        /// <summary>
         /// Handles chat messages for this player
         /// </summary>
-        public void HandleChatMessage(ChatMsg type, WoWGuid senderGuid, string senderName, string message, string channel)
+        public void HandleChatMessage(WorldServerClient client, ChatMsg type, WoWGuid senderGuid, string senderName, string message, string channel)
         {
-            mPlayerChatHandler.HandleChat(type, senderGuid, senderName, message, channel);
+            mPlayerChatHandler.HandleChat(client, type, senderGuid, senderName, message, channel);
         }
 
         /// <summary>

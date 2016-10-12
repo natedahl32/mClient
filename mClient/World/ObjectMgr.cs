@@ -18,6 +18,8 @@ namespace mClient.Clients
     {
         public UInt32 MapID;
         public WoWGuid playerGuid;
+
+        private System.Object mObjectsLock = new System.Object();
         private List<Object> mObjects;
 
         public ObjectMgr()
@@ -31,7 +33,9 @@ namespace mClient.Clients
             if (index == -1)
             {
                 Object obj = new Object(playerGuid);
-                addObject(obj);
+                lock (mObjectsLock)
+                    addObject(obj);
+
                 return obj;
                 
             }
@@ -49,7 +53,9 @@ namespace mClient.Clients
             }
             else
             {
-                mObjects.Add(obj);
+                lock(mObjectsLock)
+                    mObjects.Add(obj);
+
                 Object[] test = new Object[1];
                 test[0] = obj;
                 Event m2 = new Event(EventType.EVENT_ADD_OBJECT, "0", test);
@@ -63,9 +69,15 @@ namespace mClient.Clients
             int index = getObjectIndex(obj.Guid);
             if (index != -1)
             {
-                mObjects[index] = obj;
-                Object[] test = new Object[1];
-                test[0] = obj;
+                Object[] test;
+
+                lock (mObjectsLock)
+                {
+                    mObjects[index] = obj;
+                    test = new Object[1];
+                    test[0] = obj;
+                }
+
                 Event m2 = new Event(EventType.EVENT_UDT_OBJECT, "0", test);
                 mCore.Event(m2);
             }
@@ -80,7 +92,8 @@ namespace mClient.Clients
             int index = getObjectIndex(guid);
             if (index != -1)
             {
-                mObjects.RemoveAt(index);
+                lock(mObjectsLock)
+                    mObjects.RemoveAt(index);
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using mClient.Constants;
+﻿using mClient.Clients;
+using mClient.Constants;
 using mClient.Shared;
 
 namespace mClient.World.AI
@@ -25,8 +26,11 @@ namespace mClient.World.AI
         /// <summary>
         /// Handles a chat message
         /// </summary>
-        public void HandleChat(ChatMsg type, WoWGuid senderGuid, string senderName, string message, string channel)
+        public void HandleChat(WorldServerClient client, ChatMsg type, WoWGuid senderGuid, string senderName, string message, string channel)
         {
+            // trim termination character from end of message
+            message = message.Replace("\0", "");
+
             switch(type)
             {
                 case ChatMsg.Battleground:
@@ -35,10 +39,10 @@ namespace mClient.World.AI
                 case ChatMsg.Raid:
                 case ChatMsg.RaidLeader:
                 case ChatMsg.RaidWarning:
-                    HandleGroupChatMessage(senderGuid, senderName, message);
+                    HandleGroupChatMessage(client, senderGuid, senderName, message);
                     break;
                 case ChatMsg.Whisper:
-                    HandleWhisperMessage(senderGuid, senderName, message);
+                    HandleWhisperMessage(client, senderGuid, senderName, message);
                     break;
                 case ChatMsg.MonsterEmote:
                 case ChatMsg.MonsterParty:
@@ -47,13 +51,13 @@ namespace mClient.World.AI
                 case ChatMsg.MonsterYell:
                 case ChatMsg.RaidBossEmote:
                 case ChatMsg.RaidBossWhisper:
-                    HandleNpcMessage(senderGuid, senderName, message);
+                    HandleNpcMessage(client, senderGuid, senderName, message);
                     break;
                 case ChatMsg.Channel:
-                    HandleCustomChannelMessage(senderGuid, senderName, message, channel);
+                    HandleCustomChannelMessage(client, senderGuid, senderName, message, channel);
                     break;
                 default:
-                    HandleGenericChatMessage(senderGuid, senderName, message);
+                    HandleGenericChatMessage(client, senderGuid, senderName, message);
                     break;
             }
         }
@@ -68,7 +72,7 @@ namespace mClient.World.AI
         /// <param name="senderGuid"></param>
         /// <param name="senderName"></param>
         /// <param name="message"></param>
-        private void HandleGenericChatMessage(WoWGuid senderGuid, string senderName, string message)
+        private void HandleGenericChatMessage(WorldServerClient client, WoWGuid senderGuid, string senderName, string message)
         {
 
         }
@@ -79,7 +83,7 @@ namespace mClient.World.AI
         /// <param name="senderGuid"></param>
         /// <param name="senderName"></param>
         /// <param name="message"></param>
-        private void HandleGroupChatMessage(WoWGuid senderGuid, string senderName, string message)
+        private void HandleGroupChatMessage(WorldServerClient client, WoWGuid senderGuid, string senderName, string message)
         {
             // Nothing to do with an empty message
             if (string.IsNullOrEmpty(message)) return;
@@ -87,7 +91,14 @@ namespace mClient.World.AI
             if (message.Trim().ToLower() == "stay")
                 Player.PlayerAI.ClearFollowTarget();
             else if (message.Trim().ToLower() == "follow")
-                Player.PlayerAI.FollowTarget(senderGuid);
+            {
+                // Create a new query for the player
+                var query = new QueryQueue(QueryQueueType.Name, senderGuid.GetOldGuid());
+                query.AddCallback((o) => Player.PlayerAI.SetFollowTarget(o));
+                var obj = client.GetOrQueueObject(query);
+                if (obj != null)
+                    Player.PlayerAI.SetFollowTarget(obj);
+            }
         }
 
         /// <summary>
@@ -96,7 +107,7 @@ namespace mClient.World.AI
         /// <param name="senderGuid"></param>
         /// <param name="senderName"></param>
         /// <param name="message"></param>
-        private void HandleWhisperMessage(WoWGuid senderGuid, string senderName, string message)
+        private void HandleWhisperMessage(WorldServerClient client, WoWGuid senderGuid, string senderName, string message)
         {
 
         }
@@ -107,7 +118,7 @@ namespace mClient.World.AI
         /// <param name="senderGuid"></param>
         /// <param name="senderName"></param>
         /// <param name="message"></param>
-        private void HandleNpcMessage(WoWGuid senderGuid, string senderName, string message)
+        private void HandleNpcMessage(WorldServerClient client, WoWGuid senderGuid, string senderName, string message)
         {
 
         }
@@ -119,7 +130,7 @@ namespace mClient.World.AI
         /// <param name="senderName"></param>
         /// <param name="message"></param>
         /// <param name="channel"></param>
-        private void HandleCustomChannelMessage(WoWGuid senderGuid, string senderName, string message, string channel)
+        private void HandleCustomChannelMessage(WorldServerClient client, WoWGuid senderGuid, string senderName, string message, string channel)
         {
 
         }

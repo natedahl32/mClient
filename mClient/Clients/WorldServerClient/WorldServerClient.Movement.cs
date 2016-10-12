@@ -41,6 +41,7 @@ namespace mClient.Clients
         [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_START_SWIM)]
         [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_STOP_SWIM)]
         [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_HEARTBEAT)]
+        [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_SET_FACING)]
         public void HandleAnyMove(PacketIn packet)
         {
             byte mask = packet.ReadByte();
@@ -76,7 +77,8 @@ namespace mClient.Clients
             }
             else
             {
-                objectMgr.addObject(new Object(guid) { Type = ObjectType.Unit, Position = new Coordinate(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat()) });
+                obj = new Object(guid) { Type = ObjectType.Unit, Position = new Coordinate(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat()) };
+                objectMgr.addObject(obj);
             }
         }
 

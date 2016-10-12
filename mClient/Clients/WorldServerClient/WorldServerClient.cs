@@ -34,7 +34,6 @@ namespace mClient.Clients
         
         private System.Timers.Timer aTimer = new System.Timers.Timer();
         private System.Timers.Timer uTimer = new System.Timers.Timer();
-        private System.Timers.Timer lTimer = new System.Timers.Timer();
         private UInt32 Ping_Seq;
         private UInt32 Ping_Req_Time;
         private UInt32 Ping_Res_Time;
@@ -128,7 +127,8 @@ namespace mClient.Clients
             // Make sure we don't already have a player here
             if (player != null) throw new ApplicationException("Player already exists. Cannot create another player!");
 
-            player = new Player(playerObject, c.Race, c.Class, c.Level, c.MapID, c.Gender, c.GuildId, c.CharacterFlags);
+            player = new Player(playerObject, c.Race, c.Class, c.Level, c.MapID, c.Gender, c.GuildId, c.CharacterFlags, this);
+            player.PlayerAI.StartAI();
         }
 
         void PingLoop()
@@ -194,19 +194,6 @@ namespace mClient.Clients
             aTimer.Elapsed += new ElapsedEventHandler(Heartbeat);
             aTimer.Interval = 500;
             aTimer.Enabled = true;
-
-            // Also start our logic timer
-            lTimer.Elapsed += new ElapsedEventHandler(Logic);
-            lTimer.Interval = 300;
-            lTimer.Enabled = true;
-        }
-
-        void Logic(object source, ElapsedEventArgs e)
-        {
-            if (player == null)
-                return;
-
-            player.UpdateLogic(this);
         }
 
         public void HandlePacket(PacketIn packet)
