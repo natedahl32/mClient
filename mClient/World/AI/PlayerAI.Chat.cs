@@ -147,7 +147,7 @@ namespace mClient.World.AI
                 // Create a new query for the player
                 var query = new QueryQueue(QueryQueueType.Name, senderGuid.GetOldGuid());
                 query.AddCallback((o) => Player.PlayerAI.SetFollowTarget(o));
-                var obj = client.GetOrQueueObject(query);
+                var obj = Player.PlayerAI.Client.GetOrQueueObject(query);
                 if (obj != null)
                     Player.PlayerAI.SetFollowTarget(obj);
                 return true;

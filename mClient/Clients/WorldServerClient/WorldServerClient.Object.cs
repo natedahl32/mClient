@@ -224,7 +224,7 @@ namespace mClient.Clients
             }
         }
 
-        /*
+        
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_DESTROY_OBJECT)]
         public void DestroyObject(PacketIn packet)
         {
@@ -232,7 +232,6 @@ namespace mClient.Clients
             objectMgr.delObject(guid);
 
         }
-         * */
 
         public uint GeUpdateFieldsCount(uint updateId)
         {
