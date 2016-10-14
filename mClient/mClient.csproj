@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>mClient</RootNamespace>
     <AssemblyName>mClient</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -32,6 +32,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -44,6 +45,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -55,6 +57,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FluentBehaviourTree, Version=0.0.4.0, Culture=neutral, processorArchitecture=MSIL">
@@ -81,6 +84,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Clients\LogonServerClient\LogonServer.Client.cs" />
+    <Compile Include="Clients\WorldServerClient\Objects\WorldServerClient.Container.cs" />
+    <Compile Include="Clients\WorldServerClient\Objects\WorldServerClient.Corpse.cs" />
+    <Compile Include="Clients\WorldServerClient\Objects\WorldServerClient.DynamicObject.cs" />
+    <Compile Include="Clients\WorldServerClient\Objects\WorldServerClient.GameObject.cs" />
+    <Compile Include="Clients\WorldServerClient\Objects\WorldServerClient.Item.cs" />
+    <Compile Include="Clients\WorldServerClient\Objects\WorldServerClient.Player.cs" />
+    <Compile Include="Clients\WorldServerClient\Objects\WorldServerClient.Unit.cs" />
+    <Compile Include="Clients\WorldServerClient\UpdateBlocks\MovementBlock.cs" />
+    <Compile Include="Clients\WorldServerClient\UpdateBlocks\MovementInfo.cs" />
+    <Compile Include="Clients\WorldServerClient\UpdateBlocks\SplineInfo.cs" />
+    <Compile Include="Clients\WorldServerClient\UpdateBlocks\TransportInfo.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Group.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Player.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Auth.cs" />
@@ -88,7 +102,7 @@
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Combat.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Movement.cs" />
-    <Compile Include="Clients\WorldServerClient\WorldServerClient.Object.Class.cs" />
+    <Compile Include="Clients\WorldServerClient\Objects\WorldServerClient.Object.Class.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Object.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Others.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Spells.cs" />
@@ -127,6 +141,7 @@
     <Compile Include="Shared\BlizChunkHeader.cs" />
     <Compile Include="Shared\Compression.cs" />
     <Compile Include="Shared\Coordinate.cs" />
+    <Compile Include="Shared\Coords3.cs" />
     <Compile Include="Shared\EntityId.cs" />
     <Compile Include="Shared\QueryQueue.cs" />
     <Compile Include="Shared\UpdateMask.cs" />

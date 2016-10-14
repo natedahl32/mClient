@@ -122,7 +122,7 @@ namespace mClient.Clients
             pHandler.Initialize();
         }
 
-        void CreatePlayer(Object playerObject, Character c)
+        void CreatePlayer(PlayerObj playerObject, Character c)
         {
             // Make sure we don't already have a player here
             if (player != null) throw new ApplicationException("Player already exists. Cannot create another player!");

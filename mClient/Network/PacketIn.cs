@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 
 using mClient.Constants;
+using mClient.Shared;
 
 namespace mClient.Network
 {
@@ -79,8 +80,48 @@ namespace mClient.Network
             return System.BitConverter.ToSingle(ReadBytes(4), 0);
         }
 
+        public UInt64 ReadPackedGuid()
+        {
+            byte mask = ReadByte();
 
-		public byte[] ToArray()
+            if (mask == 0)
+            {
+                return 0;
+            }
+
+            ulong res = 0;
+
+            int i = 0;
+            while (i < 8)
+            {
+                if ((mask & 1 << i) != 0)
+                {
+                    res += (ulong)ReadByte() << (i * 8);
+                }
+                i++;
+            }
+
+            return res;
+        }
+
+        public Coords3 ReadCoords3()
+        {
+            Coords3 v;
+
+            v.X = ReadSingle();
+            v.Y = ReadSingle();
+            v.Z = ReadSingle();
+
+            return v;
+        }
+
+        public WoWGuid ReadPackedGuidToWoWGuid()
+        {
+            return new WoWGuid(ReadPackedGuid());
+        }
+
+
+        public byte[] ToArray()
 		{
 			return ((MemoryStream)BaseStream).ToArray();
 		}

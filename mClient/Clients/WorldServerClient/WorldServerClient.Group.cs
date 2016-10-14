@@ -94,7 +94,7 @@ namespace mClient.Clients
                 // Create a new query for the player
                 var query = new QueryQueue(QueryQueueType.Name, guid) { ExtraData = data };
                 query.AddCallback((o) => HandleNewGroupMemberQuery(o));
-                var obj = GetOrQueueObject(query);
+                var obj = GetOrQueueObject(query) as PlayerObj;
                 if (obj != null)
                     AddObjectToGroup(obj, data);
             }
@@ -160,7 +160,7 @@ namespace mClient.Clients
             // Get the group member data stored in the query
             var data = query.ExtraData as GroupMemberData;
 
-            AddObjectToGroup(obj, data);
+            AddObjectToGroup((PlayerObj)obj, data);
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace mClient.Clients
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="data"></param>
-        private void AddObjectToGroup(Object obj, GroupMemberData data)
+        private void AddObjectToGroup(PlayerObj obj, GroupMemberData data)
         {
             var newMember = new Player(obj) { GroupData = data };
             player.CurrentGroup.AddPlayerToGroup(newMember);

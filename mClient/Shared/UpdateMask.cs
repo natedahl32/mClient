@@ -38,7 +38,8 @@ namespace mClient.Shared
         {
 
             mCount = valuesCount;
-            mBlocks = (UInt16)((valuesCount >> 5) + 1);
+            mBlocks = (UInt16)((valuesCount + 31) / 32);
+            //mBlocks = (UInt16)((valuesCount >> 5) + 1);
 
             mUpdateMask = new byte[mBlocks*4];
         }

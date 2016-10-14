@@ -32,7 +32,7 @@ namespace mClient.Clients
             int index = getObjectIndex(playerGuid);
             if (index == -1)
             {
-                Object obj = new Object(playerGuid);
+                Object obj = Object.CreateObjectByType(playerGuid, ObjectType.Player);
                 lock (mObjectsLock)
                     addObject(obj);
 

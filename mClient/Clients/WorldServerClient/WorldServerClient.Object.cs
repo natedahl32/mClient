@@ -4,14 +4,15 @@ using System.Linq;
 using mClient.Network;
 using mClient.Shared;
 using mClient.Constants;
-
-
+using System.Collections;
+using System.Collections.Generic;
+using mClient.Clients.UpdateBlocks;
 
 namespace mClient.Clients
 {
     public partial class WorldServerClient
     {
-        /*
+        
 		[PacketHandlerAtribute(WorldServerOpCode.SMSG_COMPRESSED_UPDATE_OBJECT)]
 		public void HandleCompressedObjectUpdate(PacketIn packet)
 		{
@@ -31,197 +32,247 @@ namespace mClient.Clients
 		[PacketHandlerAtribute(WorldServerOpCode.SMSG_UPDATE_OBJECT)]
 		public void HandleObjectUpdate(PacketIn packet)
 		{
-                UInt32 UpdateBlocks = packet.ReadUInt32();
+            UInt32 UpdateBlocks = packet.ReadUInt32();
+            byte hasTransport = packet.ReadByte();
 
-                for(int allBlocks = 0; allBlocks < UpdateBlocks; allBlocks++)
-                {
-                    UpdateType type = (UpdateType)packet.ReadByte();
+            for(int allBlocks = 0; allBlocks < UpdateBlocks; allBlocks++)
+            {
+                UpdateType type = (UpdateType)packet.ReadByte();
                     
-                    WoWGuid updateGuid;
-                    uint updateId;
-                    uint fCount;
+                WoWGuid updateGuid;
+                uint updateId;
+                uint fCount;
+                byte mask;
 
-                    switch(type)
-                    {
-                        case UpdateType.Values:
-                            Object getObject;
-                            updateGuid = new WoWGuid(packet.ReadUInt64());
-                            if (objectMgr.objectExists(updateGuid))
-                            {
-                                getObject = objectMgr.getObject(updateGuid);
-                            }
-                            else
-                            {
-                                getObject = new Object(updateGuid);
-                                objectMgr.addObject(getObject);
-                            }
-                            Log.WriteLine(LogType.Normal, "Handling Fields Update for object: {0}", getObject.Guid.ToString());
-                            HandleUpdateObjectFieldBlock(packet, getObject);
-                            objectMgr.updateObject(getObject);
-                            break;
+                switch (type)
+                {
+                    case UpdateType.Values:
+                        Object getObject;
+                        updateGuid = packet.ReadPackedGuidToWoWGuid();
+                        if (objectMgr.objectExists(updateGuid))
+                        {
+                            getObject = objectMgr.getObject(updateGuid);
+                        }
+                        else
+                        {
+                            getObject = Object.CreateObjectByType(updateGuid, ObjectType.Player);
+                            objectMgr.addObject(getObject);
+                        }
+                        Log.WriteLine(LogType.Normal, "Handling Fields Update for object: {0}", getObject.Guid.ToString());
+                        HandleUpdateObjectFieldBlock(packet, getObject);
+                        objectMgr.updateObject(getObject);
+                        break;
 
-                        case UpdateType.Create:
-                        case UpdateType.CreateSelf:
-                            updateGuid = new WoWGuid(packet.ReadUInt64());
-                            updateId = packet.ReadByte();
-                            fCount = GeUpdateFieldsCount(updateId);
+                    case UpdateType.Create:
+                    case UpdateType.CreateSelf:
+                        updateGuid = packet.ReadPackedGuidToWoWGuid();
+                        var objectType = packet.ReadByte();
+                        fCount = GeUpdateFieldsCount(objectType);
 
-                            if (objectMgr.objectExists(updateGuid))
-                                objectMgr.delObject(updateGuid);
+                        if (objectMgr.objectExists(updateGuid))
+                            objectMgr.delObject(updateGuid);
 
-                            Object newObject = new Object(updateGuid);
-                            newObject.Fields = new UInt32[2000];
-                            objectMgr.addObject(newObject);
-                            HandleUpdateMovementBlock(packet, newObject);
-                            HandleUpdateObjectFieldBlock(packet, newObject);
-                            objectMgr.updateObject(newObject);
-                            Log.WriteLine(LogType.Normal, "Handling Creation of object: {0}", newObject.Guid.ToString());
-                            break;
+                        Object newObject = Object.CreateObjectByType(updateGuid, (ObjectType)objectType);
+                        //newObject.Fields = new UInt32[2000];
+                        objectMgr.addObject(newObject);
+                        HandleUpdateMovementBlock(packet, newObject);
+                        HandleUpdateObjectFieldBlock(packet, newObject);
+                        objectMgr.updateObject(newObject);
+                        Log.WriteLine(LogType.Normal, "Handling Creation of object: {0}", newObject.Guid.ToString());
+                        break;
+
+                    case UpdateType.OutOfRange:
+                        UInt32 outOfRangeGuids = packet.ReadUInt32();
+                        WoWGuid guid;
+                        for (int i = 0; i < outOfRangeGuids; i++)
+                            guid = packet.ReadPackedGuidToWoWGuid();
                         
-                        case UpdateType.OutOfRange:
-                            fCount = packet.ReadByte();
-                            for (int j = 0; j < fCount; j++)
-                            {
-                                WoWGuid guid = new WoWGuid(packet.ReadUInt64());
-                                Log.WriteLine(LogType.Normal, "Handling delete for object: {0}", guid.ToString());
-                                if (objectMgr.objectExists(guid))
-                                    objectMgr.delObject(guid);
-                            }
-                            break;
-                    }
+                        break;
+
+                    case UpdateType.Movement:
+                        Object moveObject;
+                        var moveGuid = new WoWGuid(packet.ReadUInt64());
+                        if (objectMgr.objectExists(moveGuid))
+                        {
+                            moveObject = objectMgr.getObject(moveGuid);
+                        }
+                        else
+                        {
+                            // shouldn't ever happen
+                            moveObject = Object.CreateObjectByType(moveGuid, ObjectType.Object);
+                            objectMgr.addObject(moveObject);
+                        }
+
+                        HandleUpdateMovementBlock(packet, moveObject);
+                        objectMgr.updateObject(moveObject);
+
+                        break;
+                    //case UpdateType.OutOfRange:
+                    //    fCount = packet.ReadByte();
+                    //    for (int j = 0; j < fCount; j++)
+                    //    {
+                    //        WoWGuid guid = new WoWGuid(packet.ReadUInt64());
+                    //        Log.WriteLine(LogType.Normal, "Handling delete for object: {0}", guid.ToString());
+                    //        if (objectMgr.objectExists(guid))
+                    //            objectMgr.delObject(guid);
+                    //    }
+                    //    break;
                 }
+            }
               
         }
-        */
+        
 
         public void HandleUpdateMovementBlock(PacketIn packet, Object newObject)
         {
-            UInt16 flags = packet.ReadUInt16();
+            var movementBlock = MovementBlock.Read(packet);
+            newObject.Position = new Coordinate(movementBlock.Movement.Position.X, movementBlock.Movement.Position.Y, movementBlock.Movement.Position.Z, movementBlock.Movement.Facing);
+
+            //UInt16 flags = packet.ReadUInt16();
 
 
-            if((flags & 0x20) >= 1)
-            {
-                UInt32 flags2 = packet.ReadUInt32();
-                UInt16 unk1 = packet.ReadUInt16();
-                UInt32 unk2 = packet.ReadUInt32();
-                newObject.Position = new Coordinate(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
+            //if((flags & (UInt16)ObjectUpdateFlags.UPDATEFLAG_LIVING) >= 1)
+            //{
+            //    UInt32 moveFlags = packet.ReadUInt32();
+            //    UInt32 time = packet.ReadUInt32();
+            //    newObject.Position = new Coordinate(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
 
-                if ((flags2 & 0x200) >= 1)
-                {
-                    packet.ReadBytes(21); //transporter
-                }
+            //    if ((moveFlags & (UInt32)MovementFlags.MOVEMENTFLAG_ONTRANSPORT) >= 1)
+            //    {
+            //        var transportGuid = packet.ReadUInt64();
+            //        var transportX = packet.ReadFloat();
+            //        var transportY = packet.ReadFloat();
+            //        var transportZ = packet.ReadFloat();
+            //        var transportO = packet.ReadFloat();
+            //    }
 
-                if (((flags2 & 0x2200000) >= 1) || ((unk1 & 0x20) >= 1))
-                {
-                    packet.ReadBytes(4); // pitch
-                }
+            //    if (((moveFlags & (UInt32)MovementFlags.MOVEMENTFLAG_SWIMMING) >= 1))
+            //    {
+            //        var pitch = packet.ReadFloat();
+            //    }
 
-                packet.ReadBytes(4); //lastfalltime
+            //    var fallTime = packet.ReadUInt32();
 
-                if ((flags2 & 0x1000) >= 1)
-                {
-                    packet.ReadBytes(16); // skip 4 floats
-                }
+            //    if ((moveFlags & (UInt32)MovementFlags.MOVEMENTFLAG_FALLING) >= 1)
+            //    {
+            //        var jumpVelocity = packet.ReadFloat();
+            //        var jumpSinAngle = packet.ReadFloat();
+            //        var jumpCosAngle = packet.ReadFloat();
+            //        var jumpXYSpeed = packet.ReadFloat();
+            //    }
 
-                if ((flags2 & 0x4000000) >= 1)
-                {
-                    packet.ReadBytes(4); // skip 1 float
-                }
+            //    if ((moveFlags & (UInt32)MovementFlags.MOVEMENTFLAG_SPLINE_ELEVATION) >= 1)
+            //    {
+            //        var unk1 = packet.ReadFloat();
+            //    }
 
-                packet.ReadBytes(32); // all of speeds
+            //    // Read all speeds
+            //    var moveWalkSpeed = packet.ReadFloat();
+            //    var moveRunSpeed = packet.ReadFloat();
+            //    var moveRunBackSpeed = packet.ReadFloat();
+            //    var moveSwimSpeed = packet.ReadFloat();
+            //    var moveSwimBackSpeed = packet.ReadFloat();
+            //    var moveTurnRateSpeed = packet.ReadFloat();
 
-                if ((flags2 & 0x8000000) >= 1) //spline ;/
-                {
-                    UInt32 splineFlags = packet.ReadUInt32();
+            //    if ((moveFlags & (UInt32)MovementFlags.MOVEMENTFLAG_SPLINE_ENABLED) >= 1) //spline ;/
+            //    {
+            //        UInt32 splineFlags = packet.ReadUInt32();
 
-                    if ((splineFlags & 0x00020000) >= 1)
-                    {
-                        packet.ReadBytes(4); // skip 1 float
-                    }
-                    else
-                    {
-                        if ((splineFlags & 0x00010000) >= 1)
-                        {
-                            packet.ReadBytes(4); // skip 1 float
-                        }
-                        else if ((splineFlags & 0x00008000) >= 1)
-                        {
-                            packet.ReadBytes(12); // skip 3 float
-                        }
-                    }
+            //        // if (splineFlags.final_point) - looks to be always true
+            //        packet.ReadFloat();
+            //        packet.ReadFloat();
+            //        packet.ReadFloat();
+            //        // if (splineFlags.final_target) - looks to be always true
+            //        packet.ReadUInt64();
+            //        // if (splineFlags.final_angle) - looks to be always true
+            //        packet.ReadFloat();
 
-                    packet.ReadBytes(28); // skip 8 float
+            //        // TimePassed, Duration and Id
+            //        packet.ReadUInt32();
+            //        packet.ReadUInt32();
+            //        packet.ReadUInt32();
 
-                    UInt32 splineCount = packet.ReadUInt32();
+            //        // Nodes
+            //        packet.ReadUInt32();
 
-                    for (UInt32 j = 0; j < splineCount; j++)
-                    {
-                        packet.ReadBytes(12); // skip 3 float
-                    }
+            //        // Spline Count
+            //        UInt32 splineCount = packet.ReadUInt32();
 
-                    packet.ReadBytes(13);
+            //        for (UInt32 j = 0; j < splineCount; j++)
+            //        {
+            //            packet.ReadBytes(12); // skip 3 float
+            //        }
 
-                }
-            }
+            //        // Final floats
+            //        packet.ReadFloat();
+            //        packet.ReadFloat();
+            //        packet.ReadFloat();
+            //    }
+            //}
+            //else if ((flags & (UInt32)ObjectUpdateFlags.UPDATEFLAG_HAS_POSITION) >= 1)
+            //{
+            //    newObject.Position = new Coordinate(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
+            //}
 
-            else if ((flags & 0x100) >= 1)
-            {
-                packet.ReadBytes(40);
-            }
-            else if ((flags & 0x40) >= 1)
-            {
-                newObject.Position = new Coordinate(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
-            }
+            //if ((flags & (UInt32)ObjectUpdateFlags.UPDATEFLAG_HIGHGUID) >= 1)
+            //{
+            //    packet.ReadUInt32();
+            //}
 
-            if ((flags & 0x8) >= 1)
-            {
-                packet.ReadBytes(4);
-            }
+            //if ((flags & (UInt32)ObjectUpdateFlags.UPDATEFLAG_ALL) >= 1)
+            //{
+            //    packet.ReadUInt32();
+            //}
 
-            if ((flags & 0x10) >= 1)
-            {
-                packet.ReadBytes(4);
-            }
+            //if ((flags & (UInt32)ObjectUpdateFlags.UPDATEFLAG_FULLGUID) >= 1)
+            //{
+            //    byte mask = packet.ReadByte();
+            //    WoWGuid guid = new WoWGuid(mask, packet.ReadBytes(WoWGuid.BitCount8(mask)));
+            //}
 
-            if ((flags & 0x04) >= 1)
-            {
-                packet.ReadBytes(8);
-            }
-
-            if ((flags & 0x2) >= 1)
-            {
-                packet.ReadBytes(4);
-            }
-
-            if ((flags & 0x80) >= 1)
-            {
-                packet.ReadBytes(8);
-            }
-
-            if ((flags & 0x200) >= 1)
-            {
-                packet.ReadBytes(8);
-            }
+            //if ((flags & (UInt32)ObjectUpdateFlags.UPDATEFLAG_TRANSPORT) >= 1)
+            //{
+            //    packet.ReadUInt32();
+            //}
         }
 
         public void HandleUpdateObjectFieldBlock(PacketIn packet, Object newObject)
         {
-            uint lenght = packet.ReadByte();
-            
-            UpdateMask UpdateMask = new UpdateMask();
-            UpdateMask.SetCount((ushort)(lenght));
-            UpdateMask.SetMask(packet.ReadBytes((int)lenght * 4), (ushort)lenght);
-            UInt32[] Fields = new UInt32[UpdateMask.GetCount()];
+            byte blocksCount = packet.ReadByte();
+            var updateMask = new int[blocksCount];
 
-            for (int i = 0; i < UpdateMask.GetCount(); i++)
+            for (int i = 0; i < updateMask.Length; ++i)
+                updateMask[i] = packet.ReadInt32();
+
+            var mask = new BitArray(updateMask);
+
+            var values = new Dictionary<int, uint>();
+
+            for (int i = 0; i < mask.Count; ++i)
+                if (mask[i])
+                    values[i] = packet.ReadUInt32();
+
+            foreach (var kvp in values)
             {
-                if (!UpdateMask.GetBit((ushort)i))
-                {
-                    UInt32 val = packet.ReadUInt32();
-                    newObject.SetField(i, val);
-                    Log.WriteLine(LogType.Normal, "Update Field: {0} = {1}", (UpdateFields)i, val);
-                }
+                newObject.SetField(kvp.Key, kvp.Value);
+                Log.WriteLine(LogType.Normal, "Update Field: {0} = {1}", kvp.Key, kvp.Value);
             }
+            //uint length = packet.ReadByte();
+            
+            //UpdateMask UpdateMask = new UpdateMask();
+            //UpdateMask.SetCount((ushort)(length));
+            //UpdateMask.SetMask(packet.ReadBytes((int)length * 4), (ushort)length);
+            //UInt32[] Fields = new UInt32[UpdateMask.GetCount()];
+
+            //for (int i = 0; i < UpdateMask.GetCount(); i++)
+            //{
+            //    if (UpdateMask.GetBit((ushort)i))
+            //    {
+            //        UInt32 val = packet.ReadUInt32();
+            //        newObject.SetField(i, val);
+            //        Log.WriteLine(LogType.Normal, "Update Field: {0} = {1}", i, val);
+            //    }
+            //}
         }
 
         
@@ -238,25 +289,25 @@ namespace mClient.Clients
             switch ((ObjectType)updateId)
             {
                 case ObjectType.Object:
-                    return (uint)UpdateFields.GAMEOBJECT_END;
+                    return (uint)GameObjectFields.GAMEOBJECT_END;
 
                 case ObjectType.Unit:
-                    return (uint)UpdateFields.UNIT_END;
+                    return (uint)UnitFields.UNIT_END;
 
                 case ObjectType.Player:
-                    return (uint)UpdateFields.PLAYER_END;
+                    return (uint)PlayerFields.PLAYER_END;
 
                 case ObjectType.Item:
-                    return (uint)UpdateFields.ITEM_END;
+                    return (uint)ItemFields.ITEM_END;
 
                 case ObjectType.Container:
-                    return (uint)UpdateFields.CONTAINER_END;
+                    return (uint)ContainerFields.CONTAINER_END;
 
                 case ObjectType.DynamicObject:
-                    return (uint)UpdateFields.DYNAMICOBJECT_END;
+                    return (uint)DynamicObjectFields.DYNAMICOBJECT_END;
 
                 case ObjectType.Corpse:
-                    return (uint)UpdateFields.CORPSE_END;
+                    return (uint)CorpseFields.CORPSE_END;
                 default:
                     return 0;
             }
@@ -379,7 +430,7 @@ namespace mClient.Clients
             }
             else                // Create new Object        -- FIXME: Add to new 'names only' list?
             {
-                obj = new Object(guid);
+                obj = Object.CreateObjectByType(guid, ObjectType.Player);
                 obj.Name = name;
                 objectMgr.addObject(obj);
 

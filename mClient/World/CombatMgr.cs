@@ -68,7 +68,7 @@ namespace mClient.Clients
                 {
                     if (Targets.Count > 0)
                     {
-                        Object target = Targets.First();
+                        Unit target = (Unit)Targets.First();
                         float dist = TerrainMgr.CalculateDistance(objectMgr.getPlayerObject().Position, target.Position);
                         if (dist > 1)
                         {

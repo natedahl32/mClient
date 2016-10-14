@@ -77,7 +77,8 @@ namespace mClient.Clients
             }
             else
             {
-                obj = new Object(guid) { Type = ObjectType.Unit, Position = new Coordinate(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat()) };
+                obj = Object.CreateObjectByType(guid, ObjectType.Unit);
+                obj.Position = new Coordinate(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
                 objectMgr.addObject(obj);
             }
         }

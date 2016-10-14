@@ -39,11 +39,11 @@ namespace mConsole
             try
             {
                 mClient.Clients.Object test = wclient.objectMgr.getObjectArray()[i];
-                for (int x = 1; x < (int)UpdateFields.FIELDS_MAX; x++ )
-                {
-                    if (test.Fields.ToList()[x] != 0)
-                        Log.WriteLine(LogType.Normal, "{0} = {1}", (UpdateFields)x, test.Fields.ToList()[x]);
-                }
+                //for (int x = 1; x < (int)UpdateFields.FIELDS_MAX; x++ )
+                //{
+                //    if (test.Fields.ToList()[x] != 0)
+                //        Log.WriteLine(LogType.Normal, "{0} = {1}", (UpdateFields)x, test.Fields.ToList()[x]);
+                //}
                 
             }
             catch (Exception ex)

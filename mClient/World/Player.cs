@@ -18,7 +18,7 @@ namespace mClient.World
         #region Declarations
 
         private IList<Proficiency> mProficiencies = new List<Proficiency>();
-        private PObject mPlayerObject = null;
+        private PlayerObj mPlayerObject = null;
 
         // Group the player is in and group member data for this player
         private Group mGroup = null;
@@ -38,7 +38,7 @@ namespace mClient.World
 
         #region Constructors
 
-        public Player(PObject playerObject)
+        public Player(PlayerObj playerObject)
         {
             if (playerObject == null) throw new ArgumentNullException("playerObject");
             mPlayerObject = playerObject;
@@ -50,7 +50,7 @@ namespace mClient.World
             if (guid == null) throw new ArgumentNullException("guid");
             if (string.IsNullOrEmpty(name)) throw new ArgumentNullException("name");
 
-            mPlayerObject = new PObject(guid);
+            mPlayerObject = (PlayerObj)PObject.CreateObjectByType(guid, ObjectType.Player);
             mPlayerObject.Name = name;
         }
 
@@ -66,7 +66,7 @@ namespace mClient.World
             this.CharacterFlags = cFlags;
         }
 
-        public Player(PObject playerObject, byte race, byte pClass, byte level, UInt32 mapId, byte gender, UInt32 guildId, UInt32 cFlags, WorldServerClient client) :
+        public Player(PlayerObj playerObject, byte race, byte pClass, byte level, UInt32 mapId, byte gender, UInt32 guildId, UInt32 cFlags, WorldServerClient client) :
             this(playerObject)
         {
             this.mPlayerAI = new PlayerAI(this, client);
@@ -87,7 +87,7 @@ namespace mClient.World
         /// <summary>
         /// Gets the player object for this player
         /// </summary>
-        public PObject PlayerObject { get { return mPlayerObject; } }
+        public PlayerObj PlayerObject { get { return mPlayerObject; } }
 
         /// <summary>
         /// Gets the guid for the player

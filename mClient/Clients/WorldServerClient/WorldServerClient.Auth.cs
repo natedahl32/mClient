@@ -116,7 +116,7 @@ namespace mClient.Clients
             combatMgr.Start();
             terrainMgr.ChangeMap(chr.MapID);
 
-            CreatePlayer(objectMgr.getPlayerObject(), chr);
+            CreatePlayer((PlayerObj)objectMgr.getPlayerObject(), chr);
             Log.WriteLine(LogType.Success, "Logged into world as {0}.", chr.Name);
         }
 
