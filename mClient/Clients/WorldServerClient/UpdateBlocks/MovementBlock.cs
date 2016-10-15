@@ -40,7 +40,7 @@ namespace mClient.Clients.UpdateBlocks
         {
             var movement = new MovementBlock();
 
-            movement.UpdateFlags = (ObjectUpdateFlags)gr.ReadUInt16();
+            movement.UpdateFlags = (ObjectUpdateFlags)gr.ReadByte();
 
             if (movement.UpdateFlags.HasFlag(ObjectUpdateFlags.UPDATEFLAG_LIVING))
             {

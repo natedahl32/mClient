@@ -40,9 +40,7 @@ namespace mClient.Clients
                 UpdateType type = (UpdateType)packet.ReadByte();
                     
                 WoWGuid updateGuid;
-                uint updateId;
                 uint fCount;
-                byte mask;
 
                 switch (type)
                 {
@@ -89,9 +87,17 @@ namespace mClient.Clients
                         
                         break;
 
+                    case UpdateType.NearObjects:
+                        UInt32 guidCount = packet.ReadUInt32();
+                        WoWGuid nearGuid;
+                        for (int i = 0; i < guidCount; i++)
+                            nearGuid = packet.ReadPackedGuidToWoWGuid();
+
+                        break;
+
                     case UpdateType.Movement:
                         Object moveObject;
-                        var moveGuid = new WoWGuid(packet.ReadUInt64());
+                        var moveGuid = packet.ReadPackedGuidToWoWGuid();
                         if (objectMgr.objectExists(moveGuid))
                         {
                             moveObject = objectMgr.getObject(moveGuid);
@@ -308,6 +314,10 @@ namespace mClient.Clients
 
                 case ObjectType.Corpse:
                     return (uint)CorpseFields.CORPSE_END;
+
+                case ObjectType.GameObject:
+                    return (uint)GameObjectFields.GAMEOBJECT_END;
+
                 default:
                     return 0;
             }
