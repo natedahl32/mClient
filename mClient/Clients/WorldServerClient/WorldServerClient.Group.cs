@@ -80,6 +80,10 @@ namespace mClient.Clients
             var groupFlags = inpacket.ReadByte();
             var memberCount = inpacket.ReadUInt32();
 
+            // If I have group members but I'm not in a group yet, add myself to a group
+            if (memberCount > 0 && player.CurrentGroup == null)
+                player.AddToGroup();
+
             // get group member information
             for (var i = 0; i < memberCount; i++)
             {

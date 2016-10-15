@@ -136,6 +136,12 @@ namespace mClient.World.AI
                 {
                     // TOOD: This will just be a tick on the behavior tree in the future
 
+                    // If I'm dead is ALWAYS the first check
+                    if (Player.PlayerObject.IsDead)
+                    {
+                        var i = 0;
+                    }
+
                     // If I'm in combat, handle the situation first before I do anything else
                     if (Player.IsInCombat)
                     {

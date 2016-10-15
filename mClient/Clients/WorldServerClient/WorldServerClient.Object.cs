@@ -67,12 +67,18 @@ namespace mClient.Clients
                         var objectType = packet.ReadByte();
                         fCount = GeUpdateFieldsCount(objectType);
 
+                        Object newObject;
                         if (objectMgr.objectExists(updateGuid))
-                            objectMgr.delObject(updateGuid);
-
-                        Object newObject = Object.CreateObjectByType(updateGuid, (ObjectType)objectType);
-                        //newObject.Fields = new UInt32[2000];
-                        objectMgr.addObject(newObject);
+                        {
+                            newObject = objectMgr.getObject(updateGuid);
+                            newObject.Type = (ObjectType)objectType;
+                        }
+                        else
+                        {
+                            newObject = Object.CreateObjectByType(updateGuid, (ObjectType)objectType);
+                            objectMgr.addObject(newObject);
+                        }
+                        
                         HandleUpdateMovementBlock(packet, newObject);
                         HandleUpdateObjectFieldBlock(packet, newObject);
                         objectMgr.updateObject(newObject);

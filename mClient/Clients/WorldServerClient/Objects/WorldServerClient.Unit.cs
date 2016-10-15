@@ -1,6 +1,8 @@
 ﻿using mClient.Constants;
 using mClient.Shared;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace mClient.Clients
 {
@@ -28,6 +30,37 @@ namespace mClient.Clients
         {
             get { return GetFieldValue((int)UnitFields.UNIT_FIELD_LEVEL); }
             private set { SetField((int)UnitFields.UNIT_FIELD_LEVEL, value); }
+        }
+
+        /// <summary>
+        /// Returns spell ids of the auras currently on a player
+        /// </summary>
+        public IEnumerable<UInt32> Auras
+        {
+            get
+            {
+                var auras = new List<UInt32>();
+                for (int i = (int)UnitFields.UNIT_FIELD_AURA; i <= (int)UnitFields.UNIT_FIELD_AURA_LAST; i++)
+                    if (GetFieldValue(i) > 0)
+                        auras.Add(GetFieldValue(i));
+                return auras;
+            }
+        }
+
+        /// <summary>
+        /// Gets whether or not the unit is currently dead. Can be if the unit has no current health left
+        /// or if they have the ghost buff (in case of player)
+        /// </summary>
+        public bool IsDead
+        {
+            get
+            {
+                if (CurrentHealth <= 0)
+                    return true;
+                if (Auras.Any(a => a == SpellAuras.GHOST_1 || a == SpellAuras.GHOST_2 || a == SpellAuras.GHOST_WISP))
+                    return true;
+                return false;
+            }
         }
 
         #endregion

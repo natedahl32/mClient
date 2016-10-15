@@ -117,6 +117,7 @@
     <Compile Include="Constants\Constants.Other.cs" />
     <Compile Include="Constants\Constants.Player.cs" />
     <Compile Include="Constants\Constants.Realm.cs" />
+    <Compile Include="Constants\Constants.Spells.cs" />
     <Compile Include="Constants\Constants.UpdateFields.cs" />
     <Compile Include="Crypt\ARC4.cs" />
     <Compile Include="Crypt\BigInteger.cs" />
