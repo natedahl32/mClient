@@ -5,6 +5,16 @@ using System.Text;
 
 namespace mClient.Constants
 {
+    /// <summary>
+    /// Commands given to bot players regarding movement
+    /// </summary>
+    public enum MoveCommands
+    {
+        None,
+        Stay,
+        Follow
+    }
+
     [Flags]
     public enum MovementFlags
     {

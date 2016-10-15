@@ -14,7 +14,7 @@ namespace mClient.World.AI
             // TODO: Need to code in a wait for rez if we are in combat
             var builder = new BehaviourTreeBuilder();
             return builder
-                .Sequence("death-selector")
+                .Sequence("death-sequence")
                     .Do("Is Dead?", t =>
                     {
                         if (Player.PlayerObject.IsDead)

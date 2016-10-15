@@ -35,6 +35,10 @@ namespace mClient.World
         // Spells
         private List<UInt16> mSpellList = new List<UInt16>();
 
+        // Movement commands
+        private MoveCommands mMoveCommand = MoveCommands.None;
+        private PlayerObj mIssuedMoveCommand = null;
+
         #endregion
 
         #region Constructors
@@ -202,6 +206,23 @@ namespace mClient.World
             }
         }
 
+        /// <summary>
+        /// Gets or sets the current move command for the player
+        /// </summary>
+        public MoveCommands MoveCommand
+        {
+            get { return mMoveCommand; }
+            set { mMoveCommand = value; }
+        }
+
+        /// <summary>
+        /// Gets the player object that issued the last move command given to us
+        /// </summary>
+        public PlayerObj IssuedMoveCommand
+        {
+            get { return mIssuedMoveCommand; }
+        }
+
         #endregion
 
         #region Public Methods 
@@ -320,6 +341,17 @@ namespace mClient.World
             PlayerObject.RemoveAura(SpellAuras.GHOST_1);
             PlayerObject.RemoveAura(SpellAuras.GHOST_2);
             PlayerObject.RemoveAura(SpellAuras.GHOST_WISP);
+        }
+
+        /// <summary>
+        /// Issue a move command to this player
+        /// </summary>
+        /// <param name="issuedFrom"></param>
+        /// <param name="command"></param>
+        public void IssueMoveCommand(PlayerObj issuedFrom, MoveCommands command)
+        {
+            this.mMoveCommand = command;
+            this.mIssuedMoveCommand = issuedFrom;
         }
 
         #endregion

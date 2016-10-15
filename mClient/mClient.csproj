@@ -154,6 +154,7 @@
     <Compile Include="World\AI\PlayerAI.Combat.cs" />
     <Compile Include="World\AI\PlayerAI.cs" />
     <Compile Include="World\AI\PlayerAI.Death.cs" />
+    <Compile Include="World\AI\PlayerAI.Idle.cs" />
     <Compile Include="World\CombatMgr.cs" />
     <Compile Include="World\Group.cs" />
     <Compile Include="World\MovementMgr.cs" />

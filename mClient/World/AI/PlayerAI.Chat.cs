@@ -139,17 +139,22 @@ namespace mClient.World.AI
         {
             if (message.Trim().ToLower() == "stay")
             {
-                Player.PlayerAI.ClearFollowTarget();
+                // Create a new query for the player
+                var query = new QueryQueue(QueryQueueType.Name, senderGuid.GetOldGuid());
+                query.AddCallback((o) => Player.IssueMoveCommand((PlayerObj)o, MoveCommands.Stay));
+                var obj = Player.PlayerAI.Client.GetOrQueueObject(query);
+                if (obj != null)
+                    Player.IssueMoveCommand((PlayerObj)obj, MoveCommands.Stay);
                 return true;
             }
             else if (message.Trim().ToLower() == "follow")
             {
                 // Create a new query for the player
                 var query = new QueryQueue(QueryQueueType.Name, senderGuid.GetOldGuid());
-                query.AddCallback((o) => Player.PlayerAI.SetFollowTarget(o));
+                query.AddCallback((o) => Player.IssueMoveCommand((PlayerObj)o, MoveCommands.Follow));
                 var obj = Player.PlayerAI.Client.GetOrQueueObject(query);
                 if (obj != null)
-                    Player.PlayerAI.SetFollowTarget(obj);
+                    Player.IssueMoveCommand((PlayerObj)obj, MoveCommands.Follow);
                 return true;
             }
 

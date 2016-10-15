@@ -9,7 +9,7 @@ namespace mClient.World.AI
         {
             var builder = new BehaviourTreeBuilder();
             return builder
-                .Sequence("combat-selector")
+                .Sequence("combat-sequece")
                     .Do("Is In Combat?", t =>
                     {
                         if (Player.IsInCombat)
@@ -41,8 +41,6 @@ namespace mClient.World.AI
                         if (!Player.IsInCombat) return BehaviourTreeStatus.Failure;
 
                         // TOOD: Spell Casters should cast a spell here. BUT first we need to check range on the target
-                        // TOOD: We need a state here. We can't keep sending this packet, we only need
-                        // to send it once.
                         if (!mIsAttackingTarget && mTargetSelection != null)
                         {
                             Client.Attack(mTargetSelection.Guid.GetOldGuid());

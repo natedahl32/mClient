@@ -147,6 +147,7 @@ namespace mClient.World.AI
                 .Selector("root-selector")
                     .Splice(CreateDeathAITree())
                     .Splice(CreateCombatAITree())
+                    .Splice(CreateIdleAITree())
                 .End()
                 .Build();
         }
@@ -161,44 +162,6 @@ namespace mClient.World.AI
                 try
                 {
                     this.mTree.Tick(new TimeData());
-
-                    // TOOD: This will just be a tick on the behavior tree in the future
-
-
-                    // If I'm dead is ALWAYS the first check
-                    //if (Player.PlayerObject.IsDead)
-                    //{
-                    //    // TODO: Need an action so that we know we are already finding our corpse (or doing whatever we should be doing)
-                    //    var i = 0;
-                    //}
-
-                    //// If I'm in combat, handle the situation first before I do anything else
-                    //if (Player.IsInCombat)
-                    //{
-
-                    //    // TODO: Use our target, NOT first enemy in the list
-                    //    SetTargetSelection(Client.objectMgr.getObject(Player.EnemyList.FirstOrDefault()));
-
-                    //    // If we are a melee player check melee range
-                    //    // If we are not in melee range, set the target as the follow target
-                    //    if (NotInMeleeRange && Player.IsMelee)
-                    //    {
-                    //        Client.movementMgr.FollowTarget = mTargetSelection;
-                    //    }
-                    //    else
-                    //    {
-                    //        // TOOD: Spell Casters should cast a spell here. BUT first we need to check range on the target
-                    //        // TOOD: We need a state here. We can't keep sending this packet, we only need
-                    //        // to send it once.
-                    //        if (!mIsAttackingTarget && mTargetSelection != null)
-                    //        {
-                    //            Client.Attack(mTargetSelection.Guid.GetOldGuid());
-                    //            mIsAttackingTarget = true;
-                    //        }
-                            
-                    //        continue;
-                    //    }
-                    //}
                 }
                 catch (Exception ex)
                 {
