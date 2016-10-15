@@ -1,4 +1,5 @@
-﻿using mClient.Shared;
+﻿using mClient.Constants;
+using mClient.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,24 @@ namespace mClient.Clients
         public PlayerObj(WoWGuid guid) : base(guid)
         {
         }
+
+        #region Properties
+
+        /// <summary>
+        /// Gets all quest ids the player currently has in their Quest Log
+        /// </summary>
+        public IEnumerable<UInt32> Quests
+        {
+            get
+            {
+                var quests = new List<UInt32>();
+                for (var i = (int)PlayerFields.PLAYER_QUEST_LOG_1_1; i < (int)PlayerFields.PLAYER_QUEST_LOG_LAST_3; i += QuestConstants.MAX_QUEST_OFFSET)
+                    if (GetFieldValue(i) > 0)
+                        quests.Add(GetFieldValue(i));
+                return quests;
+            }
+        }
+
+        #endregion
     }
 }
