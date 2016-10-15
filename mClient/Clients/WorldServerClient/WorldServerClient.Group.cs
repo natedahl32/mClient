@@ -15,8 +15,7 @@ namespace mClient.Clients
         public void HandlePartyMemberStatsFull(PacketIn packet)
         {
             // Get guid
-            byte mask = packet.ReadByte();
-            WoWGuid guid = new WoWGuid(mask, packet.ReadBytes(WoWGuid.BitCount8(mask)));
+            WoWGuid guid = packet.ReadPackedGuidToWoWGuid();
 
             // Check if player is online or offline
             var playerMask = packet.ReadUInt32();

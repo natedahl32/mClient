@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using mClient.Clients;
 using mClient.World.AI;
+using mClient.World.Quest;
 
 namespace mClient.World
 {
@@ -352,6 +353,27 @@ namespace mClient.World
         {
             this.mMoveCommand = command;
             this.mIssuedMoveCommand = issuedFrom;
+        }
+
+        /// <summary>
+        /// Drops a quest based on the quest title
+        /// </summary>
+        /// <param name="questTitle"></param>
+        public void DropQuest(string questTitle)
+        {
+            var quest = QuestManager.Instance.GetQuest(questTitle);
+            if (quest != null)
+                DropQuest(quest.QuestId);
+        }
+
+        /// <summary>
+        /// Drops a quest based on the id
+        /// </summary>
+        /// <param name="questId"></param>
+        public void DropQuest(UInt32 questId)
+        {
+            PlayerAI.Client.RemoveQuest(questId);
+            PlayerObject.DropQuest(questId);
         }
 
         #endregion

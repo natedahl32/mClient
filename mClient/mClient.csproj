@@ -106,6 +106,7 @@
     <Compile Include="Clients\WorldServerClient\Objects\WorldServerClient.Object.Class.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Object.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Others.cs" />
+    <Compile Include="Clients\WorldServerClient\WorldServerClient.Quest.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Spells.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Constants\Constants.Auth.cs" />
@@ -131,7 +132,6 @@
     <Compile Include="Crypt\Sha1Warden.cs" />
     <Compile Include="Crypt\Srp6.cs" />
     <Compile Include="Crypt\WoWCrypt.cs" />
-    <Compile Include="DBC\CreatureTemplateTable.cs" />
     <Compile Include="DBC\DBCReader.cs" />
     <Compile Include="DBC\MapTable.cs" />
     <Compile Include="DBC\SpellTable.cs" />
@@ -149,6 +149,7 @@
     <Compile Include="Shared\Coords3.cs" />
     <Compile Include="Shared\EntityId.cs" />
     <Compile Include="Shared\QueryQueue.cs" />
+    <Compile Include="Shared\Singleton.cs" />
     <Compile Include="Shared\UpdateMask.cs" />
     <Compile Include="Shared\WoWGuid.cs" />
     <Compile Include="Utils\Log.cs" />
@@ -164,6 +165,8 @@
     <Compile Include="World\ObjectMgr.cs" />
     <Compile Include="World\Player.cs" />
     <Compile Include="World\Player.Proficiency.cs" />
+    <Compile Include="World\Quest\QuestInfo.cs" />
+    <Compile Include="World\Quest\QuestManager.cs" />
     <Compile Include="World\TerrainManager.cs" />
     <Compile Include="World\Terrain\ADTProcessor.cs" />
     <Compile Include="World\Terrain\BlizChunkHeader.cs" />

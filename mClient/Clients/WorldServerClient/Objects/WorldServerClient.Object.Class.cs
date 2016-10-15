@@ -85,9 +85,14 @@ namespace mClient.Clients
         {
         }
 
-        public void SetField(int x, UInt32 value)
+        public virtual void SetField(WorldServerClient client, int x, UInt32 value)
         {
             mFields[x] = value;
+        }
+
+        public void SetField(int x, UInt32 value)
+        {
+            SetField(null, x, value);
         }
 
         #region Converstion Methods for Fields

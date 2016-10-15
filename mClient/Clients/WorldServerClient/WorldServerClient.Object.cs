@@ -159,7 +159,7 @@ namespace mClient.Clients
 
             foreach (var kvp in values)
             {
-                newObject.SetField(kvp.Key, kvp.Value);
+                newObject.SetField(this, kvp.Key, kvp.Value);
                 //Log.WriteLine(LogType.Normal, "Update Field: {0} = {1}", kvp.Key, kvp.Value);
             }
         }

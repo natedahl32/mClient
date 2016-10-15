@@ -13,6 +13,7 @@ namespace mClient.Shared
         static ReaderWriterLock networkLock = new ReaderWriterLock();
         static ReaderWriterLock debugkLock = new ReaderWriterLock();
         static ReaderWriterLock normalLock = new ReaderWriterLock();
+        static ReaderWriterLock errorLock = new ReaderWriterLock();
         static int writerTimeouts = 0;
 
         public static void WriteLine(LogType type, string format, params object[] parameters)
@@ -96,6 +97,26 @@ namespace mClient.Shared
                         finally
                         {
                             normalLock.ReleaseWriterLock();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Interlocked.Increment(ref writerTimeouts);
+                    }
+                }
+                else if (type == LogType.Error)
+                {
+                    try
+                    {
+                        errorLock.AcquireWriterLock(1000);
+                        try
+                        {
+                            using (var errorFile = File.AppendText("error.txt"))
+                                errorFile.WriteLine(msg);
+                        }
+                        finally
+                        {
+                            errorLock.ReleaseWriterLock();
                         }
                     }
                     catch (Exception e)
