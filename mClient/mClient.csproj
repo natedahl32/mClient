@@ -113,6 +113,7 @@
     <Compile Include="Constants\Constants.Combat.cs" />
     <Compile Include="Constants\Constants.Items.cs" />
     <Compile Include="Constants\Constants.Movement.cs" />
+    <Compile Include="Constants\Constants.Npc.cs" />
     <Compile Include="Constants\Constants.Objects.cs" />
     <Compile Include="Constants\Constants.OpCodes.cs" />
     <Compile Include="Constants\Constants.Other.cs" />
@@ -130,6 +131,7 @@
     <Compile Include="Crypt\Sha1Warden.cs" />
     <Compile Include="Crypt\Srp6.cs" />
     <Compile Include="Crypt\WoWCrypt.cs" />
+    <Compile Include="DBC\CreatureTemplateTable.cs" />
     <Compile Include="DBC\DBCReader.cs" />
     <Compile Include="DBC\MapTable.cs" />
     <Compile Include="DBC\SpellTable.cs" />

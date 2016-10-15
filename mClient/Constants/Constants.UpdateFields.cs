@@ -316,36 +316,4 @@ namespace mClient.Constants
         CORPSE_END = ObjectFields.OBJECT_END + 0x20
     }
 
-
-    //public enum UpdateFields
-    //{
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //    UNIT_FIELD_STRENGTH = UNIT_FIELD_STAT0,
-    //    UNIT_FIELD_AGILITY = UNIT_FIELD_STAT1,
-    //    UNIT_FIELD_STAMINA = UNIT_FIELD_STAT2,
-    //    UNIT_FIELD_INTELLECT = UNIT_FIELD_STAT3,
-    //    UNIT_FIELD_SPIRIT = UNIT_FIELD_STAT4,
-
-    //    VLack: Don't forget to fix up these when generating this file from a new client!!!
-    //    PLAYER_VISIBLE_ITEM_LENGTH = (PLAYER_VISIBLE_ITEM_2_ENTRYID - PLAYER_VISIBLE_ITEM_1_ENTRYID)
-    //    PLAYER_VISIBLE_ITEM_LENGTH = 2,
-    //    GAMEOBJECT_PARENTROTATION_01 = OBJECT_END + 0x0005,
-    //    GAMEOBJECT_PARENTROTATION_02 = OBJECT_END + 0x0006,
-    //    GAMEOBJECT_PARENTROTATION_03 = OBJECT_END + 0x0007,
-    //    FIELDS_MAX
-    //}
 }
