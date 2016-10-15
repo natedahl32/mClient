@@ -30,7 +30,6 @@ namespace mClient.Clients
             {
                 
                 string channel = null;
-                UInt64 guid = 0;
                 UInt64 senderGuid = 0;
                 WoWGuid fguid = null, fguid2 = null;
                 string username = null;
@@ -50,7 +49,7 @@ namespace mClient.Clients
                     case ChatMsg.MonsterEmote:
                         SenderNameLength = packet.ReadUInt32();
                         senderName = Encoding.Default.GetString(packet.ReadBytes((int)SenderNameLength));
-                        guid = packet.ReadUInt64();
+                        senderGuid = packet.ReadUInt64();
                         break;
                     case ChatMsg.Say:
                     case ChatMsg.Party:
@@ -63,7 +62,7 @@ namespace mClient.Clients
                         senderGuid = packet.ReadUInt64();
                         SenderNameLength = packet.ReadUInt32();
                         senderName = Encoding.Default.GetString(packet.ReadBytes((int)SenderNameLength));
-                        guid = packet.ReadUInt64();
+                        packet.ReadUInt64();
                         break;
                     case ChatMsg.Channel:
                         channel = packet.ReadString();
@@ -112,7 +111,7 @@ namespace mClient.Clients
                     que.AFK = afk;
 
                     // Create a new query for the player
-                    var query = new QueryQueue(QueryQueueType.Name, guid) { ExtraData = que };
+                    var query = new QueryQueue(QueryQueueType.Name, senderGuid) { ExtraData = que };
                     query.AddCallback((o) => HandleChatQuery(o));
                     var obj = GetOrQueueObject(query);
                     if (obj == null)

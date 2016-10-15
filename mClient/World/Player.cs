@@ -19,6 +19,7 @@ namespace mClient.World
 
         private IList<Proficiency> mProficiencies = new List<Proficiency>();
         private PlayerObj mPlayerObject = null;
+        private Corpse mPlayerCorpse = null;
 
         // Group the player is in and group member data for this player
         private Group mGroup = null;
@@ -173,6 +174,11 @@ namespace mClient.World
         public PlayerAI PlayerAI { get { return mPlayerAI; } }
 
         /// <summary>
+        /// Gets the players corpse
+        /// </summary>
+        public Corpse PlayerCorpse { get { return mPlayerCorpse; } }
+
+        /// <summary>
         /// Gets whether or not this is a melee character
         /// </summary>
         public bool IsMelee
@@ -283,6 +289,37 @@ namespace mClient.World
         {
             if (!mSpellList.Contains(spellId))
                 mSpellList.Add(spellId);
+        }
+
+        /// <summary>
+        /// Called when an object is added
+        /// </summary>
+        /// <param name="obj"></param>
+        public void ObjectAdded(PObject obj)
+        {
+            if (obj.Type == ObjectType.Corpse)
+            {
+                // If this is our corpse hold on to it so we can teleport back to it
+                var corpse = obj as Corpse;
+                if (corpse == null)
+                    return;
+
+                if (corpse.OwnerGuid.GetOldGuid() == this.Guid.GetOldGuid())
+                    mPlayerCorpse = corpse;
+            }
+        }
+
+        /// <summary>
+        /// Adjusts fields for the player so they are no longer seen as dead
+        /// </summary>
+        public void ResurrectFromDeath()
+        {
+            if (PlayerObject.CurrentHealth <= 0)
+                PlayerObject.SetField((int)UnitFields.UNIT_FIELD_HEALTH, 1);
+            // Remove any ghost auras
+            PlayerObject.RemoveAura(SpellAuras.GHOST_1);
+            PlayerObject.RemoveAura(SpellAuras.GHOST_2);
+            PlayerObject.RemoveAura(SpellAuras.GHOST_WISP);
         }
 
         #endregion

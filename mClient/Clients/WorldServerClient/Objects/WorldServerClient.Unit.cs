@@ -67,6 +67,17 @@ namespace mClient.Clients
 
         #region Public Methods
 
+        /// <summary>
+        /// Removes any auras
+        /// </summary>
+        /// <param name="spellId">Id of spell to remove</param>
+        public void RemoveAura(int spellId)
+        {
+            for (int i = (int)UnitFields.UNIT_FIELD_AURA; i <= (int)UnitFields.UNIT_FIELD_AURA_LAST; i++)
+                if (GetFieldValue(i) > 0 && GetFieldValue(i) == spellId)
+                    SetField(i, 0);
+        }
+
         public void Update(uint currentHealth, uint maxHealth, uint level, uint currentPower, uint maxPower)
         {
             this.CurrentHealth = currentHealth;

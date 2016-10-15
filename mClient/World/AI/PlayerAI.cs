@@ -5,6 +5,7 @@ using System.Linq;
 using mClient.Shared;
 using System.Runtime.InteropServices;
 using System.Threading;
+using FluentBehaviourTree;
 
 namespace mClient.World.AI
 {
@@ -20,6 +21,7 @@ namespace mClient.World.AI
 
         private Player mPlayer;
         private WorldServerClient mClient;
+        private IBehaviourTreeNode mTree;
 
         // Combat variables
         private PObject mTargetSelection = null;
@@ -62,6 +64,14 @@ namespace mClient.World.AI
         /// </summary>
         public bool NotInMeleeRange { get; set; }
 
+        /// <summary>
+        /// Gets the target select of the player
+        /// </summary>
+        public Unit TargetSelection
+        {
+            get { return mTargetSelection as Unit; }
+        }
+
         #endregion
 
         #region Public Methods
@@ -73,6 +83,8 @@ namespace mClient.World.AI
         {
             try
             {
+                this.BuildBehavior();
+
                 lastUpdateTime = MM_GetTime();
 
                 mAILoop = new Thread(Loop);
@@ -119,10 +131,24 @@ namespace mClient.World.AI
             if (target == null || mTargetSelection == null)
                 mIsAttackingTarget = false;
             // Switching targets
-            if (target.Guid.GetOldGuid() != mTargetSelection.Guid.GetOldGuid())
+            else if (target.Guid.GetOldGuid() != mTargetSelection.Guid.GetOldGuid())
                 mIsAttackingTarget = false;
 
             mTargetSelection = target;
+        }
+
+        /// <summary>
+        /// Builds the behavior tree for this player
+        /// </summary>
+        private void BuildBehavior()
+        {
+            var builder = new BehaviourTreeBuilder();
+            this.mTree = builder
+                .Selector("root-selector")
+                    .Splice(CreateDeathAITree())
+                    .Splice(CreateCombatAITree())
+                .End()
+                .Build();
         }
 
         /// <summary>
@@ -134,41 +160,45 @@ namespace mClient.World.AI
             {
                 try
                 {
+                    this.mTree.Tick(new TimeData());
+
                     // TOOD: This will just be a tick on the behavior tree in the future
 
+
                     // If I'm dead is ALWAYS the first check
-                    if (Player.PlayerObject.IsDead)
-                    {
-                        var i = 0;
-                    }
+                    //if (Player.PlayerObject.IsDead)
+                    //{
+                    //    // TODO: Need an action so that we know we are already finding our corpse (or doing whatever we should be doing)
+                    //    var i = 0;
+                    //}
 
-                    // If I'm in combat, handle the situation first before I do anything else
-                    if (Player.IsInCombat)
-                    {
+                    //// If I'm in combat, handle the situation first before I do anything else
+                    //if (Player.IsInCombat)
+                    //{
 
-                        // TODO: Use our target, NOT first enemy in the list
-                        SetTargetSelection(Client.objectMgr.getObject(Player.EnemyList.FirstOrDefault()));
+                    //    // TODO: Use our target, NOT first enemy in the list
+                    //    SetTargetSelection(Client.objectMgr.getObject(Player.EnemyList.FirstOrDefault()));
 
-                        // If we are a melee player check melee range
-                        // If we are not in melee range, set the target as the follow target
-                        if (NotInMeleeRange && Player.IsMelee)
-                        {
-                            Client.movementMgr.FollowTarget = mTargetSelection;
-                        }
-                        else
-                        {
-                            // TOOD: Spell Casters should cast a spell here. BUT first we need to check range on the target
-                            // TOOD: We need a state here. We can't keep sending this packet, we only need
-                            // to send it once.
-                            if (!mIsAttackingTarget && mTargetSelection != null)
-                            {
-                                Client.Attack(mTargetSelection.Guid.GetOldGuid());
-                                mIsAttackingTarget = true;
-                            }
+                    //    // If we are a melee player check melee range
+                    //    // If we are not in melee range, set the target as the follow target
+                    //    if (NotInMeleeRange && Player.IsMelee)
+                    //    {
+                    //        Client.movementMgr.FollowTarget = mTargetSelection;
+                    //    }
+                    //    else
+                    //    {
+                    //        // TOOD: Spell Casters should cast a spell here. BUT first we need to check range on the target
+                    //        // TOOD: We need a state here. We can't keep sending this packet, we only need
+                    //        // to send it once.
+                    //        if (!mIsAttackingTarget && mTargetSelection != null)
+                    //        {
+                    //            Client.Attack(mTargetSelection.Guid.GetOldGuid());
+                    //            mIsAttackingTarget = true;
+                    //        }
                             
-                            continue;
-                        }
-                    }
+                    //        continue;
+                    //    }
+                    //}
                 }
                 catch (Exception ex)
                 {

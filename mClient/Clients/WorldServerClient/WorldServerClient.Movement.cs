@@ -44,9 +44,7 @@ namespace mClient.Clients
         [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_SET_FACING)]
         public void HandleAnyMove(PacketIn packet)
         {
-            byte mask = packet.ReadByte();
-
-            WoWGuid guid = new WoWGuid(mask, packet.ReadBytes(WoWGuid.BitCount8(mask)));
+            WoWGuid guid = packet.ReadPackedGuidToWoWGuid();
 
             Object obj = objectMgr.getObject(guid);
             if (obj != null)
@@ -58,8 +56,6 @@ namespace mClient.Clients
                 var z = packet.ReadFloat();
                 var o = packet.ReadFloat();
                 obj.Position= new Coordinate(x, y, z, o);
-                //if (guid.GetOldGuid() == player.PlayerObject.Guid.GetOldGuid())
-                //    Log.WriteLine(LogType.Debug, "Received position: {0} {1} {2} {3}");
             }
         }
 
@@ -81,6 +77,9 @@ namespace mClient.Clients
                 obj.Position = new Coordinate(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
                 objectMgr.addObject(obj);
             }
+
+            if (player.PlayerAI.TargetSelection != null && guid.GetOldGuid() == player.PlayerAI.TargetSelection.Guid.GetOldGuid())
+                Log.WriteLine(LogType.Debug, "Received target position: {0} {1} {2} for Op Code {3}", obj.Position.X, obj.Position.Y, obj.Position.Z, (WorldServerOpCode)packet.PacketId.RawId);
         }
 
         void Heartbeat(object source, ElapsedEventArgs e)
@@ -89,6 +88,24 @@ namespace mClient.Clients
                 return;
 
             SendMovementPacket(WorldServerOpCode.MSG_MOVE_HEARTBEAT);
+        }
+
+        /// <summary>
+        /// Teleports the player to a map location
+        /// </summary>
+        /// <param name="mapid"></param>
+        /// <param name="location"></param>
+        /// <param name="orientation"></param>
+        void Teleport(UInt32 mapid, Coordinate location, float orientation = 3.141593f)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_WORLD_TELEPORT);
+            packet.Write(MM_GetTime());
+            packet.Write(mapid);
+            packet.Write(location.X);
+            packet.Write(location.Y);
+            packet.Write(location.Z);
+            packet.Write(player.Position.O);
+            Send(packet);
         }
 
         public void SendMovementPacket(WorldServerOpCode movementOpCode, UInt32 time = 0)

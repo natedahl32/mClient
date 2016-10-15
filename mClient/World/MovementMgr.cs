@@ -102,6 +102,7 @@ namespace mClient.Clients
                         continue;
                     }
 
+                    // Otherwise follow any waypoints set for us
                     Coordinate Waypoint;
                     float angle, dist;
 
@@ -239,8 +240,12 @@ namespace mClient.Clients
             lastUpdateTime = timeNow;
 
             // if the angle is not correct, send a set facing packet and face the client in the right direction
-            if (angle != objectMgr.getPlayerObject().Position.O)
+            if (Math.Abs(angle - objectMgr.getPlayerObject().Position.O) > 0.5)
+            {
                 objectMgr.getPlayerObject().Position.O = angle;
+                mClient.SendMovementPacket(WorldServerOpCode.MSG_MOVE_SET_FACING, timeNow);
+            }
+                
 
             // check if we are within distance of the target position or not
             if (dist > 2 && dist < 100)

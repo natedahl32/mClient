@@ -379,7 +379,7 @@ namespace mClient.Clients
 
         public void HandlePacket(PacketIn packet)
         {
-            Log.WriteLine(LogType.Packet, "{0}", packet.ToHex());
+            //Log.WriteLine(LogType.Packet, "{0}", packet.ToHex());
             pHandler.HandlePacket(packet);
         }
 

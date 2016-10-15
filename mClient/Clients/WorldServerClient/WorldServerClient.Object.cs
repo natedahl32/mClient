@@ -56,7 +56,7 @@ namespace mClient.Clients
                             getObject = Object.CreateObjectByType(updateGuid, ObjectType.Player);
                             objectMgr.addObject(getObject);
                         }
-                        Log.WriteLine(LogType.Normal, "Handling Fields Update for object: {0}", getObject.Guid.ToString());
+                        //Log.WriteLine(LogType.Normal, "Handling Fields Update for object: {0}", getObject.Guid.ToString());
                         HandleUpdateObjectFieldBlock(packet, getObject);
                         objectMgr.updateObject(getObject);
                         break;
@@ -82,7 +82,8 @@ namespace mClient.Clients
                         HandleUpdateMovementBlock(packet, newObject);
                         HandleUpdateObjectFieldBlock(packet, newObject);
                         objectMgr.updateObject(newObject);
-                        Log.WriteLine(LogType.Normal, "Handling Creation of object: {0}", newObject.Guid.ToString());
+                        player.ObjectAdded(newObject);
+                        //Log.WriteLine(LogType.Normal, "Handling Creation of object: {0}", newObject.Guid.ToString());
                         break;
 
                     case UpdateType.OutOfRange:
@@ -110,7 +111,6 @@ namespace mClient.Clients
                         }
                         else
                         {
-                            // shouldn't ever happen
                             moveObject = Object.CreateObjectByType(moveGuid, ObjectType.Object);
                             objectMgr.addObject(moveObject);
                         }
@@ -267,24 +267,8 @@ namespace mClient.Clients
             foreach (var kvp in values)
             {
                 newObject.SetField(kvp.Key, kvp.Value);
-                Log.WriteLine(LogType.Normal, "Update Field: {0} = {1}", kvp.Key, kvp.Value);
+                //Log.WriteLine(LogType.Normal, "Update Field: {0} = {1}", kvp.Key, kvp.Value);
             }
-            //uint length = packet.ReadByte();
-            
-            //UpdateMask UpdateMask = new UpdateMask();
-            //UpdateMask.SetCount((ushort)(length));
-            //UpdateMask.SetMask(packet.ReadBytes((int)length * 4), (ushort)length);
-            //UInt32[] Fields = new UInt32[UpdateMask.GetCount()];
-
-            //for (int i = 0; i < UpdateMask.GetCount(); i++)
-            //{
-            //    if (UpdateMask.GetBit((ushort)i))
-            //    {
-            //        UInt32 val = packet.ReadUInt32();
-            //        newObject.SetField(i, val);
-            //        Log.WriteLine(LogType.Normal, "Update Field: {0} = {1}", i, val);
-            //    }
-            //}
         }
 
         

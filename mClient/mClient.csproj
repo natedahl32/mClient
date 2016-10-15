@@ -95,6 +95,7 @@
     <Compile Include="Clients\WorldServerClient\UpdateBlocks\MovementInfo.cs" />
     <Compile Include="Clients\WorldServerClient\UpdateBlocks\SplineInfo.cs" />
     <Compile Include="Clients\WorldServerClient\UpdateBlocks\TransportInfo.cs" />
+    <Compile Include="Clients\WorldServerClient\WorldServerClient.Corpse.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Group.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Player.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Auth.cs" />
@@ -150,7 +151,9 @@
     <Compile Include="Utils\Log.cs" />
     <Compile Include="Utils\Time.cs" />
     <Compile Include="World\AI\PlayerAI.Chat.cs" />
+    <Compile Include="World\AI\PlayerAI.Combat.cs" />
     <Compile Include="World\AI\PlayerAI.cs" />
+    <Compile Include="World\AI\PlayerAI.Death.cs" />
     <Compile Include="World\CombatMgr.cs" />
     <Compile Include="World\Group.cs" />
     <Compile Include="World\MovementMgr.cs" />

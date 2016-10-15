@@ -19,7 +19,7 @@ namespace mClient.Clients
 
         #region Properties
 
-        public Coordinate Position
+        public virtual Coordinate Position
         {
             get { return mPosition; }
             set
@@ -94,7 +94,15 @@ namespace mClient.Clients
 
         protected static UInt64 GetGuid(UInt32 val, UInt32 val2)
         {
-            return (((UInt64)val) << 32) | val2;
+            var bytes1 = BitConverter.GetBytes(val);
+            var bytes2 = BitConverter.GetBytes(val2);
+
+            return BitConverter.ToUInt64(bytes1.Concat(bytes2).ToArray(), 0);
+        }
+
+        protected static WoWGuid GetWoWGuid(UInt32 val, UInt32 val2)
+        {
+            return new WoWGuid(GetGuid(val, val2));
         }
 
         #endregion
