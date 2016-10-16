@@ -61,6 +61,8 @@ namespace mClient.World.AI
                             // Are we in range to accept the quest?
                             if (Client.movementMgr.CalculateDistance(obj.Position) > 3.0f)
                             {
+                                // TODO: Blindly setting the quest giver as follow target is dangerous. We could run
+                                // right into a pack of hostiles. Should fix this!
                                 SetFollowTarget(obj);
                                 return BehaviourTreeStatus.Success;
                             }
@@ -90,6 +92,8 @@ namespace mClient.World.AI
                         }
 
                         // If we have found a chosen target, start moving towards them
+                        // TODO: Blindly setting the quest giver as follow target is dangerous. We could run
+                        // right into a pack of hostiles. Should fix this!
                         if (chosenObject != null)
                             SetFollowTarget(chosenObject);
 
