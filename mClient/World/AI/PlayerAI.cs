@@ -147,6 +147,7 @@ namespace mClient.World.AI
                 .Selector("root-selector")
                     .Splice(CreateDeathAITree())
                     .Splice(CreateCombatAITree())
+                    .Splice(CreateQuestAITree())
                     .Splice(CreateIdleAITree())
                 .End()
                 .Build();

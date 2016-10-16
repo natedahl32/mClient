@@ -227,6 +227,7 @@ namespace mClient.Clients
         /// </summary>
         private void HandleFollowTarget()
         {
+            if (mFollowTarget == null) return;
             // Make sure the follow target has a coordinate
             if (mFollowTarget.Position == null)
                 return;
@@ -240,11 +241,8 @@ namespace mClient.Clients
             lastUpdateTime = timeNow;
 
             // if the angle is not correct, send a set facing packet and face the client in the right direction
-            if (Math.Abs(angle - objectMgr.getPlayerObject().Position.O) > 0.5)
-            {
+            if (angle != objectMgr.getPlayerObject().Position.O)
                 objectMgr.getPlayerObject().Position.O = angle;
-                mClient.SendMovementPacket(WorldServerOpCode.MSG_MOVE_SET_FACING, timeNow);
-            }
                 
 
             // check if we are within distance of the target position or not

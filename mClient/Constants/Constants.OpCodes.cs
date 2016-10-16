@@ -939,8 +939,8 @@ namespace mClient.Constants
         SMSG_1041 = 1041, // uint, uint, uint
         SMSG_1042 = 1042, // byte, ulong, uint, uint spellId
 
-        CMSG_QUESTGIVER_STATUS_MULTIPLE_QUERY = 1047,
-        SMSG_QUESTGIVER_STATUS_MULTIPLE = 1048,
+        CMSG_QUESTGIVER_STATUS_MULTIPLE_QUERY = 1046,
+        SMSG_QUESTGIVER_STATUS_MULTIPLE = 1047,
 
 
         Maximum = 1500,

@@ -159,12 +159,14 @@
     <Compile Include="World\AI\PlayerAI.cs" />
     <Compile Include="World\AI\PlayerAI.Death.cs" />
     <Compile Include="World\AI\PlayerAI.Idle.cs" />
+    <Compile Include="World\AI\PlayerAI.Quest.cs" />
     <Compile Include="World\CombatMgr.cs" />
     <Compile Include="World\Group.cs" />
     <Compile Include="World\MovementMgr.cs" />
     <Compile Include="World\ObjectMgr.cs" />
     <Compile Include="World\Player.cs" />
     <Compile Include="World\Player.Proficiency.cs" />
+    <Compile Include="World\Quest\QuestGiver.cs" />
     <Compile Include="World\Quest\QuestInfo.cs" />
     <Compile Include="World\Quest\QuestManager.cs" />
     <Compile Include="World\TerrainManager.cs" />

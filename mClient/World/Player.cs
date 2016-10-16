@@ -40,6 +40,9 @@ namespace mClient.World
         private MoveCommands mMoveCommand = MoveCommands.None;
         private PlayerObj mIssuedMoveCommand = null;
 
+        // Quest givers
+        private List<QuestGiver> mQuestGivers = new List<QuestGiver>();
+
         #endregion
 
         #region Constructors
@@ -224,6 +227,14 @@ namespace mClient.World
             get { return mIssuedMoveCommand; }
         }
 
+        /// <summary>
+        /// Gets all quest givers that are in LOS of this player
+        /// </summary>
+        public IEnumerable<QuestGiver> QuestGivers
+        {
+            get { return mQuestGivers; }
+        }
+
         #endregion
 
         #region Public Methods 
@@ -374,6 +385,23 @@ namespace mClient.World
         {
             PlayerAI.Client.RemoveQuest(questId);
             PlayerObject.DropQuest(questId);
+        }
+
+        /// <summary>
+        /// Updates our list of quest givers that are in our LOS
+        /// </summary>
+        /// <param name="questGivers"></param>
+        public void UpdateQuestGivers(IList<QuestGiver> questGivers)
+        {
+            // Remove any that don't exist anymore
+            var toRemove = mQuestGivers.Where(qg => !questGivers.Any(qg2 => qg.Guid == qg2.Guid)).ToList();
+            foreach (var q in toRemove)
+                mQuestGivers.Remove(q);
+
+            // Add any that don't exist already
+            foreach (var q in questGivers)
+                if (!mQuestGivers.Any(qg => qg.Guid == q.Guid))
+                    mQuestGivers.Add(q);
         }
 
         #endregion
