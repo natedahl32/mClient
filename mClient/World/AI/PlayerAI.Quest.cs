@@ -1,6 +1,7 @@
 ﻿using FluentBehaviourTree;
 using mClient.Shared;
 using System;
+using System.Diagnostics;
 using System.Linq;
 
 namespace mClient.World.AI
@@ -128,7 +129,7 @@ namespace mClient.World.AI
                             }
 
                             // Are we in range to accept the quest?
-                            if (Client.movementMgr.CalculateDistance(obj.Position) > 3.0f)
+                            if (Client.movementMgr.CalculateDistance(obj.Position) > 1.0f)
                             {
                                 // TODO: Blindly setting the quest giver as follow target is dangerous. We could run
                                 // right into a pack of hostiles. Should fix this!
@@ -161,7 +162,7 @@ namespace mClient.World.AI
                             }
 
                             // Are we in range to accept the quest?
-                            if (Client.movementMgr.CalculateDistance(obj.Position) > 3.0f)
+                            if (Client.movementMgr.CalculateDistance(obj.Position) > 1.0f)
                             {
                                 // TODO: Blindly setting the quest giver as follow target is dangerous. We could run
                                 // right into a pack of hostiles. Should fix this!

@@ -440,7 +440,7 @@ namespace mClient.Clients
         /// </summary>
         public void GetQuestListFromQuestGiver(UInt64 guid)
         {
-            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_QUESTGIVER_HELLO);
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_GOSSIP_HELLO);
             packet.Write(guid);
             Send(packet);
         }
