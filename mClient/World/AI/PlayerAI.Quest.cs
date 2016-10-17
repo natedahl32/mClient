@@ -69,10 +69,11 @@ namespace mClient.World.AI
 
                             // TODO: Actually go through the quest dialogs to accept all quests available
                             // from this quest giver.
+
                             return BehaviourTreeStatus.Success;
                         }
 
-                        // So if we have any quests available to get and select the closest.
+                        // See if we have any quests available to get and select the closest.
                         var questGivers = Player.QuestGivers.Where(q => q.Status == Constants.QuestGiverStatus.DIALOG_STATUS_AVAILABLE).ToList();
                         var closestDistance = 1000000.0f;
                         mClient.Clients.Object chosenObject = null;
