@@ -202,7 +202,7 @@ namespace mClient.Clients
                     AcceptQuest(entityGuid, q);
 
             // Remove flag from AI, telling them we got the quests
-            player.PlayerAI.WaitingToAcceptOrTurnInQuests = false;
+            player.PlayerAI.WaitingToAcceptQuests = false;
 
             // Remove the quest giver as well so we don't keep trying to get quests from this entity immediately until
             // we can update the quest giver statuses
@@ -247,7 +247,7 @@ namespace mClient.Clients
 
 
             // Remove flag from AI, telling them we got the quests
-            player.PlayerAI.WaitingToAcceptOrTurnInQuests = false;
+            player.PlayerAI.WaitingToAcceptQuests = false;
 
             // Remove the quest giver as well so we don't keep trying to get quests from this entity immediately until
             // we can update the quest giver statuses
@@ -357,6 +357,9 @@ namespace mClient.Clients
             // Remove the quest from our log now that we have completed it. NOTE - call the one on the player object
             // otherwise will try to send the drop to the server (which we don't want to do because we just completed it)
             player.PlayerObject.DropQuest(questId);
+
+            // Notify AI that we have completed a quest
+            player.PlayerAI.WaitingToTurnInQuests = false;
         }
 
         #endregion

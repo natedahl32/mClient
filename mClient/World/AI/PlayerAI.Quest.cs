@@ -23,7 +23,12 @@ namespace mClient.World.AI
         /// <summary>
         /// Gets or sets whether or not this player is waiting to accept quests from an entity.
         /// </summary>
-        public bool WaitingToAcceptOrTurnInQuests { get; set; }
+        public bool WaitingToAcceptQuests { get; set; }
+
+        /// <summary>
+        /// Gets or sets wehther or not this player is waiting to turn in quests from an entity
+        /// </summary>
+        public bool WaitingToTurnInQuests { get; set; }
 
         #endregion
 
@@ -114,9 +119,6 @@ namespace mClient.World.AI
                             // If I don't have a guid with a quest to turn in
                             if (mTurningInQuestTo == 0) return BehaviourTreeStatus.Failure;
 
-                            // If we are waiting to turn in quests from a quest giver than exit out with success
-                            if (WaitingToAcceptOrTurnInQuests) return BehaviourTreeStatus.Success;
-
                             // Does this object exist currently?
                             var obj = Client.objectMgr.getObject(new WoWGuid(mTurningInQuestTo));
                             if (obj == null)
@@ -138,8 +140,10 @@ namespace mClient.World.AI
                             Client.GetQuestListFromQuestGiver(mTurningInQuestTo);
                             // Clear the guid of the person we are accepting quests from
                             mTurningInQuestTo = 0;
-                            // Set flag that we are waiting to accept quests from the quest giver
-                            WaitingToAcceptOrTurnInQuests = true;
+                            // Set flag that we are waiting to turn in quests from the quest giver. We don't want to start
+                            // walking away before we have turned in the quest.
+                            WaitingToTurnInQuests = true;
+                            while (WaitingToTurnInQuests) { }  // Flag will switch off in network thread where we receive opcode
 
                             return BehaviourTreeStatus.Success;
                         })
@@ -147,9 +151,6 @@ namespace mClient.World.AI
                         {
                             // If I don't have a guid with a quest to accept
                             if (mAcceptingQuestFrom == 0) return BehaviourTreeStatus.Failure;
-
-                            // If we are waiting to accept quests from a quest giver than exit out with success
-                            if (WaitingToAcceptOrTurnInQuests) return BehaviourTreeStatus.Success;
 
                             // Does this object exist currently?
                             var obj = Client.objectMgr.getObject(new WoWGuid(mAcceptingQuestFrom));
@@ -172,8 +173,10 @@ namespace mClient.World.AI
                             Client.GetQuestListFromQuestGiver(mAcceptingQuestFrom);
                             // Clear the guid of the person we are accepting quests from
                             mAcceptingQuestFrom = 0;
-                            // Set flag that we are waiting to accept quests from the quest giver
-                            WaitingToAcceptOrTurnInQuests = true;
+                            // Set flag that we are waiting to accept quests from the quest giver. We don't want to start
+                            // walking away before we have accepted the quest.
+                            WaitingToAcceptQuests = true;
+                            while (WaitingToAcceptQuests) { }   // Flag will switch off in network thread where we receive opcode
 
                             return BehaviourTreeStatus.Success;
                         })
