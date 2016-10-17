@@ -173,6 +173,42 @@ namespace mClient.World.AI
             }
         }
 
+        /// <summary>
+        /// Waits for the ref variable to become false. If that doesn't happen within 2 seconds a timeout will action
+        /// will be called.
+        /// </summary>
+        /// <param name="checkValue"></param>
+        /// <param name="timeOut"></param>
+        /// <returns>Returns false if the timeout elapsed. Otherwise true.</returns>
+        protected bool Wait(ref bool checkValue, Action timeOut)
+        {
+            return Wait(ref checkValue, 2000, timeOut);
+        }
+
+        /// <summary>
+        /// Waits for the ref variable to become false. If that doesn't happen within the specified timeout a timeout action
+        /// will be called.
+        /// </summary>
+        /// <param name="checkValue"></param>
+        /// <param name="timeoutMilliseconds"></param>
+        /// <param name="timeOut"></param>
+        /// <returns>Returns false if the timeout elapsed. Otherwise true.</returns>
+        protected bool Wait(ref bool checkValue, int timeoutMilliseconds, Action timeOut)
+        {
+            var startTime = MM_GetTime();
+            while(checkValue)
+            {
+                if ((MM_GetTime() - startTime) >= timeoutMilliseconds)
+                {
+                    timeOut.Invoke();
+                    return false;
+                }
+            }
+
+            // Check value was returned to off state
+            return true;
+        }
+
         #endregion
     }
 }

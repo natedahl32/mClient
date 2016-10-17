@@ -17,6 +17,10 @@ namespace mClient.World.AI
         // The object guid we are currently turning in a quest to
         private UInt64 mTurningInQuestTo;
 
+        // Wait variables
+        private bool mWaitingToAcceptQuests = false;
+        private bool mWaitingToTurnInQuests = false;
+
         #endregion
 
         #region Properties
@@ -24,12 +28,12 @@ namespace mClient.World.AI
         /// <summary>
         /// Gets or sets whether or not this player is waiting to accept quests from an entity.
         /// </summary>
-        public bool WaitingToAcceptQuests { get; set; }
+        public bool WaitingToAcceptQuests { get { return mWaitingToAcceptQuests; } set { mWaitingToAcceptQuests = value; } }
 
         /// <summary>
         /// Gets or sets wehther or not this player is waiting to turn in quests from an entity
         /// </summary>
-        public bool WaitingToTurnInQuests { get; set; }
+        public bool WaitingToTurnInQuests { get { return mWaitingToTurnInQuests; } set { mWaitingToTurnInQuests = value; } }
 
         #endregion
 
@@ -144,7 +148,9 @@ namespace mClient.World.AI
                             // Set flag that we are waiting to turn in quests from the quest giver. We don't want to start
                             // walking away before we have turned in the quest.
                             WaitingToTurnInQuests = true;
-                            while (WaitingToTurnInQuests) { }  // Flag will switch off in network thread where we receive opcode
+                            // Now wait to accept the quests. If timeout elapses just continue on. This can happen if
+                            // the server doesn't think we are close enough to the quest giver.
+                            Wait(ref mWaitingToTurnInQuests, () => { WaitingToTurnInQuests = false; });
 
                             return BehaviourTreeStatus.Success;
                         })
@@ -177,7 +183,9 @@ namespace mClient.World.AI
                             // Set flag that we are waiting to accept quests from the quest giver. We don't want to start
                             // walking away before we have accepted the quest.
                             WaitingToAcceptQuests = true;
-                            while (WaitingToAcceptQuests) { }   // Flag will switch off in network thread where we receive opcode
+                            // Now wait to accept the quests. If timeout elapses just continue on. This can happen if
+                            // the server doesn't think we are close enough to the quest giver.
+                            Wait(ref mWaitingToAcceptQuests, () => { WaitingToAcceptQuests = false; });
 
                             return BehaviourTreeStatus.Success;
                         })
