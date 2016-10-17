@@ -44,7 +44,7 @@ namespace mClient.Clients
         }
 
         /// <summary>
-        /// Handles quest confirmation acceptance when starting group/raid quests
+        /// Handles quest failed timer
         /// </summary>
         /// <param name="packet"></param>
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_QUESTUPDATE_FAILEDTIMER)]
@@ -55,6 +55,30 @@ namespace mClient.Clients
 
             // Drop the quest if we failed it, we'll have to pick it back up again if we want to complete it
             player.DropQuest(questId);
+
+            // Get the quest from the quest manager
+            var quest = QuestManager.Instance.GetQuest(questId);
+            if (quest != null)
+                SendChatMsg(ChatMsg.Party, Languages.Common, string.Format("My quest '{0}' failed. I dropped the quest.", quest.QuestName));
+        }
+
+        /// <summary>
+        /// Handles quest failure
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_QUESTUPDATE_FAILED)]
+        public void HandleQuestFailed(PacketIn packet)
+        {
+            // Get guid
+            var questId = packet.ReadUInt32();
+
+            // Drop the quest if we failed it, we'll have to pick it back up again if we want to complete it
+            player.DropQuest(questId);
+
+            // Get the quest from the quest manager
+            var quest = QuestManager.Instance.GetQuest(questId);
+            if (quest != null)
+                SendChatMsg(ChatMsg.Party, Languages.Common, string.Format("My quest '{0}' failed. I dropped the quest.", quest.QuestName));
         }
 
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_QUEST_QUERY_RESPONSE)]
@@ -157,20 +181,28 @@ namespace mClient.Clients
             }
 
             var questMenuCount = packet.ReadUInt32();
+            var quests = new List<UInt32>();
             for (int i = 0; i < questMenuCount; i++)
             {
                 var questId = packet.ReadUInt32();
                 packet.ReadUInt32();    // Quest icon
                 packet.ReadUInt32();    // Quest level
                 packet.ReadString();    // Quest title
-
-                // if the players quest log is not full, accept the quest
-                if (!player.PlayerObject.IsQuestLogFull)
-                    AcceptQuest(entityGuid, questId);
+                quests.Add(questId);
             }
 
+            // First, try to complete all the quests if we have them in our log to make room for new ones
+            foreach (var q in quests)
+                if (player.PlayerObject.GetQuestSlot(q) < QuestConstants.MAX_QUEST_LOG_SIZE)
+                    CompleteQuest(entityGuid, q);
+
+            // if the players quest log is not full, accept the quest
+            foreach (var q in quests)
+                if (!player.PlayerObject.IsQuestLogFull)
+                    AcceptQuest(entityGuid, q);
+
             // Remove flag from AI, telling them we got the quests
-            player.PlayerAI.WaitingToAcceptQuests = false;
+            player.PlayerAI.WaitingToAcceptOrTurnInQuests = false;
 
             // Remove the quest giver as well so we don't keep trying to get quests from this entity immediately until
             // we can update the quest giver statuses
@@ -193,20 +225,29 @@ namespace mClient.Clients
             packet.ReadUInt32();    // NPC emote
 
             var questCount = packet.ReadByte();
+            var quests = new List<UInt32>();
             for (int i = 0; i < questCount; i++)
             {
                 var questId = packet.ReadUInt32();
                 packet.ReadUInt32();    // Quest icon
                 packet.ReadUInt32();    // Quest level
                 packet.ReadString();    // Quest title
-
-                // if the players quest log is not full, accept the quest
-                if (!player.PlayerObject.IsQuestLogFull)
-                    AcceptQuest(entityGuid, questId);
+                quests.Add(questId);
             }
 
+            // First, try to complete all the quests if we have them in our log to make room for new ones
+            foreach (var q in quests)
+                if (player.PlayerObject.GetQuestSlot(q) < QuestConstants.MAX_QUEST_LOG_SIZE)
+                    CompleteQuest(entityGuid, q);
+
+            // if the players quest log is not full, accept the quest
+            foreach (var q in quests)
+                if (!player.PlayerObject.IsQuestLogFull)
+                    AcceptQuest(entityGuid, q);
+
+
             // Remove flag from AI, telling them we got the quests
-            player.PlayerAI.WaitingToAcceptQuests = false;
+            player.PlayerAI.WaitingToAcceptOrTurnInQuests = false;
 
             // Remove the quest giver as well so we don't keep trying to get quests from this entity immediately until
             // we can update the quest giver statuses
@@ -214,6 +255,108 @@ namespace mClient.Clients
 
             // Finally update any quest giver statuses
             GetQuestGiverStatuses();
+        }
+
+        /// <summary>
+        /// Handles quest giver request items when trying to completing a quest
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_QUESTGIVER_REQUEST_ITEMS)]
+        public void HandleQuestGiverRequestItems(PacketIn packet)
+        {
+            var entityGuid = packet.ReadUInt64();
+            var questId = packet.ReadUInt32();
+            var questTitle = packet.ReadString();    // Quest title
+            packet.ReadString();    // Request items text
+            packet.ReadUInt32();    // Emote delay
+            packet.ReadUInt32();    // Emote Id
+
+            // TODO: Finish this up by sending a message via chat as to what items are still missing
+            // from the quest requirements and for what quest.
+        }
+
+        /// <summary>
+        /// Handles quest giver offer reward options for a quest
+        /// </summary>
+        /// <param name="packet"></param>
+        /// <remarks>This is not called when we have completed the quest. Do not add items to inventory at this point.</remarks>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_QUESTGIVER_OFFER_REWARD)]
+        public void HandleQuestGiverOfferReward(PacketIn packet)
+        {
+            var entityGuid = packet.ReadUInt64();
+            var questId = packet.ReadUInt32();
+            packet.ReadString();    // Quest title
+            packet.ReadString();    // Offer reward text
+            packet.ReadUInt32();    // Auto complete
+
+            var emoteCount = packet.ReadUInt32();
+            for (int i = 0; i < emoteCount; i++)
+            {
+                packet.ReadUInt32();    // Emote delay
+                packet.ReadUInt32();    // Emote Id
+            }
+
+            // Rewards we have a choice of selecting
+            var rewardsChoiceItemCount = packet.ReadUInt32();
+            for (int i = 0; i < rewardsChoiceItemCount; i++)
+            {
+                var itemId = packet.ReadUInt32();
+                var itemCount = packet.ReadUInt32();
+                packet.ReadUInt32();    // Display Info
+            }
+
+            // TODO: Make an intelligent choice! And put it in the AI, don't do it here.
+            // For now just choose the first item if we have a choice
+
+            if (rewardsChoiceItemCount > 0)
+                ChooseQuestReward(entityGuid, questId, 0);
+            else // In this case there were no rewards to choose, but we still need to send something back
+                ChooseQuestReward(entityGuid, questId, 0);
+
+            // I don't think we need anything below this. It is just for display purposes for a client.
+
+            // Rewards we get by default
+            //var rewardsCount = packet.ReadUInt32();
+            //for (int i = 0; i < rewardsCount; i++)
+            //{
+            //    var itemId = packet.ReadUInt32();
+            //    var itemCount = packet.ReadUInt32();
+            //    packet.ReadUInt32();    // Display Info
+            //}
+
+            //var moneyReward = packet.ReadUInt32();
+            //packet.ReadUInt32();        // Rewards spell, do we need this?
+            //packet.ReadUInt32();        // Casted spell on us, do we need this?
+
+        }
+
+        /// <summary>
+        /// Handles quest giver offer reward options for a quest
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_QUESTGIVER_QUEST_COMPLETE)]
+        public void HandleCompletedQuest(PacketIn packet)
+        {
+            var questId = packet.ReadUInt32();
+            packet.ReadUInt32();    // unknown
+
+            // Not sure that we need anything below here or not yet.
+
+            //var experienceAwarded = packet.ReadUInt32();
+            //var rewardedMoney = packet.ReadUInt32();
+
+            //var rewardItemsCount = packet.ReadUInt32();
+            //for (int i = 0; i < rewardItemsCount; i++)
+            //{
+            //    var itemId = packet.ReadUInt32();
+            //    var itemCount = packet.ReadUInt32();
+            //    // Note - I don't think we need these at all. We will get a SMSG_ITEM_PUSH_RESULT from
+            //    // the server for all rewards.
+            //}
+
+            // Remove the quest from our log now that we have completed it. NOTE - call the one on the player object
+            // otherwise will try to send the drop to the server (which we don't want to do because we just completed it)
+            player.PlayerObject.DropQuest(questId);
         }
 
         #endregion
@@ -238,6 +381,9 @@ namespace mClient.Clients
         /// <param name="questId"></param>
         public void AcceptQuest(UInt64 questGiverGuid, UInt32 questId)
         {
+            // Query for the quest
+            QueryQuest(questId);
+
             // Send response to server
             PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_QUESTGIVER_ACCEPT_QUEST);
             packet.Write(questGiverGuid);
@@ -246,7 +392,6 @@ namespace mClient.Clients
 
             // Add quest to the player and then query for the quest data
             player.PlayerObject.AddQuest(questId);
-            QueryQuest(questId);
         }
 
         /// <summary>
@@ -292,8 +437,36 @@ namespace mClient.Clients
         /// </summary>
         public void GetQuestListFromQuestGiver(UInt64 guid)
         {
-            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_GOSSIP_HELLO);
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_QUESTGIVER_HELLO);
             packet.Write(guid);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Completes a quest from a quest giver
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <param name="questId"></param>
+        public void CompleteQuest(UInt64 guid, UInt32 questId)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_QUESTGIVER_REQUEST_REWARD);
+            packet.Write(guid);
+            packet.Write(questId);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Chooses a quest reward based on the choice index given to us
+        /// </summary>
+        /// <param name="questGiverGuid"></param>
+        /// <param name="questId"></param>
+        /// <param name="itemChoiceIndex"></param>
+        public void ChooseQuestReward(UInt64 questGiverGuid, UInt32 questId, UInt32 itemChoiceIndex)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_QUESTGIVER_CHOOSE_REWARD);
+            packet.Write(questGiverGuid);
+            packet.Write(questId);
+            packet.Write(itemChoiceIndex);
             Send(packet);
         }
 

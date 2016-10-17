@@ -42,6 +42,7 @@ namespace mClient.World
 
         // Quest givers
         private List<QuestGiver> mQuestGivers = new List<QuestGiver>();
+        private System.Object mQuestGiversLock = new System.Object();
 
         #endregion
 
@@ -396,12 +397,14 @@ namespace mClient.World
             // Remove any that don't exist anymore
             var toRemove = mQuestGivers.Where(qg => !questGivers.Any(qg2 => qg.Guid == qg2.Guid)).ToList();
             foreach (var q in toRemove)
-                mQuestGivers.Remove(q);
+                lock (mQuestGiversLock)
+                    mQuestGivers.Remove(q);
 
             // Add any that don't exist already
             foreach (var q in questGivers)
                 if (!mQuestGivers.Any(qg => qg.Guid == q.Guid))
-                    mQuestGivers.Add(q);
+                    lock (mQuestGiversLock)
+                        mQuestGivers.Add(q);
         }
 
         /// <summary>
@@ -412,7 +415,8 @@ namespace mClient.World
         {
             var existing = mQuestGivers.Where(q => q.Guid == questGiverGuid).SingleOrDefault();
             if (existing != null)
-                mQuestGivers.Remove(existing);
+                lock (mQuestGiversLock)
+                    mQuestGivers.Remove(existing);
         }
 
         #endregion
