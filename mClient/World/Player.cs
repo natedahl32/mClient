@@ -404,6 +404,17 @@ namespace mClient.World
                     mQuestGivers.Add(q);
         }
 
+        /// <summary>
+        /// Removes a quest giver from the list. It will get updated again if it still has a quest to get or complete for us.
+        /// </summary>
+        /// <param name="questGiverGuid"></param>
+        public void RemoveQuestGiver(UInt64 questGiverGuid)
+        {
+            var existing = mQuestGivers.Where(q => q.Guid == questGiverGuid).SingleOrDefault();
+            if (existing != null)
+                mQuestGivers.Remove(existing);
+        }
+
         #endregion
     }
 }

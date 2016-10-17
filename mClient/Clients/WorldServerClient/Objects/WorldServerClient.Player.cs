@@ -31,6 +31,14 @@ namespace mClient.Clients
             }
         }
 
+        /// <summary>
+        /// Gets whether or not the players quest log is full
+        /// </summary>
+        public bool IsQuestLogFull
+        {
+            get { return Quests.Count() >= QuestConstants.MAX_QUEST_LOG_SIZE; }
+        }
+
         #endregion
 
         #region Public Methods

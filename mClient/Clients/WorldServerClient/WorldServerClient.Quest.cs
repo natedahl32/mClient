@@ -136,6 +136,86 @@ namespace mClient.Clients
             player.UpdateQuestGivers(questGivers);
         }
 
+        /// <summary>
+        /// Retrieves the quest list from an entity
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_GOSSIP_MESSAGE)]
+        public void HandleGossipMenuList(PacketIn packet)
+        {
+            var entityGuid = packet.ReadUInt64();
+            packet.ReadUInt32();    // title text id
+
+            var gossipMenuCount = packet.ReadUInt32();
+            for (int i = 0; i < gossipMenuCount; i++)
+            {
+                // TODO: Might want to do something with these in the future
+                var menuIndex = packet.ReadUInt32();
+                packet.ReadUInt32();    // Menu icon
+                packet.ReadUInt32();    // Menu coded
+                packet.ReadString();    // Text for gossip item
+            }
+
+            var questMenuCount = packet.ReadUInt32();
+            for (int i = 0; i < questMenuCount; i++)
+            {
+                var questId = packet.ReadUInt32();
+                packet.ReadUInt32();    // Quest icon
+                packet.ReadUInt32();    // Quest level
+                packet.ReadString();    // Quest title
+
+                // if the players quest log is not full, accept the quest
+                if (!player.PlayerObject.IsQuestLogFull)
+                    AcceptQuest(entityGuid, questId);
+            }
+
+            // Remove flag from AI, telling them we got the quests
+            player.PlayerAI.WaitingToAcceptQuests = false;
+
+            // Remove the quest giver as well so we don't keep trying to get quests from this entity immediately until
+            // we can update the quest giver statuses
+            player.RemoveQuestGiver(entityGuid);
+
+            // Finally update any quest giver statuses
+            GetQuestGiverStatuses();
+        }
+
+        /// <summary>
+        /// Retrieves the quest list from an entity
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_QUESTGIVER_QUEST_LIST)]
+        public void HandleQuestList(PacketIn packet)
+        {
+            var entityGuid = packet.ReadUInt64();
+            packet.ReadString();    // Title of gossip menu
+            packet.ReadUInt32();    // Player emote
+            packet.ReadUInt32();    // NPC emote
+
+            var questCount = packet.ReadByte();
+            for (int i = 0; i < questCount; i++)
+            {
+                var questId = packet.ReadUInt32();
+                packet.ReadUInt32();    // Quest icon
+                packet.ReadUInt32();    // Quest level
+                packet.ReadString();    // Quest title
+
+                // if the players quest log is not full, accept the quest
+                if (!player.PlayerObject.IsQuestLogFull)
+                    AcceptQuest(entityGuid, questId);
+            }
+
+            // Remove flag from AI, telling them we got the quests
+            player.PlayerAI.WaitingToAcceptQuests = false;
+
+            // Remove the quest giver as well so we don't keep trying to get quests from this entity immediately until
+            // we can update the quest giver statuses
+            player.RemoveQuestGiver(entityGuid);
+
+            // Finally update any quest giver statuses
+            GetQuestGiverStatuses();
+        }
+
         #endregion
 
         #region Actions
@@ -203,6 +283,17 @@ namespace mClient.Clients
         public void GetQuestGiverStatuses()
         {
             PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_QUESTGIVER_STATUS_MULTIPLE_QUERY);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Calls for a gossip menu from an entity (unit, gameobject, etc.) by guid and retrieves the quest
+        /// list returned for that entity.
+        /// </summary>
+        public void GetQuestListFromQuestGiver(UInt64 guid)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_GOSSIP_HELLO);
+            packet.Write(guid);
             Send(packet);
         }
 

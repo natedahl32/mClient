@@ -7,10 +7,23 @@ namespace mClient.World.AI
 {
     public partial class PlayerAI
     {
+        #region Declarations
+
         // Holds the last coordinate that we did a quest status update check
         private Coordinate mLastQuestStatusCheckCoordinate;
         // The object guid we are currently accepting a quest from
         private UInt64 mAcceptingQuestFrom;
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets whether or not this player is waiting to accept quests from an entity.
+        /// </summary>
+        public bool WaitingToAcceptQuests { get; set; }
+
+        #endregion
 
         protected IBehaviourTreeNode CreateQuestAITree()
         {
@@ -47,6 +60,9 @@ namespace mClient.World.AI
                     })
                     .Do("Do I have a quest available?", t =>
                     {
+                        // If we are waiting to accept quests from a quest giver than exit out with success
+                        if (WaitingToAcceptQuests) return BehaviourTreeStatus.Success;
+
                         // If we are currently accepting a quest.
                         if (mAcceptingQuestFrom > 0)
                         {
@@ -67,8 +83,12 @@ namespace mClient.World.AI
                                 return BehaviourTreeStatus.Success;
                             }
 
-                            // TODO: Actually go through the quest dialogs to accept all quests available
-                            // from this quest giver.
+                            // Get the quest list from the quest giver and accept all quests they have to offer for us
+                            Client.GetQuestListFromQuestGiver(mAcceptingQuestFrom);
+                            // Clear the guid of the person we are accepting quests from
+                            mAcceptingQuestFrom = 0;
+                            // Set flag that we are waiting to accept quests from the quest giver
+                            WaitingToAcceptQuests = true;
 
                             return BehaviourTreeStatus.Success;
                         }
