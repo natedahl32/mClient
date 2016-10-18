@@ -158,6 +158,7 @@ namespace mClient.Clients
             }
 
             player.UpdateQuestGivers(questGivers);
+            player.PlayerAI.WaitingToUpdateQuestGivers = false;
         }
 
         /// <summary>

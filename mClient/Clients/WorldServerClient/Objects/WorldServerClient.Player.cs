@@ -1,5 +1,6 @@
 ﻿using mClient.Constants;
 using mClient.Shared;
+using mClient.World.Items;
 using mClient.World.Quest;
 using System;
 using System.Collections.Generic;
@@ -39,15 +40,74 @@ namespace mClient.Clients
             get { return Quests.Count() >= QuestConstants.MAX_QUEST_LOG_SIZE; }
         }
 
+        /// <summary>
+        /// Gets all items in the inventory of the player
+        /// </summary>
+        public IEnumerable<ItemInfo> InventoryItems
+        {
+            get
+            {
+                var items = new List<ItemInfo>();
+                for (int i = (int)PlayerFields.PLAYER_FIELD_PACK_SLOT_1; i <= (int)PlayerFields.PLAYER_FIELD_PACK_SLOT_LAST; i++)
+                {
+                    var itemId = GetFieldValue(i);
+                    if (itemId > 0)
+                    {
+                        var item = ItemManager.Instance.GetItem(itemId);
+                        if (item != null)
+                            items.Add(item);
+                    }
+                }
+                return items;
+            }
+        }
+
+        /// <summary>
+        /// Gets all items in the player currently has equipped
+        /// </summary>
+        public IEnumerable<ItemInfo> EquippedItems
+        {
+            get
+            {
+                var items = new List<ItemInfo>();
+                for (int i = (int)PlayerFields.PLAYER_FIELD_INV_SLOT_HEAD; i < (int)PlayerFields.PLAYER_FIELD_PACK_SLOT_1; i++)
+                {
+                    var itemId = GetFieldValue(i);
+                    if (itemId > 0)
+                    {
+                        var item = ItemManager.Instance.GetItem(itemId);
+                        if (item != null)
+                            items.Add(item);
+                    }
+                }
+                return items;
+            }
+        }
+
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// Gets the item currently equipped in the given slot
+        /// </summary>
+        /// <param name="slot"></param>
+        /// <returns></returns>
+        public ItemInfo GetItemInEquipmentSlot(EquipmentSlots slot)
+        {
+            // TOOD: THis isn't going to work. We have guids and the manager has id's
+            var index = (int)PlayerFields.PLAYER_FIELD_INV_SLOT_HEAD + (int)slot;
+            var itemId = GetFieldValue(index);
+            var item = ItemManager.Instance.GetItem(itemId);
+            return item;
+        }
 
         public override void SetField(WorldServerClient client, int x, uint value)
         {
             // Can be null when sent from base class
             if (client != null)
             {
+                // Quests
                 if (x >= (int)PlayerFields.PLAYER_QUEST_LOG_1_1 && x <= (int)PlayerFields.PLAYER_QUEST_LOG_LAST_3)
                 {
                     // If we are updating a quest, make sure our quest manager has the quest
@@ -55,6 +115,12 @@ namespace mClient.Clients
                         if (x == i)
                             if (QuestManager.Instance.GetQuest(value) == null)
                                 client.QueryQuest(value);
+                }
+                // Items in inventory and bag slots
+                else if (x >= (int)PlayerFields.PLAYER_FIELD_INV_SLOT_HEAD && x <= (int)PlayerFields.PLAYER_FIELD_KEYRING_SLOT_LAST)
+                {
+                    if (ItemManager.Instance.GetItem(value) == null)
+                        client.QueryItemPrototype(Convert.ToUInt64(value));
                 }
             }
             

@@ -21,6 +21,7 @@ namespace mClient.World.AI
         // Wait variables
         private bool mWaitingToAcceptQuests = false;
         private bool mWaitingToTurnInQuests = false;
+        private bool mWaitingToUpdateQuestGivers = false;
 
         #endregion
 
@@ -35,6 +36,11 @@ namespace mClient.World.AI
         /// Gets or sets wehther or not this player is waiting to turn in quests from an entity
         /// </summary>
         public bool WaitingToTurnInQuests { get { return mWaitingToTurnInQuests; } set { mWaitingToTurnInQuests = value; } }
+
+        /// <summary>
+        /// Gets or sets whether or not this player is waiting to update quest givers
+        /// </summary>
+        public bool WaitingToUpdateQuestGivers { get { return mWaitingToUpdateQuestGivers; } set { mWaitingToUpdateQuestGivers = value; } }
 
         #endregion
 
@@ -53,6 +59,7 @@ namespace mClient.World.AI
                             if (mLastQuestStatusCheckCoordinate == null)
                             {
                                 mLastQuestStatusCheckCoordinate = Player.Position;
+                                mWaitingToUpdateQuestGivers = true;
                                 Client.GetQuestGiverStatuses();
                                 return BehaviourTreeStatus.Failure;
                             }
@@ -62,6 +69,7 @@ namespace mClient.World.AI
                             if (Client.movementMgr.CalculateDistance(mLastQuestStatusCheckCoordinate) >= 20.0f)
                             {
                                 mLastQuestStatusCheckCoordinate = Player.Position;
+                                mWaitingToUpdateQuestGivers = true;
                                 Client.GetQuestGiverStatuses();
                                 return BehaviourTreeStatus.Failure;
                             }
@@ -70,6 +78,9 @@ namespace mClient.World.AI
                         })
                         .Do("Find Quest to Turn In", t =>
                         {
+                            // If we are still waiting for quest givers to update, return failure
+                            if (WaitingToUpdateQuestGivers) return BehaviourTreeStatus.Failure;
+
                             // See if we have any quests available to turn in and select the closest.
                             var questGivers = Player.QuestGivers.Where(q => q.Status == Constants.QuestGiverStatus.DIALOG_STATUS_REWARD_REP ||
                                                                             q.Status == Constants.QuestGiverStatus.DIALOG_STATUS_REWARD_OLD ||

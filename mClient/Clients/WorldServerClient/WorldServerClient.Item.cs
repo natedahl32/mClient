@@ -18,6 +18,12 @@ namespace mClient.Clients
         public void HandleItemQueryResponse(PacketIn packet)
         {
             var itemId = packet.ReadUInt32();
+            if (packet.Remaining == 0)
+            {
+                // No item info found for item!
+                return;
+            }
+
             var itemClass = packet.ReadUInt32();
             var itemSubClass = packet.ReadUInt32();
             var itemName = packet.ReadString();
@@ -138,6 +144,19 @@ namespace mClient.Clients
         {
             PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_ITEM_QUERY_SINGLE);
             packet.Write(itemId);
+            packet.Write((UInt64)0);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Queries the server for an item prototype
+        /// </summary>
+        /// <param name="itemId"></param>
+        public void QueryItemPrototype(UInt64 guid)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_ITEM_QUERY_SINGLE);
+            packet.Write((UInt32)0);
+            packet.Write(guid);
             Send(packet);
         }
 
