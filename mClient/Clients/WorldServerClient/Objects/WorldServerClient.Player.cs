@@ -53,7 +53,7 @@ namespace mClient.Clients
                     // If we are updating a quest, make sure our quest manager has the quest
                     for (var i = (int)PlayerFields.PLAYER_QUEST_LOG_1_1; i < (int)PlayerFields.PLAYER_QUEST_LOG_LAST_3; i += QuestConstants.MAX_QUEST_OFFSET)
                         if (x == i)
-                            if (QuestManager.Instance.GetQuest(value) == null)
+                            if (QuestManager.Instance.Get(value) == null)
                                 client.QueryQuest(value);
                 }
             }
