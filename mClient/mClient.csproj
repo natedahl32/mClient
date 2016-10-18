@@ -97,6 +97,7 @@
     <Compile Include="Clients\WorldServerClient\UpdateBlocks\TransportInfo.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Corpse.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Group.cs" />
+    <Compile Include="Clients\WorldServerClient\WorldServerClient.Item.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Player.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Auth.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Chat.cs" />
@@ -162,6 +163,11 @@
     <Compile Include="World\AI\PlayerAI.Quest.cs" />
     <Compile Include="World\CombatMgr.cs" />
     <Compile Include="World\Group.cs" />
+    <Compile Include="World\Items\ItemInfo.cs" />
+    <Compile Include="World\Items\ItemManager.cs" />
+    <Compile Include="World\Items\ItemSpellDamage.cs" />
+    <Compile Include="World\Items\ItemSpellEffect.cs" />
+    <Compile Include="World\Items\ItemStat.cs" />
     <Compile Include="World\MovementMgr.cs" />
     <Compile Include="World\ObjectMgr.cs" />
     <Compile Include="World\Player.cs" />

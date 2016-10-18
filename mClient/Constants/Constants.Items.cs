@@ -5,6 +5,13 @@ using System.Text;
 
 namespace mClient.Constants
 {
+    public static class ItemConstants
+    {
+        public const int MAX_ITEM_PROTO_STATS = 10;
+        public const int MAX_ITEM_PROTO_DAMAGES = 5;
+        public const int MAX_ITEM_PROTO_SPELLS = 5;
+    }
+
     public enum EquipmentSlots
     {
         EQUIPMENT_SLOT_START        = 0,
@@ -66,6 +73,7 @@ namespace mClient.Constants
         BIND_QUEST_ITEM1            = 5         // not used in game
     }
 
+    [Flags]
     public enum ItemPrototypeFlags
     {
         ITEM_FLAG_UNK0              = 0x00000001, // not used
@@ -308,5 +316,16 @@ namespace mClient.Constants
         ITEM_SUBCLASS_JUNK_HOLIDAY = 3,
         ITEM_SUBCLASS_JUNK_OTHER = 4,
         ITEM_SUBCLASS_JUNK_MOUNT = 5
+    }
+
+    public enum ItemQualities
+    {
+        ITEM_QUALITY_POOR = 0,                 // GREY
+        ITEM_QUALITY_NORMAL = 1,                 // WHITE
+        ITEM_QUALITY_UNCOMMON = 2,                 // GREEN
+        ITEM_QUALITY_RARE = 3,                 // BLUE
+        ITEM_QUALITY_EPIC = 4,                 // PURPLE
+        ITEM_QUALITY_LEGENDARY = 5,                 // ORANGE
+        ITEM_QUALITY_ARTIFACT = 6                  // LIGHT YELLOW
     }
 }

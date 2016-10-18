@@ -11,7 +11,7 @@ namespace mClient.World.Quest
     {
         #region Declarations
 
-        private List<QuestInfo> mQuests = new List<QuestInfo>();
+        private Dictionary<UInt32, QuestInfo> mQuests = new Dictionary<uint, QuestInfo>();
         private Object mLock = new Object();
 
         #endregion
@@ -37,8 +37,10 @@ namespace mClient.World.Quest
         /// <param name="questId"></param>
         /// <returns></returns>
         public QuestInfo GetQuest(UInt32 questId)
-        {            
-            return mQuests.Where(q => q.QuestId == questId).SingleOrDefault();
+        {
+            QuestInfo quest = null;
+            mQuests.TryGetValue(questId, out quest);
+            return quest;
         }
 
         /// <summary>
@@ -49,7 +51,7 @@ namespace mClient.World.Quest
         public QuestInfo GetQuest(string questTitle)
         {
             if (string.IsNullOrEmpty(questTitle)) return null;
-            return mQuests.Where(q => q.QuestName.ToLower() == questTitle.ToLower()).SingleOrDefault();
+            return mQuests.Values.Where(q => q.QuestName.ToLower() == questTitle.ToLower()).SingleOrDefault();
         }
 
         /// <summary>
@@ -58,9 +60,9 @@ namespace mClient.World.Quest
         /// <param name="questInfo"></param>
         public void AddQuest(QuestInfo questInfo)
         {
-            if (!mQuests.Any(q => q.QuestId == questInfo.QuestId))
+            if (!mQuests.ContainsKey(questInfo.QuestId))
                 lock(mLock)
-                    mQuests.Add(questInfo);
+                    mQuests.Add(questInfo.QuestId, questInfo);
         }
 
         /// <summary>
@@ -70,19 +72,19 @@ namespace mClient.World.Quest
         public void AddOrUpdateQuest(QuestInfo questInfo)
         {
             if (questInfo == null) return;
-            var existing = mQuests.Where(q => q.QuestId == questInfo.QuestId).SingleOrDefault();
+            QuestInfo existing = null;
+            mQuests.TryGetValue(questInfo.QuestId, out existing);
             if (existing == null)
             {
                 lock(mLock)
-                    mQuests.Add(questInfo);
+                    mQuests.Add(questInfo.QuestId, questInfo);
                 return;
             }
 
             // Already exists, remove it and then re-add it
             lock(mLock)
             {
-                mQuests.Remove(existing);
-                mQuests.Add(questInfo);
+                mQuests[existing.QuestId] = questInfo;
             }
         }
 
