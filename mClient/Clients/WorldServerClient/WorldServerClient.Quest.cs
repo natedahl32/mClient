@@ -57,7 +57,7 @@ namespace mClient.Clients
             player.DropQuest(questId);
 
             // Get the quest from the quest manager
-            var quest = QuestManager.Instance.GetQuest(questId);
+            var quest = QuestManager.Instance.Get(questId);
             if (quest != null)
                 SendChatMsg(ChatMsg.Party, Languages.Common, string.Format("My quest '{0}' failed. I dropped the quest.", quest.QuestName));
         }
@@ -76,7 +76,7 @@ namespace mClient.Clients
             player.DropQuest(questId);
 
             // Get the quest from the quest manager
-            var quest = QuestManager.Instance.GetQuest(questId);
+            var quest = QuestManager.Instance.Get(questId);
             if (quest != null)
                 SendChatMsg(ChatMsg.Party, Languages.Common, string.Format("My quest '{0}' failed. I dropped the quest.", quest.QuestName));
         }
