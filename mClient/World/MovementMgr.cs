@@ -22,6 +22,9 @@ namespace mClient.Clients
         [DllImport("winmm.dll", EntryPoint = "timeGetTime")]
         public static extern uint MM_GetTime();
 
+        public const float MINIMUM_FOLLOW_DISTANCE = 2.0f;
+        public const float MAXIMUM_FOLLOW_DISTANCE = 100.0f;
+
         private System.Timers.Timer aTimer = new System.Timers.Timer();
         Thread loop = null;
         public MovementFlag Flag = new MovementFlag();
@@ -119,7 +122,7 @@ namespace mClient.Clients
                             dist = TerrainMgr.CalculateDistance(objectMgr.getPlayerObject().Position, Waypoint);
                             if (angle == objectMgr.getPlayerObject().Position.O)
                             {
-                                if (dist > 1)
+                                if (dist > MINIMUM_FOLLOW_DISTANCE)
                                 {
                                     bool isMoving = Flag.IsMoveFlagSet(MovementFlags.MOVEMENTFLAG_FORWARD);
                                     Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_FORWARD);
@@ -246,7 +249,7 @@ namespace mClient.Clients
                 
 
             // check if we are within distance of the target position or not
-            if (dist > 2 && dist < 100)
+            if (dist > MINIMUM_FOLLOW_DISTANCE && dist < MAXIMUM_FOLLOW_DISTANCE)
             {
                 bool isMoving = Flag.IsMoveFlagSet(MovementFlags.MOVEMENTFLAG_FORWARD);
                 Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_FORWARD);

@@ -1,4 +1,5 @@
 ﻿using FluentBehaviourTree;
+using mClient.Clients;
 using mClient.Shared;
 using System;
 using System.Diagnostics;
@@ -133,7 +134,7 @@ namespace mClient.World.AI
                             }
 
                             // Are we in range to accept the quest?
-                            if (Client.movementMgr.CalculateDistance(obj.Position) > 1.0f)
+                            if (Client.movementMgr.CalculateDistance(obj.Position) > MovementMgr.MINIMUM_FOLLOW_DISTANCE)
                             {
                                 // TODO: Blindly setting the quest giver as follow target is dangerous. We could run
                                 // right into a pack of hostiles. Should fix this!
@@ -168,7 +169,7 @@ namespace mClient.World.AI
                             }
 
                             // Are we in range to accept the quest?
-                            if (Client.movementMgr.CalculateDistance(obj.Position) > 1.0f)
+                            if (Client.movementMgr.CalculateDistance(obj.Position) > MovementMgr.MINIMUM_FOLLOW_DISTANCE)
                             {
                                 // TODO: Blindly setting the quest giver as follow target is dangerous. We could run
                                 // right into a pack of hostiles. Should fix this!
@@ -185,7 +186,10 @@ namespace mClient.World.AI
                             WaitingToAcceptQuests = true;
                             // Now wait to accept the quests. If timeout elapses just continue on. This can happen if
                             // the server doesn't think we are close enough to the quest giver.
-                            Wait(ref mWaitingToAcceptQuests, () => { WaitingToAcceptQuests = false; });
+                            Wait(ref mWaitingToAcceptQuests, () => 
+                            {
+                                WaitingToAcceptQuests = false;
+                            });
 
                             return BehaviourTreeStatus.Success;
                         })
