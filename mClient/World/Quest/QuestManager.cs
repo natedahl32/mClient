@@ -26,6 +26,7 @@ namespace mClient.World.Quest
 
         public override bool Exists(QuestInfo obj)
         {
+            if (obj == null) return false;
             return mObjects.Any(q => q.QuestId == obj.QuestId);
         }
 
