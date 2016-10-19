@@ -148,18 +148,6 @@ namespace mClient.Clients
             Send(packet);
         }
 
-        /// <summary>
-        /// Queries the server for an item prototype
-        /// </summary>
-        /// <param name="itemId"></param>
-        public void QueryItemPrototype(UInt64 guid)
-        {
-            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_ITEM_QUERY_SINGLE);
-            packet.Write((UInt32)0);
-            packet.Write(guid);
-            Send(packet);
-        }
-
         #endregion
     }
 }

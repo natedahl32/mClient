@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 using mClient;
@@ -8,6 +9,8 @@ using mClient.Clients;
 using mClient.Constants;
 using mClient.Shared;
 using mConsole.Commands;
+using mClient.World.Quest;
+using mClient.World.Items;
 
 namespace mConsole
 {
@@ -16,12 +19,25 @@ namespace mConsole
         static byte[] k;
         static LogonServerClient lclient;
         static WorldServerClient wclient;
-        
+
+        static ConsoleEventDelegate handler;
+        private delegate bool ConsoleEventDelegate(int eventType);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool SetConsoleCtrlHandler(ConsoleEventDelegate callback, bool add);
+
         public static void Main(string[] args)
         {
+            // event delegate setup to catch when the console app is closed
+            handler = new ConsoleEventDelegate(ConsoleEventCallback);
+            SetConsoleCtrlHandler(handler, true);
+
             Console.WindowWidth = 100;
             mCore.Init(EventHandler);
             CommandHandler.Initialize();
+
+            // Load our caches
+            QuestManager.Instance.Load();
+            ItemManager.Instance.Load();
 
             while (true)
             {
@@ -31,6 +47,17 @@ namespace mConsole
             }
         
             
+        }
+
+        static bool ConsoleEventCallback(int eventType)
+        {
+            if (eventType == 2)
+            {
+                // Serialize our managers
+                QuestManager.Instance.Serialize();
+                ItemManager.Instance.Serialize();
+            }
+            return false;
         }
 
         public static void HandleRealmlist(Realm[] rlist)

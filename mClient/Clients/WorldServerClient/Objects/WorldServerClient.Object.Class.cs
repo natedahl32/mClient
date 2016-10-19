@@ -31,15 +31,29 @@ namespace mClient.Clients
             }
         }
 
+        /// <summary>
+        /// Gets the entry of the item, most often the id
+        /// </summary>
         public UInt32 ObjectFieldEntry
         {
             get { return GetFieldValue((int)ObjectFields.OBJECT_FIELD_ENTRY); }
             private set { SetField((int)ObjectFields.OBJECT_FIELD_ENTRY, value); }
         }
 
+        /// <summary>
+        /// Gets the long guid of the object
+        /// </summary>
         public UInt64 ObjectFieldGuid
         {
             get { return GetGuid(GetFieldValue((int)ObjectFields.OBJECT_FIELD_GUID), GetFieldValue(((int)ObjectFields.OBJECT_FIELD_GUID) + 1)); }
+        }
+
+        /// <summary>
+        /// Gets the WoWGuid of the object
+        /// </summary>
+        public WoWGuid ObjectFieldWoWGuid
+        {
+            get { return new WoWGuid(ObjectFieldGuid); }
         }
 
         #endregion
