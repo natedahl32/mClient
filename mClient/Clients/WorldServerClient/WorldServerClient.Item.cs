@@ -11,6 +11,30 @@ namespace mClient.Clients
         #region Packet Handlers
 
         /// <summary>
+        /// Handles equip errors
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_INVENTORY_CHANGE_FAILURE)]
+        public void HandleInventoryChangeFailure(PacketIn packet)
+        {
+            var inventoryResultMessage = (InventoryResult)packet.ReadByte();
+            if (inventoryResultMessage != InventoryResult.EQUIP_ERR_OK)
+            {
+                var requiredLevel = (UInt32)0;
+                if (inventoryResultMessage == InventoryResult.EQUIP_ERR_CANT_EQUIP_LEVEL_I)
+                {
+                    requiredLevel = packet.ReadUInt32();
+                }
+
+                var itemGuid = packet.ReadUInt64();
+                var item2Guid = packet.ReadUInt64();
+                packet.ReadByte();
+            }
+
+            SendChatMsg(ChatMsg.Party, Languages.Common, string.Format("Inventory change failure with msg {0}", inventoryResultMessage));
+        }
+
+        /// <summary>
         /// Handles a trade status from the server
         /// </summary>
         /// <param name="packet"></param>
@@ -194,6 +218,19 @@ namespace mClient.Clients
         {
             PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_ACCEPT_TRADE);
             packet.Write((UInt32)0);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Auto equips the item 
+        /// </summary>
+        /// <param name="bagSlot"></param>
+        /// <param name="slot"></param>
+        public void AutoEquipItem(byte bagSlot, byte slot)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_AUTOEQUIP_ITEM);
+            packet.Write(bagSlot);
+            packet.Write(slot);
             Send(packet);
         }
 

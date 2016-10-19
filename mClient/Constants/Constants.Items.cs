@@ -10,6 +10,8 @@ namespace mClient.Constants
         public const int MAX_ITEM_PROTO_STATS = 10;
         public const int MAX_ITEM_PROTO_DAMAGES = 5;
         public const int MAX_ITEM_PROTO_SPELLS = 5;
+
+        public const int INVENTORY_SLOT_BAG_0 = 255;
     }
 
     public enum EquipmentSlots
@@ -35,6 +37,50 @@ namespace mClient.Constants
         EQUIPMENT_SLOT_RANGED       = 17,
         EQUIPMENT_SLOT_TABARD       = 18,
         EQUIPMENT_SLOT_END          = 19
+    }
+
+    public enum InventorySlots                                         // 4 slots
+    {
+        INVENTORY_SLOT_BAG_START = 19,
+        INVENTORY_SLOT_BAG_END = 23
+    }
+
+    public enum InventoryPackSlots                                     // 16 slots
+    {
+        INVENTORY_SLOT_ITEM_START = 23,
+        INVENTORY_SLOT_ITEM_END = 39
+    }
+
+    public enum BankItemSlots                                          // 28 slots
+    {
+        BANK_SLOT_ITEM_START = 39,
+        BANK_SLOT_ITEM_END = 63
+    }
+
+    public enum BankBagSlots                                           // 7 slots
+    {
+        BANK_SLOT_BAG_START = 63,
+        BANK_SLOT_BAG_END = 69
+    }
+
+    public enum BuyBackSlots                                           // 12 slots
+    {
+        // stored in m_buybackitems
+        BUYBACK_SLOT_START = 69,
+        BUYBACK_SLOT_END = 81
+    }
+
+    public enum KeyRingSlots                                           // 32 slots
+    {
+        KEYRING_SLOT_START = 81,
+        KEYRING_SLOT_END = 97
+    }
+
+    public enum TradeSlots
+    {
+        TRADE_SLOT_COUNT = 7,
+        TRADE_SLOT_TRADED_COUNT = 6,
+        TRADE_SLOT_NONTRADED = 6
     }
 
     public enum ItemModType

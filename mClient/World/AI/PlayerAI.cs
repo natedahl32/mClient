@@ -148,6 +148,7 @@ namespace mClient.World.AI
                     .Splice(CreateDeathAITree())
                     .Splice(CreateCombatAITree())
                     .Splice(CreateQuestAITree())
+                    .Splice(CreateInventoryAITree())
                     .Splice(CreateIdleAITree())
                 .End()
                 .Build();

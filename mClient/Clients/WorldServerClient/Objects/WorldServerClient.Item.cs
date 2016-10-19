@@ -59,6 +59,7 @@ namespace mClient.Clients
 
     public class InventoryItemSlot
     {
+        public int Bag { get; set; }
         public int Slot { get; set; }
         public Item Item { get; set; }
     }

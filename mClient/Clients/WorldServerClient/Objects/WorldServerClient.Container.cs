@@ -27,6 +27,11 @@ namespace mClient.Clients
         #region Properties
 
         /// <summary>
+        /// The inventory or bank bag slot of this container
+        /// </summary>
+        public int InventoryBagSlot { get; set; }
+
+        /// <summary>
         /// Gets the number of slots this container has
         /// </summary>
         public uint NumberOfSlots { get { return GetFieldValue((int)ContainerFields.CONTAINER_FIELD_NUM_SLOTS); } }
@@ -38,7 +43,7 @@ namespace mClient.Clients
         {
             get
             {
-                return mInventory.Where(kvp => kvp.Value != null).Select(kvp => new InventoryItemSlot() { Slot = kvp.Key, Item = kvp.Value }).ToList();
+                return mInventory.Where(kvp => kvp.Value != null).Select(kvp => new InventoryItemSlot() { Bag = InventoryBagSlot, Slot = kvp.Key, Item = kvp.Value }).ToList();
             }
         }
 

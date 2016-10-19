@@ -165,6 +165,7 @@
     <Compile Include="World\AI\PlayerAI.cs" />
     <Compile Include="World\AI\PlayerAI.Death.cs" />
     <Compile Include="World\AI\PlayerAI.Idle.cs" />
+    <Compile Include="World\AI\PlayerAI.Inventory.cs" />
     <Compile Include="World\AI\PlayerAI.Quest.cs" />
     <Compile Include="World\CombatMgr.cs" />
     <Compile Include="World\Group.cs" />

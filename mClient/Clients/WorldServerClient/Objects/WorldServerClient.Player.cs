@@ -69,7 +69,7 @@ namespace mClient.Clients
             get
             {
                 // All items in pack and all items in each bag we have
-                var packItems = mInventory.Where(kvp => kvp.Value != null).Select(kvp => new InventoryItemSlot() { Slot = kvp.Key, Item = kvp.Value }).ToList();
+                var packItems = mInventory.Where(kvp => kvp.Value != null).Select(kvp => new InventoryItemSlot() { Bag = ItemConstants.INVENTORY_SLOT_BAG_0, Slot = kvp.Key, Item = kvp.Value }).ToList();
                 foreach (var bag in mInventoryBags.Values.Where(b => b != null))
                     packItems.AddRange(bag.ItemsInContainer);
                 return packItems;
@@ -82,6 +82,32 @@ namespace mClient.Clients
         public IEnumerable<InventoryItemSlot> Bags
         {
             get { return mInventoryBags.Where(b => b.Value != null).Select(b => new InventoryItemSlot() { Slot = b.Key, Item = b.Value }); }
+        }
+
+        /// <summary>
+        /// Gets the bag with the smallest number of slots
+        /// </summary>
+        public Container SmallestBag
+        {
+            get
+            {
+                // If we don't have any equipped bags return null
+                if (mInventoryBags.Count == 0) return null;
+
+                var minimumSlots = mInventoryBags.Where(b => b.Value != null).Select(b => b.Value.NumberOfSlots).Min();
+                var bag = mInventoryBags.Where(b => b.Value != null && b.Value.NumberOfSlots == minimumSlots).FirstOrDefault();
+                if (!bag.Equals(new KeyValuePair<int, Container>()))
+                    return bag.Value;
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets the total number of bags currently equipped
+        /// </summary>
+        public int NumberOfEquippedBags
+        {
+            get { return mInventoryBags.Where(b => b.Value != null).Count(); }
         }
 
         #endregion
@@ -216,7 +242,7 @@ namespace mClient.Clients
             if (slot < (int)PlayerFields.PLAYER_FIELD_PACK_SLOT_1)
             {
                 var equippedSlotValue = (slot - (int)PlayerFields.PLAYER_FIELD_INV_SLOT_HEAD) / 2;
-                if (equippedSlotValue >= (int)EquipmentSlots.EQUIPMENT_SLOT_END)
+                if (equippedSlotValue >= (int)InventorySlots.INVENTORY_SLOT_BAG_START && equippedSlotValue <= (int)InventorySlots.INVENTORY_SLOT_BAG_END)
                 {
                     // This is a bag
                     var container = item as Container;
@@ -230,7 +256,10 @@ namespace mClient.Clients
 
                     // Update the items in the container
                     if (container != null)
+                    {
+                        container.InventoryBagSlot = equippedSlotValue;
                         container.UpdateItemsInContainer(client);
+                    }
                 }
                 else
                 {
