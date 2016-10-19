@@ -11,6 +11,36 @@ namespace mClient.Clients
         #region Packet Handlers
 
         /// <summary>
+        /// Handles a trade status from the server
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_TRADE_STATUS)]
+        public void HandleTradeStatus(PacketIn packet)
+        {
+            var tradeStatus = (TradeStatus)packet.ReadUInt32();
+            switch(tradeStatus)
+            {
+                case TradeStatus.TRADE_STATUS_BEGIN_TRADE:
+                    var traderGuid = packet.ReadUInt64();
+                    BeginTrade();
+                    break;
+                case TradeStatus.TRADE_STATUS_CLOSE_WINDOW:
+                    var result = (InventoryResult)packet.ReadUInt32();
+                    var isTargetResult = packet.ReadByte();
+                    var itemLimitCategoryId = packet.ReadUInt32();  // From ItemLimitCategory.dbc
+                    break;
+                case TradeStatus.TRADE_STATUS_OPEN_WINDOW:
+                    // TODO: window is open, we can put items into trade now
+                    break;
+                case TradeStatus.TRADE_STATUS_TRADE_ACCEPT:
+                    AcceptTrade();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        /// <summary>
         /// Handles an item query from the server
         /// </summary>
         /// <param name="packet"></param>
@@ -145,6 +175,25 @@ namespace mClient.Clients
             PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_ITEM_QUERY_SINGLE);
             packet.Write(itemId);
             packet.Write((UInt64)0);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Begins a trade when initiated by another player
+        /// </summary>
+        public void BeginTrade()
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_BEGIN_TRADE);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Accepts the current trade
+        /// </summary>
+        public void AcceptTrade()
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_ACCEPT_TRADE);
+            packet.Write((UInt32)0);
             Send(packet);
         }
 

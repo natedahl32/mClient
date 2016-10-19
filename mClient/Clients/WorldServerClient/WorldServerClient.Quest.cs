@@ -273,7 +273,8 @@ namespace mClient.Clients
             packet.ReadUInt32();    // Emote Id
 
             // TODO: Finish this up by sending a message via chat as to what items are still missing
-            // from the quest requirements and for what quest.
+            // from the quest requirements and for what quest. Not certain under what circumstances we would
+            // receive this op code.
         }
 
         /// <summary>
