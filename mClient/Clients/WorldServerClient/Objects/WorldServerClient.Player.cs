@@ -48,12 +48,12 @@ namespace mClient.Clients
             get
             {
                 var items = new List<ItemInfo>();
-                for (int i = (int)PlayerFields.PLAYER_FIELD_PACK_SLOT_1; i <= (int)PlayerFields.PLAYER_FIELD_PACK_SLOT_LAST; i++)
+                for (int i = (int)PlayerFields.PLAYER_FIELD_PACK_SLOT_1; i <= (int)PlayerFields.PLAYER_FIELD_PACK_SLOT_LAST; i += 2)
                 {
                     var itemId = GetFieldValue(i);
                     if (itemId > 0)
                     {
-                        var item = ItemManager.Instance.GetItem(itemId);
+                        var item = ItemManager.Instance.Get(itemId);
                         if (item != null)
                             items.Add(item);
                     }
@@ -75,7 +75,7 @@ namespace mClient.Clients
                     var itemId = GetFieldValue(i);
                     if (itemId > 0)
                     {
-                        var item = ItemManager.Instance.GetItem(itemId);
+                        var item = ItemManager.Instance.Get(itemId);
                         if (item != null)
                             items.Add(item);
                     }
@@ -98,7 +98,7 @@ namespace mClient.Clients
             // TOOD: THis isn't going to work. We have guids and the manager has id's
             var index = (int)PlayerFields.PLAYER_FIELD_INV_SLOT_HEAD + (int)slot;
             var itemId = GetFieldValue(index);
-            var item = ItemManager.Instance.GetItem(itemId);
+            var item = ItemManager.Instance.Get(itemId);
             return item;
         }
 
@@ -119,7 +119,7 @@ namespace mClient.Clients
                 // Items in inventory and bag slots
                 else if (x >= (int)PlayerFields.PLAYER_FIELD_INV_SLOT_HEAD && x <= (int)PlayerFields.PLAYER_FIELD_KEYRING_SLOT_LAST)
                 {
-                    if (ItemManager.Instance.GetItem(value) == null)
+                    if (ItemManager.Instance.Get(value) == null)
                         client.QueryItemPrototype(Convert.ToUInt64(value));
                 }
             }

@@ -28,6 +28,11 @@ namespace mClient.World.Items
             return mObjects.Any(i => i.ItemId == obj.ItemId);
         }
 
+        public bool Exists(UInt32 itemId)
+        {
+            return mObjects.Any(i => i.ItemId == itemId);
+        }
+
         public override ItemInfo Get(uint id)
         {
             return mObjects.Where(i => i.ItemId == id).SingleOrDefault();

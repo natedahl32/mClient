@@ -136,7 +136,7 @@ namespace mClient.Clients
                 QuestPoint = new Coords3() { X = questPointX, Y = questPointY }
             };
 
-            QuestManager.Instance.AddQuest(questInfo);
+            QuestManager.Instance.Add(questInfo);
         }
 
         /// <summary>

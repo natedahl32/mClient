@@ -107,7 +107,7 @@ namespace mClient.Shared
         /// Adds an object to the manager
         /// </summary>
         /// <param name="obj"></param>
-        public void AddQuest(T obj)
+        public void Add(T obj)
         {
             if (!Exists(obj))
             {

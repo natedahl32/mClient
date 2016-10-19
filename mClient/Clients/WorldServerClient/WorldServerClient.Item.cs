@@ -29,7 +29,7 @@ namespace mClient.Clients
             var itemName = packet.ReadString();
 
             // If we already have the item we don't need to go any further
-            if (ItemManager.Instance.ContainsItem(itemId)) return;
+            if (ItemManager.Instance.Exists(itemId)) return;
 
             ItemInfo item = new ItemInfo()
             {
@@ -129,7 +129,7 @@ namespace mClient.Clients
             var mapId = packet.ReadUInt32();
             item.BagFamily = packet.ReadUInt32();
 
-            ItemManager.Instance.AddItem(item);
+            ItemManager.Instance.Add(item);
         }
 
         #endregion
