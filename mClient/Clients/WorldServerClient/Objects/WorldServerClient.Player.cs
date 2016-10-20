@@ -34,11 +34,6 @@ namespace mClient.Clients
         #region Properties
 
         /// <summary>
-        /// Gets the world server client associated with this object
-        /// </summary>
-        protected WorldServerClient Client { get { return mClient; } }
-
-        /// <summary>
         /// Gets all quest ids the player currently has in their Quest Log
         /// </summary>
         public IEnumerable<UInt32> Quests
@@ -122,6 +117,136 @@ namespace mClient.Clients
         public Item GetItemInEquipmentSlot(EquipmentSlots slot)
         {
             return mEquippedItems[slot];
+        }
+
+        /// <summary>
+        /// Gets the inventory item in the slot
+        /// </summary>
+        /// <param name="bag"></param>
+        /// <param name="slot"></param>
+        /// <returns></returns>
+        public InventoryItemSlot GetInventoryItem(int bag, int slot)
+        {
+            InventoryItemSlot item = null;
+            if (bag == ItemConstants.INVENTORY_SLOT_BAG_0)
+                item = InventoryItems.Where(i => i.Slot == slot).SingleOrDefault();
+            else
+            {
+                // Get the bag
+                var inBag = Bags.Where(b => b.Slot == bag).SingleOrDefault();
+                if (inBag == null)
+                    return null;
+                // Make sure it's a container
+                var container = inBag.Item as Container;
+                if (container == null)
+                    return null;
+                item = container.ItemsInContainer.Where(i => i.Slot == slot).SingleOrDefault();
+            }
+
+            return item;
+        }
+
+        /// <summary>
+        /// Equips the item in the bag and slot
+        /// </summary>
+        /// <param name="bag"></param>
+        /// <param name="slot"></param>
+        /// <returns></returns>
+        public bool AutoEquipItem(int bag, int slot)
+        {
+            // Retrieve the item we are equipping
+            InventoryItemSlot item = GetInventoryItem(bag, slot);
+
+            // Make sure we have an item
+            if (item == null || item.Item == null) return false;
+
+            // Get the slot we want to equip this item in
+            int equipToSlot = -1;
+            if (item.Item.BaseInfo.InventoryType == InventoryType.INVTYPE_BAG)
+            {
+                // If we have the maximum number of bags, choose the slot with lowest number of slots in it
+                if (NumberOfEquippedBags == ItemConstants.MAX_NUMBER_OF_EQUIPPABLE_BAGS)
+                {
+                    var minSlots = Bags.Select(b => (b.Item as Container).NumberOfSlots).Min();
+                    equipToSlot = Bags.Where(b => (b.Item as Container).NumberOfSlots == minSlots).FirstOrDefault().Slot;
+                }
+                else
+                {
+                    // Find the first bag slot that is open
+                    for (int s = (int)InventorySlots.INVENTORY_SLOT_BAG_START; s <= (int)InventorySlots.INVENTORY_SLOT_BAG_END; s++)
+                        if (!Bags.Any(b => b.Slot == s))
+                            equipToSlot = s;
+                }
+            }
+            else if (item.Item.BaseInfo.InventoryType == InventoryType.INVTYPE_FINGER)
+            {
+                if (GetItemInEquipmentSlot(EquipmentSlots.EQUIPMENT_SLOT_FINGER1) == null)
+                    equipToSlot = (int)EquipmentSlots.EQUIPMENT_SLOT_FINGER1;
+                else if (GetItemInEquipmentSlot(EquipmentSlots.EQUIPMENT_SLOT_FINGER2) == null)
+                    equipToSlot = (int)EquipmentSlots.EQUIPMENT_SLOT_FINGER2;
+                else
+                    equipToSlot = (int)EquipmentSlots.EQUIPMENT_SLOT_FINGER1;
+            }
+            else if (item.Item.BaseInfo.InventoryType == InventoryType.INVTYPE_TRINKET)
+            {
+                if (GetItemInEquipmentSlot(EquipmentSlots.EQUIPMENT_SLOT_TRINKET1) == null)
+                    equipToSlot = (int)EquipmentSlots.EQUIPMENT_SLOT_TRINKET1;
+                else if (GetItemInEquipmentSlot(EquipmentSlots.EQUIPMENT_SLOT_TRINKET2) == null)
+                    equipToSlot = (int)EquipmentSlots.EQUIPMENT_SLOT_TRINKET2;
+                else
+                    equipToSlot = (int)EquipmentSlots.EQUIPMENT_SLOT_TRINKET1;
+            }
+            else
+                equipToSlot = (int)item.Item.GetEquipSlotByInventoryType();
+
+            // If we couldn't find a slot to equip to, exit out
+            if (equipToSlot == -1) return false;
+
+            // Equip the item  
+            return EquipItem(bag, slot, equipToSlot);
+        }
+
+        /// <summary>
+        /// Equips the item that is currently in the bag slot to the equipToSlot
+        /// </summary>
+        /// <param name="bag"></param>
+        /// <param name="slot"></param>
+        /// <param name="equipToSlot"></param>
+        /// <returns></returns>
+        public bool EquipItem(int bag, int slot, int equipToSlot)
+        {
+            // Get the item we are equippping
+            var item = GetInventoryItem(bag, slot);
+            if (item == null || item.Item == null) return false;
+
+            Item currentlyEquipped = null;
+            // Handle bags differently
+            if (item.Item.BaseInfo.InventoryType == InventoryType.INVTYPE_BAG)
+            {
+                // Get the currently equipped bag (if any)
+                if (Bags.Any(b => b.Slot == equipToSlot))
+                    currentlyEquipped = Bags.Where(b => b.Slot == equipToSlot).SingleOrDefault().Item;
+
+                // Hold a reference to the new bag
+                var newBag = item.Item as Container;
+
+                // Send the currently equipped bag back to inventory
+                if (currentlyEquipped != null)
+                    item.Item = currentlyEquipped;
+
+                // Set the new bag to it's position
+                if (mInventoryBags.ContainsKey(equipToSlot))
+                    mInventoryBags[equipToSlot] = newBag;
+                else
+                    mInventoryBags.Add(equipToSlot, newBag);
+
+                return true;
+            }
+            
+            // Non bag item    
+            currentlyEquipped = GetItemInEquipmentSlot((EquipmentSlots)equipToSlot);
+
+            return true;
         }
 
 

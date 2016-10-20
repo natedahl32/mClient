@@ -11,6 +11,8 @@ namespace mClient.Constants
         public const int MAX_ITEM_PROTO_DAMAGES = 5;
         public const int MAX_ITEM_PROTO_SPELLS = 5;
 
+        public const int MAX_NUMBER_OF_EQUIPPABLE_BAGS = ((int)InventorySlots.INVENTORY_SLOT_BAG_END - (int)InventorySlots.INVENTORY_SLOT_BAG_START);
+
         public const int INVENTORY_SLOT_BAG_0 = 255;
     }
 

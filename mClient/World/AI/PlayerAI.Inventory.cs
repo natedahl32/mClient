@@ -13,6 +13,13 @@ namespace mClient.World.AI
             var builder = new BehaviourTreeBuilder();
             return builder
                 .Selector("inventory-selector")
+                    .Selector("Handle Quest Start Items in Inventory")
+                        .Do("Start Quests from Items in Bag", t =>
+                        {
+                            // TODO: Check bags for quest items and start any quests we don't already have
+                            return BehaviourTreeStatus.Failure;
+                        })
+                    .End()
                     .Selector("Handle Bags in Inventory")
                         .Do("Equip better bag in inventory", t =>
                         {
@@ -25,17 +32,17 @@ namespace mClient.World.AI
                                 if (container != null)
                                 {
                                     // if we don't have all bag slots filled, we can autoequip the bag
-                                    if (Player.PlayerObject.NumberOfEquippedBags < ((int)InventorySlots.INVENTORY_SLOT_BAG_END - (int)InventorySlots.INVENTORY_SLOT_BAG_START))
+                                    if (Player.PlayerObject.NumberOfEquippedBags < ItemConstants.MAX_NUMBER_OF_EQUIPPABLE_BAGS)
                                     {
-                                        // TODO: We need to move the item from inventory to our bag slot or we will keep trying to send this op code
+                                        Player.PlayerObject.AutoEquipItem(itemSlot.Bag, itemSlot.Slot);
                                         Client.AutoEquipItem((byte)itemSlot.Bag, (byte)itemSlot.Slot);
                                         return BehaviourTreeStatus.Success;
                                     }
                                         
-                                    // if any of our bag slots are empty or have less slots than this bag
-                                    // then lets equip this bag
+                                    // if any of our bags have less slots than this bag then lets equip this bag
                                     if (container.NumberOfSlots > Player.PlayerObject.SmallestBag.NumberOfSlots)
                                     {
+                                        // TODO: First we need to make sure the bag we want to equip is not in the bag we are replacing or we will hit an error
                                         // TOOD: Equip the bag in place of the smallest bag
                                         return BehaviourTreeStatus.Success;
                                     }
