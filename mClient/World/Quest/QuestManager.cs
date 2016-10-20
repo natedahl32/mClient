@@ -1,10 +1,24 @@
 ﻿using mClient.Shared;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace mClient.World.Quest
 {
-    public class QuestManager : AbstractObjectManager<QuestManager, QuestInfo>
+    public class QuestManager : AbstractObjectManager<QuestInfo>
     {
+        #region Singleton
+
+        static readonly QuestManager instance = new QuestManager();
+
+        static QuestManager() { }
+
+        QuestManager()
+        { }
+
+        public static QuestManager Instance { get { return instance; } }
+
+        #endregion
+
         #region Properties
 
         protected override string SerializeToFile
@@ -21,7 +35,7 @@ namespace mClient.World.Quest
 
         public override QuestInfo Get(uint id)
         {
-            return mObjects.Where(q => q.QuestId == id).SingleOrDefault();
+            return mObjects.Where(q => q != null && q.QuestId == id).SingleOrDefault();
         }
 
         public override bool Exists(QuestInfo obj)

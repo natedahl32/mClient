@@ -6,8 +6,20 @@ using System.Linq;
 
 namespace mClient.World.Items
 {
-    public class ItemManager : AbstractObjectManager<ItemManager, ItemInfo>
+    public class ItemManager : AbstractObjectManager<ItemInfo>
     {
+        #region Singleton
+
+        static readonly ItemManager instance = new ItemManager();
+        
+        static ItemManager() { }
+
+        ItemManager() { }
+
+        public static ItemManager Instance { get { return instance; } }
+
+        #endregion
+
         #region Properties
 
         protected override string SerializeToFile
@@ -35,7 +47,7 @@ namespace mClient.World.Items
 
         public override ItemInfo Get(uint id)
         {
-            return mObjects.Where(i => i.ItemId == id).SingleOrDefault();
+            return mObjects.Where(i => i != null && i.ItemId == id).SingleOrDefault();
         }
 
         #endregion

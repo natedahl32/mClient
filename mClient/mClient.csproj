@@ -155,7 +155,6 @@
     <Compile Include="Shared\Coords3.cs" />
     <Compile Include="Shared\EntityId.cs" />
     <Compile Include="Shared\QueryQueue.cs" />
-    <Compile Include="Shared\Singleton.cs" />
     <Compile Include="Shared\UpdateMask.cs" />
     <Compile Include="Shared\WoWGuid.cs" />
     <Compile Include="Utils\Log.cs" />

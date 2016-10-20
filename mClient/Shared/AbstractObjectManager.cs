@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace mClient.Shared
 {
-    public abstract class AbstractObjectManager<TManager, T> where TManager : class, new()
+    public abstract class AbstractObjectManager<T>
     {
         #region Declarations
 
-        private const int ITEMS_ADDED_TO_SERIALIZE = 20;
+        private const int ITEMS_ADDED_TO_SERIALIZE = 1;
 
         protected List<T> mObjects = new List<T>();
         private Object mLock = new Object();
@@ -36,18 +36,6 @@ namespace mClient.Shared
 
         #endregion
 
-        #region Static Methods
-
-        /// <summary>
-        /// Gets the instance of manager
-        /// </summary>
-        public static TManager Instance
-        {
-            get { return Singleton<TManager>.Instance; }
-        }
-
-        #endregion
-
         #region Public Methods
 
         /// <summary>
@@ -58,10 +46,11 @@ namespace mClient.Shared
             // if there is nothing to save we don't need to serialize
             if (addedSinceSerialize == 0) return;
 
-            // Lock and start a new thread for the write
-            lock (mWriteLock)
+            Task task = Task.Factory.StartNew(() =>
             {
-                Task task = Task.Factory.StartNew(() =>
+                // Lock and start a new thread for the write
+                lock (mLock)
+                lock (mWriteLock)
                 {
                     JsonSerializer serializer = new JsonSerializer();
                     serializer.Converters.Add(new JavaScriptDateTimeConverter());
@@ -70,11 +59,11 @@ namespace mClient.Shared
                     using (StreamWriter sw = new StreamWriter(FilePath))
                     using (JsonWriter writer = new JsonTextWriter(sw))
                         serializer.Serialize(writer, mObjects);
-                });
 
-                // reset back to 0
-                addedSinceSerialize = 0;
-            }
+                    // reset back to 0
+                    addedSinceSerialize = 0;
+                }
+            });
         }
 
         /// <summary>
@@ -86,6 +75,7 @@ namespace mClient.Shared
             if (!File.Exists(FilePath)) return;
 
             var data = File.ReadAllText(FilePath);
+            if (string.IsNullOrEmpty(data) || string.IsNullOrEmpty(data.Trim())) return;
             mObjects = JsonConvert.DeserializeObject<List<T>>(data);
         }
 
