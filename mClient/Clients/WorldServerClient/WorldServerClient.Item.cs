@@ -3,12 +3,61 @@ using mClient.Network;
 using mClient.Shared;
 using mClient.World.Items;
 using System;
+using System.Collections.Generic;
 
 namespace mClient.Clients
 {
     public partial class WorldServerClient
     {
         #region Packet Handlers
+
+        /// <summary>
+        /// Handles loot lists
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_LOOT_LIST)]
+        public void HandleLootList(PacketIn packet)
+        {
+            var lootGuid = packet.ReadUInt64();
+            var masterLooterGuid = packet.ReadPackedGuidToWoWGuid();
+            var currentLooterGuid = packet.ReadPackedGuidToWoWGuid();
+
+            // if this is our loot then add it to our Loot
+            if (currentLooterGuid.GetOldGuid() == player.Guid.GetOldGuid())
+                player.AddLootable(new WoWGuid(lootGuid));
+        }
+
+        /// <summary>
+        /// Handles a loot response
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_LOOT_RESPONSE)]
+        public void HandleLootResponse(PacketIn packet)
+        {
+            var itemsToLoot = new List<LootItem>();
+
+            var guidTarget = packet.ReadUInt64();   // Not sure what this is for
+            var clientLootType = packet.ReadByte();
+            var goldAmount = packet.ReadUInt32();
+            var itemCount = packet.ReadByte();
+            for (int i = 0; i < itemCount; i++)
+            {
+                var lootItem = new LootItem();
+                lootItem.Read(packet);
+                itemsToLoot.Add(lootItem);
+            }
+
+            // If there is money to loot, do that also
+            if (goldAmount > 0) LootMoney();
+
+            // Loot all items that we can
+            foreach (var item in itemsToLoot)
+                if (item.LootSlotType == 0)
+                    LootItem(item.LootSlot);
+
+            // Set flag to notify AI we are done looting
+            player.PlayerAI.IsLooting = false;
+        }
 
         /// <summary>
         /// Handles equip errors
@@ -231,6 +280,38 @@ namespace mClient.Clients
             PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_AUTOEQUIP_ITEM);
             packet.Write(bagSlot);
             packet.Write(slot);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Starts the loot sequence for an object
+        /// </summary>
+        /// <param name="guid"></param>
+        public void Loot(WoWGuid guid)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_LOOT);
+            packet.Write(guid.GetOldGuid());
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Loots money from lootable object
+        /// </summary>
+        public void LootMoney()
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_LOOT_MONEY);
+            Send(packet);
+
+        }
+
+        /// <summary>
+        /// Loots a slot from a lootable object
+        /// </summary>
+        /// <param name="itemSlot">Slot to loot</param>
+        public void LootItem(byte itemSlot)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_AUTOSTORE_LOOT_ITEM);
+            packet.Write(itemSlot);
             Send(packet);
         }
 

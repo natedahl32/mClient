@@ -476,4 +476,21 @@ namespace mClient.Constants
         EQUIP_ERR_LOOT_CANT_LOOT_THAT_NOW = 66,      // ERR_LOOT_CANT_LOOT_THAT_NOW
                                                      // any greater values show as "bag full"
     }
+
+
+    public enum LootSlotType
+    {
+        LOOT_SLOT_NORMAL = 0,                                  // can be looted
+        LOOT_SLOT_VIEW = 1,                                  // can be only view (ignore any loot attempts)
+        LOOT_SLOT_MASTER = 2,                                  // can be looted only master (error message)
+        LOOT_SLOT_REQS = 3,                                  // can't be looted (error message about missing reqs)
+        MAX_LOOT_SLOT_TYPE                                      // custom, use for mark skipped from show items
+    }
+
+    public enum LootItemType
+    {
+        LOOTITEM_TYPE_NORMAL = 1,
+        LOOTITEM_TYPE_QUEST = 2,
+        LOOTITEM_TYPE_CONDITIONNAL = 3
+    }
 }

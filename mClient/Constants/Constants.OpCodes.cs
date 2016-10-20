@@ -927,7 +927,7 @@ namespace mClient.Constants
         SMSG_1008 = 1008, // 0x03F0
 
         SMSG_1013 = 1013, // ulong, uint
-        SMSG_1016 = 1016, // ulong guid
+        SMSG_LOOT_LIST = 1016, // ulong guid
         SMSG_1020 = 1020, // int, uint, uint, byte, for i<6 {uint,uint}
         CMSG_1021 = 1021,
         SMSG_1022 = 1022,

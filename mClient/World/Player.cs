@@ -44,6 +44,9 @@ namespace mClient.World
         private List<QuestGiver> mQuestGivers = new List<QuestGiver>();
         private System.Object mQuestGiversLock = new System.Object();
 
+        // Loot
+        private List<WoWGuid> mLootable = new List<WoWGuid>();
+
         #endregion
 
         #region Constructors
@@ -236,6 +239,14 @@ namespace mClient.World
             get { return mQuestGivers; }
         }
 
+        /// <summary>
+        /// Guids of objects that we can loot
+        /// </summary>
+        public IEnumerable<WoWGuid> Lootable
+        {
+            get { return mLootable; }
+        }
+
         #endregion
 
         #region Public Methods 
@@ -417,6 +428,25 @@ namespace mClient.World
             if (existing != null)
                 lock (mQuestGiversLock)
                     mQuestGivers.Remove(existing);
+        }
+
+        /// <summary>
+        /// Adds a lootable object
+        /// </summary>
+        /// <param name="guid"></param>
+        public void AddLootable(WoWGuid guid)
+        {
+            if (!mLootable.Any(l => l.GetOldGuid() == guid.GetOldGuid()))
+                mLootable.Add(guid);
+        }
+
+        /// <summary>
+        /// Removes a lootable from the list
+        /// </summary>
+        /// <param name="guid"></param>
+        public void RemoveLootable(WoWGuid guid)
+        {
+            mLootable.Remove(guid);
         }
 
         #endregion

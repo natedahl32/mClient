@@ -165,6 +165,7 @@
     <Compile Include="World\AI\PlayerAI.Death.cs" />
     <Compile Include="World\AI\PlayerAI.Idle.cs" />
     <Compile Include="World\AI\PlayerAI.Inventory.cs" />
+    <Compile Include="World\AI\PlayerAI.Loot.cs" />
     <Compile Include="World\AI\PlayerAI.Quest.cs" />
     <Compile Include="World\CombatMgr.cs" />
     <Compile Include="World\Group.cs" />
@@ -173,6 +174,7 @@
     <Compile Include="World\Items\ItemSpellDamage.cs" />
     <Compile Include="World\Items\ItemSpellEffect.cs" />
     <Compile Include="World\Items\ItemStat.cs" />
+    <Compile Include="World\Items\LootItem.cs" />
     <Compile Include="World\MovementMgr.cs" />
     <Compile Include="World\ObjectMgr.cs" />
     <Compile Include="World\Player.cs" />

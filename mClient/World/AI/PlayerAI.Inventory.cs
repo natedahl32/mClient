@@ -2,6 +2,8 @@
 using FluentBehaviourTree;
 using mClient.Clients;
 using mClient.Constants;
+using System;
+using System.Linq;
 
 namespace mClient.World.AI
 {
@@ -16,7 +18,16 @@ namespace mClient.World.AI
                     .Selector("Handle Quest Start Items in Inventory")
                         .Do("Start Quests from Items in Bag", t =>
                         {
-                            // TODO: Check bags for quest items and start any quests we don't already have
+                            var itemsThatStartQuest = Player.PlayerObject.InventoryItems.Where(i => i.Item.BaseInfo != null && i.Item.BaseInfo.StartsQuestId > 0).ToList();
+                            foreach (var item in itemsThatStartQuest)
+                            {
+                                if (!Player.PlayerObject.Quests.Any(q => q == item.Item.BaseInfo.StartsQuestId))
+                                {
+                                    // TODO: Start the quest from the item
+                                    return BehaviourTreeStatus.Success;
+                                }
+                            }
+                            
                             return BehaviourTreeStatus.Failure;
                         })
                     .End()
