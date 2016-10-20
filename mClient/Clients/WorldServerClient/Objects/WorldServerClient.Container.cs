@@ -52,6 +52,16 @@ namespace mClient.Clients
         #region Public Methods
 
         /// <summary>
+        /// Clears the slot in the bag
+        /// </summary>
+        /// <param name="slot"></param>
+        public void ClearSlot(int slot)
+        {
+            if (mInventory.ContainsKey(slot))
+                mInventory[slot] = null;
+        }
+
+        /// <summary>
         /// Updates the items in the container
         /// </summary>
         /// <param name="client"></param>

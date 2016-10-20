@@ -13,7 +13,6 @@ namespace mClient.Clients
     {
         #region Declarations
 
-        private WorldServerClient mClient = null;
         private Dictionary<int, Container> mInventoryBags = new Dictionary<int, Container>();
         private Dictionary<int, Item> mInventory = new Dictionary<int, Item>();
         private Dictionary<EquipmentSlots, Item> mEquippedItems = new Dictionary<EquipmentSlots, Item>();
@@ -158,7 +157,7 @@ namespace mClient.Clients
             InventoryItemSlot item = GetInventoryItem(bag, slot);
 
             // Make sure we have an item
-            if (item == null || item.Item == null) return false;
+            if (item == null || item.Item == null || item.Item.BaseInfo == null) return false;
 
             // Get the slot we want to equip this item in
             int equipToSlot = -1;
@@ -175,7 +174,10 @@ namespace mClient.Clients
                     // Find the first bag slot that is open
                     for (int s = (int)InventorySlots.INVENTORY_SLOT_BAG_START; s <= (int)InventorySlots.INVENTORY_SLOT_BAG_END; s++)
                         if (!Bags.Any(b => b.Slot == s))
+                        {
                             equipToSlot = s;
+                            break;
+                        }
                 }
             }
             else if (item.Item.BaseInfo.InventoryType == InventoryType.INVTYPE_FINGER)
@@ -233,6 +235,19 @@ namespace mClient.Clients
                 // Send the currently equipped bag back to inventory
                 if (currentlyEquipped != null)
                     item.Item = currentlyEquipped;
+                else
+                {
+                    // Clear out the item from inventory since it will be equipped
+                    if (bag == ItemConstants.INVENTORY_SLOT_BAG_0)
+                        mInventory[slot] = null;
+                    else
+                    {
+                        var holdingBag = Bags.Where(b => b.Bag == bag).SingleOrDefault();
+                        if (holdingBag != null)
+                            (holdingBag.Item as Container).ClearSlot(slot);
+                    }
+                }
+                    
 
                 // Set the new bag to it's position
                 if (mInventoryBags.ContainsKey(equipToSlot))
@@ -404,11 +419,11 @@ namespace mClient.Clients
             {
                 var inventorySlot = (slot - (int)PlayerFields.PLAYER_FIELD_PACK_SLOT_1) / 2;
                 if (mInventory.ContainsKey(inventorySlot))
-                    mInventory[inventorySlot] = item;
+                    mInventory[inventorySlot + (int)InventoryPackSlots.INVENTORY_SLOT_ITEM_START] = item;
                 else
                 {
                     if (item != null)
-                        mInventory.Add(inventorySlot, item);
+                        mInventory.Add(inventorySlot + (int)InventoryPackSlots.INVENTORY_SLOT_ITEM_START, item);
                 }
             }
             // TOOD: Need to add bank bags, bank slots, and keyring to this as well

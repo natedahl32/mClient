@@ -34,7 +34,8 @@ namespace mClient.World.AI
                                     // if we don't have all bag slots filled, we can autoequip the bag
                                     if (Player.PlayerObject.NumberOfEquippedBags < ItemConstants.MAX_NUMBER_OF_EQUIPPABLE_BAGS)
                                     {
-                                        Player.PlayerObject.AutoEquipItem(itemSlot.Bag, itemSlot.Slot);
+                                        if (!Player.PlayerObject.AutoEquipItem(itemSlot.Bag, itemSlot.Slot))
+                                            return BehaviourTreeStatus.Failure;
                                         Client.AutoEquipItem((byte)itemSlot.Bag, (byte)itemSlot.Slot);
                                         return BehaviourTreeStatus.Success;
                                     }
@@ -56,7 +57,7 @@ namespace mClient.World.AI
                         .Do("Equip better items in inventory", t =>
                         {
                             // TOOD: Find upgrades and equip them
-                            return BehaviourTreeStatus.Success;
+                            return BehaviourTreeStatus.Failure;
                         })
                     .End()
                  .End()

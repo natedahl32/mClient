@@ -7,6 +7,21 @@ namespace mClient.Clients
 {
     partial class WorldServerClient
     {
+        #region Handlers
+
+        /// <summary>
+        /// Handles logging out a player
+        /// </summary>
+        /// <param name="inpacket"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_LOGOUT_COMPLETE)]
+        public void HandleLogoutComplete(PacketIn inpacket)
+        {
+            var itemClass = (ItemClass)inpacket.ReadByte();
+            var subClass = inpacket.ReadUInt32();
+
+            player.AddProficiency(itemClass, subClass);
+        }
+
         /// <summary>
         /// Add item proficiency to player
         /// </summary>
@@ -61,5 +76,20 @@ namespace mClient.Clients
                 var cooldownCategory = inpacket.ReadUInt32();
             }
         }
+
+        #endregion
+
+        #region Actions
+
+        /// <summary>
+        /// Sends a request to the server to logout the player
+        /// </summary>
+        public void LogoutPlayer()
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_LOGOUT_REQUEST);
+            Send(packet);
+        }
+
+        #endregion
     }
 }
