@@ -7,6 +7,7 @@ using mClient.Shared;
 using mClient.Network;
 using mClient.Crypt;
 using mClient.Constants;
+using mClient.Terrain;
 
 namespace mClient.Clients
 {
@@ -33,7 +34,10 @@ namespace mClient.Clients
         public void HandleAttackSwingBadFacing(PacketIn packet)
         {
             // TODO: Face the target!
-            var i = 0;
+            var angle = TerrainMgr.CalculateAngle(objectMgr.getPlayerObject().Position, movementMgr.FollowTarget.Position);
+            objectMgr.getPlayerObject().Position.O = angle;
+            SendMovementPacket(WorldServerOpCode.MSG_MOVE_SET_FACING);
+            SendMovementPacket(WorldServerOpCode.MSG_MOVE_START_FORWARD);
         }
 
         /// <summary>

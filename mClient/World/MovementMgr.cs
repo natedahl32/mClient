@@ -231,6 +231,12 @@ namespace mClient.Clients
         private void HandleFollowTarget()
         {
             if (mFollowTarget == null) return;
+            if ((mFollowTarget as Unit) != null && (mFollowTarget as Unit).IsDead)
+            {
+                mFollowTarget = null;
+                return;
+            }
+
             // Make sure the follow target has a coordinate
             if (mFollowTarget.Position == null)
                 return;

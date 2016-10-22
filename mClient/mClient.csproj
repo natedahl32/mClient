@@ -175,6 +175,7 @@
     <Compile Include="World\Items\ItemSpellEffect.cs" />
     <Compile Include="World\Items\ItemStat.cs" />
     <Compile Include="World\Items\LootItem.cs" />
+    <Compile Include="World\NpcMoveMgr.cs" />
     <Compile Include="World\MovementMgr.cs" />
     <Compile Include="World\ObjectMgr.cs" />
     <Compile Include="World\Player.cs" />

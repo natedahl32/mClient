@@ -1,5 +1,6 @@
 ﻿using mClient.Constants;
 using mClient.Shared;
+using mClient.World;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,16 @@ namespace mClient.Clients
         }
 
         #region Properties
+
+        /// <summary>
+        /// Gets or sets the monster movement manager
+        /// </summary>
+        public NpcMoveMgr MonsterMovement { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether or not this object is an npc
+        /// </summary>
+        public bool IsNPC { get; set; }
 
         public UInt32 MaxHealth
         {

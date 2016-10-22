@@ -164,6 +164,13 @@ namespace mClient.World.AI
             {
                 try
                 {
+                    // Update NPC movement
+                    var npcUnits = Client.objectMgr.GetNpcUnits().ToList();
+                    foreach (var npc in npcUnits)
+                        if (npc.MonsterMovement != null)
+                            npc.MonsterMovement.UpdatePosition();
+
+                    // Update behavior tree
                     this.mTree.Tick(new TimeData());
                 }
                 catch (Exception ex)

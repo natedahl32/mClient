@@ -11,6 +11,7 @@ using System.Resources;
 using mClient.Shared;
 using mClient.Network;
 using mClient.Constants;
+using mClient.Terrain;
 
 namespace mClient.Clients
 {
@@ -66,16 +67,65 @@ namespace mClient.Clients
 
             WoWGuid guid = new WoWGuid(mask, packet.ReadBytes(WoWGuid.BitCount8(mask)));
 
-            Object obj = objectMgr.getObject(guid);
+            Unit obj = objectMgr.getObject(guid) as Unit;
             if (obj != null)
             {
                 obj.Position = new Coordinate(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
             }
             else
             {
-                obj = Object.CreateObjectByType(guid, ObjectType.Unit);
+                obj = Object.CreateObjectByType(guid, ObjectType.Unit) as Unit;
                 obj.Position = new Coordinate(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
                 objectMgr.addObject(obj);
+            }
+
+            // Create the monster movement manager if this object doesn't have one yet
+            if (obj.MonsterMovement == null)
+                obj.MonsterMovement = new World.NpcMoveMgr(obj, terrainMgr);
+            obj.IsNPC = true;
+
+            packet.ReadUInt32();    // Id
+            var monsterMoveType = packet.ReadByte();
+            if (monsterMoveType == 1) // stop monster movement
+            {
+                // stop monster movement
+                obj.MonsterMovement.Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_NONE);
+            }
+            else if(monsterMoveType == 0)
+            {
+                // update monster movement
+                obj.MonsterMovement.Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_FORWARD);
+            }
+            else
+            {
+                // face them correctly so they are moving in the right direction
+                if (monsterMoveType == 3)
+                {
+                    // facing a target
+                    var targetGuid = packet.ReadUInt64();
+                    var target = objectMgr.getObject(new WoWGuid(targetGuid));
+                    if (target != null)
+                    {
+                        var angle = TerrainMgr.CalculateAngle(obj.Position, target.Position);
+                        obj.Position.O = angle;
+                    }
+                }
+                else if (monsterMoveType == 4)
+                {
+                    // facing an angle
+                    var angle = packet.ReadFloat();
+                    obj.Position.O = angle;
+                }
+                else if (monsterMoveType == 2)
+                {
+                    // facing a point
+                    var x = packet.ReadFloat();
+                    var y = packet.ReadFloat();
+                    var z = packet.ReadFloat();
+
+                    var angle = TerrainMgr.CalculateAngle(obj.Position, new Coordinate(x, y, z));
+                    obj.Position.O = angle;
+                }
             }
 
             if (player.PlayerAI.TargetSelection != null && guid.GetOldGuid() == player.PlayerAI.TargetSelection.Guid.GetOldGuid())
