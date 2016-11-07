@@ -77,21 +77,21 @@ namespace mClient.Clients
                     }
                     else if (packet.PacketId.Service == ServiceType.World)
                     {
-                        //Log.WriteLine(LogType.Network, "Handling packet: {0}", handle.packetId);
+                        Log.WriteLine(LogType.Network, "Handling packet: {0}", handle.packetId);
                         handle.MethodInfo.Invoke(wClient, obj);
-                        
-                        
                     }
-                    //Log.WriteLine(LogType.Packet, packet.ToHex());
+                    Log.WriteLine(LogType.Packet, packet.ToHex());
                 }
                 catch (Exception ex)
                 {
+                    Log.WriteLine(LogType.Error, "Error occurred handling packet: {0}", handle.packetId);
+                    Log.WriteLine(LogType.Error, ex.Message);
+                    Log.WriteLine(LogType.Error, ex.StackTrace);
                 }
 
             }
             else
             {
-                //Log.WriteLine(LogType.Normal, "Unhandled packet: {0}", packet.PacketId.ToString());
                 Log.WriteLine(LogType.Packet, "Unhandled packet: {0}", packet.PacketId.ToString());
             }
         }

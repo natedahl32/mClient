@@ -41,4 +41,43 @@ namespace mClient.Constants
         }
     }
 
+    public enum Swing
+    {
+        NOSWING = 0,
+        SINGLEHANDEDSWING = 1,
+        TWOHANDEDSWING = 2
+    }
+
+    public enum VictimState
+    {
+        VICTIMSTATE_UNAFFECTED = 0,                         // seen in relation with HITINFO_MISS
+        VICTIMSTATE_NORMAL = 1,
+        VICTIMSTATE_DODGE = 2,
+        VICTIMSTATE_PARRY = 3,
+        VICTIMSTATE_INTERRUPT = 4,
+        VICTIMSTATE_BLOCKS = 5,
+        VICTIMSTATE_EVADES = 6,
+        VICTIMSTATE_IS_IMMUNE = 7,
+        VICTIMSTATE_DEFLECTS = 8
+    }
+
+    [Flags]
+    public enum HitInfo
+    {
+        HITINFO_NORMALSWING = 0x00000000,
+        HITINFO_UNK0 = 0x00000001,               // req correct packet structure
+        HITINFO_NORMALSWING2 = 0x00000002,
+        HITINFO_LEFTSWING = 0x00000004,
+        HITINFO_UNK3 = 0x00000008,
+        HITINFO_MISS = 0x00000010,
+        HITINFO_ABSORB = 0x00000020,               // plays absorb sound
+        HITINFO_RESIST = 0x00000040,               // resisted atleast some damage
+        HITINFO_CRITICALHIT = 0x00000080,
+        HITINFO_UNK8 = 0x00000100,               // wotlk?
+        HITINFO_UNK9 = 0x00002000,               // wotlk?
+        HITINFO_GLANCING = 0x00004000,
+        HITINFO_CRUSHING = 0x00008000,
+        HITINFO_NOACTION = 0x00010000,
+        HITINFO_SWINGNOHITSOUND = 0x00080000
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using FluentBehaviourTree;
+using mClient.Clients;
 
 namespace mClient.World.AI
 {
@@ -29,6 +30,14 @@ namespace mClient.World.AI
                         // We are melee, if we are not in melee range then we need to set our follow target
                         if (NotInMeleeRange)
                         {
+                            // If the enemy is moving don't follow them yet, clear the follow target and 
+                            // wait for them to come to us
+                            //if ((mTargetSelection as Unit).IsMoving)
+                            //{
+                            //    Client.movementMgr.FollowTarget = null;
+                            //    return BehaviourTreeStatus.Running;
+                            //}
+                                
                             Client.movementMgr.FollowTarget = mTargetSelection;
                             return BehaviourTreeStatus.Running;
                         }

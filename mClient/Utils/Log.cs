@@ -20,7 +20,9 @@ namespace mClient.Shared
         {          
 
             format = string.Format("[{0}][{1}]{2}", Time.GetTime(), type, (string)format);
-            string msg = string.Format(format, parameters);
+            string msg = format;
+            if (parameters.Length > 0)
+                msg = string.Format(format, parameters);
 
             if (Config.LogToFile)
             {

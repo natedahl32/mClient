@@ -45,7 +45,11 @@ namespace mClient.Clients
 
         public IList<Unit> GetNpcUnits()
         {
-            return mObjects.Where(o => (o as Unit) != null && (o as Unit).IsNPC).Cast<Unit>().ToList();
+            List<Object> copy;
+            // avoid collection was modified errors by making a copy of the list
+            lock (mObjectsLock)
+                copy = mObjects.ToList();
+            return copy.Where(o => (o as Unit) != null && (o as Unit).IsNPC).Cast<Unit>().ToList();    
         }
 
         public void addObject(Object obj)

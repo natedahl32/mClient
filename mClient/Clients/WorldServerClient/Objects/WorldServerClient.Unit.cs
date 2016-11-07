@@ -74,6 +74,19 @@ namespace mClient.Clients
             }
         }
 
+        /// <summary>
+        /// Gets whether or not the unit is moving
+        /// </summary>
+        public virtual bool IsMoving
+        {
+            get
+            {
+                if (IsNPC && MonsterMovement != null)
+                    return MonsterMovement.IsMoving;
+                return false;
+            }
+        }
+
         #endregion
 
         #region Public Methods

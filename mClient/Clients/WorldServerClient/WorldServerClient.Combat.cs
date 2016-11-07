@@ -34,10 +34,9 @@ namespace mClient.Clients
         public void HandleAttackSwingBadFacing(PacketIn packet)
         {
             // TODO: Face the target!
-            var angle = TerrainMgr.CalculateAngle(objectMgr.getPlayerObject().Position, movementMgr.FollowTarget.Position);
+            var angle = TerrainMgr.CalculateAngle(objectMgr.getPlayerObject().Position, player.PlayerAI.TargetSelection.Position);
             objectMgr.getPlayerObject().Position.O = angle;
             SendMovementPacket(WorldServerOpCode.MSG_MOVE_SET_FACING);
-            SendMovementPacket(WorldServerOpCode.MSG_MOVE_START_FORWARD);
         }
 
         /// <summary>
@@ -166,17 +165,24 @@ namespace mClient.Clients
             var hitInfo = packet.ReadUInt32();
 
             // Attacker
-            byte mask = packet.ReadByte();
-            WoWGuid attackerGuid = new WoWGuid(mask, packet.ReadBytes(WoWGuid.BitCount8(mask)));
+            WoWGuid attackerGuid = packet.ReadPackedGuidToWoWGuid();
 
             // Target
-            mask = packet.ReadByte();
-            WoWGuid targetGuid = new WoWGuid(mask, packet.ReadBytes(WoWGuid.BitCount8(mask)));
+            WoWGuid targetGuid = packet.ReadPackedGuidToWoWGuid();
 
             // Damage applied (full damage taking into account absorbs, resists, and blocks
             var fullDamageApplied = packet.ReadUInt32();
 
+            // If the attacker is our target then stop their movement
+            //if (player.PlayerAI.TargetSelection != null & attackerGuid.GetOldGuid() == player.PlayerAI.TargetSelection.Guid.GetOldGuid())
+            //{
+            //    var npc = objectMgr.getObject(attackerGuid) as Unit;
+            //    if (npc != null)
+            //        npc.MonsterMovement.Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_NONE);
+            //}
+
             // Check if the target is us or someone in our party
+
         }
 
         #endregion

@@ -192,7 +192,7 @@ namespace mClient.Clients
         public void StartHeartbeat()
         {
             aTimer.Elapsed += new ElapsedEventHandler(Heartbeat);
-            aTimer.Interval = 800;
+            aTimer.Interval = 500;
             aTimer.Enabled = true;
         }
 

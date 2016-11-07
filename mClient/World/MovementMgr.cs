@@ -65,6 +65,14 @@ namespace mClient.Clients
             set { mFollowTarget = value; }
         }
 
+        /// <summary>
+        /// Gets whether or not there the unit is moving
+        /// </summary>
+        public bool IsMoving
+        {
+            get { return Flag.IsMoveFlagSet(MovementFlags.MOVEMENTFLAG_FORWARD); }
+        }
+
         #endregion
 
         public void Start()
@@ -238,10 +246,14 @@ namespace mClient.Clients
             }
 
             // Make sure the follow target has a coordinate
-            if (mFollowTarget.Position == null)
+            if (mFollowTarget == null || mFollowTarget.Position == null)
                 return;
 
             var targetPosition = mFollowTarget.Position;
+            var unit = (mFollowTarget as Unit);
+            if (unit != null && unit.IsNPC && unit.MonsterMovement != null && unit.MonsterMovement.Destination != null)
+                targetPosition = unit.MonsterMovement.Destination;
+
             var angle = TerrainMgr.CalculateAngle(objectMgr.getPlayerObject().Position, targetPosition);
             var dist = TerrainMgr.CalculateDistance(objectMgr.getPlayerObject().Position, targetPosition);
 
@@ -252,12 +264,14 @@ namespace mClient.Clients
             // if the angle is not correct, send a set facing packet and face the client in the right direction
             if (angle != objectMgr.getPlayerObject().Position.O)
                 objectMgr.getPlayerObject().Position.O = angle;
-                
+
 
             // check if we are within distance of the target position or not
             if (dist > MINIMUM_FOLLOW_DISTANCE && dist < MAXIMUM_FOLLOW_DISTANCE)
             {
-                bool isMoving = Flag.IsMoveFlagSet(MovementFlags.MOVEMENTFLAG_FORWARD);
+                Log.WriteLine(LogType.Debug, "The distance from my follow target is {0}", dist);
+
+                bool isMoving = IsMoving;
                 Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_FORWARD);
                 UpdatePosition(diff);
                 lastUpdateTime = timeNow;
@@ -266,7 +280,7 @@ namespace mClient.Clients
             }
             else
             {
-                bool isMoving = Flag.IsMoveFlagSet(MovementFlags.MOVEMENTFLAG_FORWARD);
+                bool isMoving = IsMoving;
                 Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_NONE);
                 UpdatePosition(diff);
                 if (isMoving)

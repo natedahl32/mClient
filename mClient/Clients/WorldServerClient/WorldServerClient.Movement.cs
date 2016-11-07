@@ -17,6 +17,7 @@ namespace mClient.Clients
 {
     public partial class WorldServerClient
     {
+        private System.Object mMovementPacketLock = new System.Object();
 
         [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_START_FORWARD)]
         [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_START_BACKWARD)]
@@ -58,14 +59,16 @@ namespace mClient.Clients
                 var o = packet.ReadFloat();
                 obj.Position= new Coordinate(x, y, z, o);
             }
+
+            // Debug movement for target
+            if (player.PlayerAI.TargetSelection != null && guid.GetOldGuid() == player.PlayerAI.TargetSelection.Guid.GetOldGuid())
+                Log.WriteLine(LogType.Debug, "Got movement packet for my target! {0}", obj.Name);
         }
 
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_MONSTER_MOVE)]
         public void HandleMonsterMove(PacketIn packet)
         {
-            byte mask = packet.ReadByte();
-
-            WoWGuid guid = new WoWGuid(mask, packet.ReadBytes(WoWGuid.BitCount8(mask)));
+            WoWGuid guid = packet.ReadPackedGuidToWoWGuid();
 
             Unit obj = objectMgr.getObject(guid) as Unit;
             if (obj != null)
@@ -79,6 +82,10 @@ namespace mClient.Clients
                 objectMgr.addObject(obj);
             }
 
+            // Log position if this is our target
+            if (player.PlayerAI.TargetSelection != null && guid.GetOldGuid() == player.PlayerAI.TargetSelection.Guid.GetOldGuid())
+                Log.WriteLine(LogType.Debug, "Received target position: {0} {1} {2} for Op Code {3}", obj.Position.X, obj.Position.Y, obj.Position.Z, (WorldServerOpCode)packet.PacketId.RawId);
+
             // Create the monster movement manager if this object doesn't have one yet
             if (obj.MonsterMovement == null)
                 obj.MonsterMovement = new World.NpcMoveMgr(obj, terrainMgr);
@@ -90,14 +97,22 @@ namespace mClient.Clients
             {
                 // stop monster movement
                 obj.MonsterMovement.Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_NONE);
+                // log target stopped
+                if (player.PlayerAI.TargetSelection != null && guid.GetOldGuid() == player.PlayerAI.TargetSelection.Guid.GetOldGuid())
+                    Log.WriteLine(LogType.Debug, "Target has stopped.");
             }
             else if(monsterMoveType == 0)
             {
                 // update monster movement
                 obj.MonsterMovement.Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_FORWARD);
+                // Log target moving forward
+                if (player.PlayerAI.TargetSelection != null && guid.GetOldGuid() == player.PlayerAI.TargetSelection.Guid.GetOldGuid())
+                        Log.WriteLine(LogType.Debug, "Target is moving forward.");
             }
             else
             {
+                // stop monster movement
+                obj.MonsterMovement.Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_NONE);
                 // face them correctly so they are moving in the right direction
                 if (monsterMoveType == 3)
                 {
@@ -109,12 +124,18 @@ namespace mClient.Clients
                         var angle = TerrainMgr.CalculateAngle(obj.Position, target.Position);
                         obj.Position.O = angle;
                     }
+
+                    if (player.PlayerAI.TargetSelection != null && guid.GetOldGuid() == player.PlayerAI.TargetSelection.Guid.GetOldGuid())
+                        Log.WriteLine(LogType.Debug, "Target is facing another target: {0}", target.Name);
                 }
                 else if (monsterMoveType == 4)
                 {
                     // facing an angle
                     var angle = packet.ReadFloat();
                     obj.Position.O = angle;
+
+                    if (player.PlayerAI.TargetSelection != null && guid.GetOldGuid() == player.PlayerAI.TargetSelection.Guid.GetOldGuid())
+                        Log.WriteLine(LogType.Debug, "Target is facing an angle");
                 }
                 else if (monsterMoveType == 2)
                 {
@@ -125,11 +146,22 @@ namespace mClient.Clients
 
                     var angle = TerrainMgr.CalculateAngle(obj.Position, new Coordinate(x, y, z));
                     obj.Position.O = angle;
+
+                    if (player.PlayerAI.TargetSelection != null && guid.GetOldGuid() == player.PlayerAI.TargetSelection.Guid.GetOldGuid())
+                        Log.WriteLine(LogType.Debug, "Target is facing a point.");
                 }
             }
 
-            if (player.PlayerAI.TargetSelection != null && guid.GetOldGuid() == player.PlayerAI.TargetSelection.Guid.GetOldGuid())
-                Log.WriteLine(LogType.Debug, "Received target position: {0} {1} {2} for Op Code {3}", obj.Position.X, obj.Position.Y, obj.Position.Z, (WorldServerOpCode)packet.PacketId.RawId);
+            // Get some more data
+            if (monsterMoveType != 1)
+            {
+                packet.ReadUInt32();
+                packet.ReadUInt32();
+
+                var pathSize = packet.ReadUInt32();
+                var destination = new Coordinate(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
+                obj.MonsterMovement.Destination = destination;
+            }
         }
 
         void Heartbeat(object source, ElapsedEventArgs e)
@@ -137,7 +169,9 @@ namespace mClient.Clients
             if (objectMgr.getPlayerObject().Position == null)
                 return;
 
-            SendMovementPacket(WorldServerOpCode.MSG_MOVE_HEARTBEAT);
+            // It appears clients only send heartbeat messages while they are moving
+            if (movementMgr.IsMoving)
+                SendMovementPacket(WorldServerOpCode.MSG_MOVE_HEARTBEAT);
         }
 
         /// <summary>

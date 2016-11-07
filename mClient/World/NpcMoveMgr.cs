@@ -38,6 +38,22 @@ namespace mClient.World
 
         #endregion
 
+        #region Properties
+
+        /// <summary>
+        /// Gets whether or not there the unit is moving
+        /// </summary>
+        public bool IsMoving
+        {
+            get { return Flag.IsMoveFlagSet(MovementFlags.MOVEMENTFLAG_FORWARD); }
+        }
+
+        /// <summary>
+        /// Destination of the NPC
+        /// </summary>
+        public Coordinate Destination { get; set; }
+
+        #endregion
 
         #region Public Methods
 
@@ -85,6 +101,12 @@ namespace mClient.World
                 //expected = terrainMgr.getZ(expected);
                 mUnit.Position = expected;
 
+                if (mUnit.Position != null && Destination != null)
+                {
+                    var distanceToDestination = TerrainMgr.CalculateDistance(mUnit.Position, Destination);
+                    if (distanceToDestination <= 1.0f)
+                        Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_NONE);
+                }
             }
 
             oldLocation = loc;
