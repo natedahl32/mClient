@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using FluentBehaviourTree;
 using mClient.Clients;
+using mClient.World.AI.Activity.Combat;
 
 namespace mClient.World.AI
 {
@@ -11,55 +12,78 @@ namespace mClient.World.AI
             var builder = new BehaviourTreeBuilder();
             return builder
                 .Sequence("combat-sequece")
-                    .Do("Is In Combat?", t =>
-                    {
-                        if (Player.IsInCombat)
-                            return BehaviourTreeStatus.Success;
-                        return BehaviourTreeStatus.Failure;
-                    })
-                    .Do("Is In Melee?", t =>
-                    {
-                        // If the player is not a melee player return success
-                        if (!Player.IsMelee)
-                            return BehaviourTreeStatus.Success;
-
-                        // TODO: Select a target more intelligently
-                        // Set our target
-                        SetTargetSelection(Client.objectMgr.getObject(Player.EnemyList.FirstOrDefault()));
-
-                        // We are melee, if we are not in melee range then we need to set our follow target
-                        if (NotInMeleeRange)
-                        {
-                            // If the enemy is moving don't follow them yet, clear the follow target and 
-                            // wait for them to come to us
-                            //if ((mTargetSelection as Unit).IsMoving)
-                            //{
-                            //    Client.movementMgr.FollowTarget = null;
-                            //    return BehaviourTreeStatus.Running;
-                            //}
-                                
-                            Client.movementMgr.FollowTarget = mTargetSelection;
-                            return BehaviourTreeStatus.Running;
-                        }
-
-                        return BehaviourTreeStatus.Success;
-                    })
-                    .Do("Attack!!!", t =>
-                    {
-                        // If we are no longer in combat, fail out
-                        if (!Player.IsInCombat) return BehaviourTreeStatus.Failure;
-
-                        // TOOD: Spell Casters should cast a spell here. BUT first we need to check range on the target
-                        if (!mIsAttackingTarget && mTargetSelection != null)
-                        {
-                            Client.Attack(mTargetSelection.Guid.GetOldGuid());
-                            mIsAttackingTarget = true;
-                        }
-
-                        return BehaviourTreeStatus.Running;
-                    })
+                    .Do("Is In Combat?", t => IsInCombat())
+                    .Do("Select Target", t => SelectTarget())
+                    .Do("Is In Melee?", t => MoveToMelee())
+                    .Do("Attack!!!", t => Attack())
                  .End()
                  .Build();
+        }
+
+        /// <summary>
+        /// Determines whether or not the player is in combat
+        /// </summary>
+        /// <returns></returns>
+        private BehaviourTreeStatus IsInCombat()
+        {
+            if (Player.IsInCombat)
+                return BehaviourTreeStatus.Success;
+            return BehaviourTreeStatus.Failure;
+        }
+
+        /// <summary>
+        /// Determines our target
+        /// </summary>
+        /// <returns></returns>
+        private BehaviourTreeStatus SelectTarget()
+        {
+            // TODO: Select a target more intelligently
+            // Set our target
+            SetTargetSelection(Client.objectMgr.getObject(Player.EnemyList.FirstOrDefault()));
+            return BehaviourTreeStatus.Success;
+        }
+
+        /// <summary>
+        /// Makes sure we are in melee range if we are a melee combatant
+        /// </summary>
+        /// <returns></returns>
+        private BehaviourTreeStatus MoveToMelee()
+        {
+            // If the player is not a melee player return success
+            if (!Player.IsMelee)
+                return BehaviourTreeStatus.Success;
+
+            // We are melee, if we are not in melee range then we need to set our follow target
+            if (NotInMeleeRange)
+            {
+                Client.movementMgr.FollowTarget = mTargetSelection;
+                return BehaviourTreeStatus.Running;
+            }
+
+            return BehaviourTreeStatus.Success;
+        }
+
+        /// <summary>
+        /// Attacks the current target
+        /// </summary>
+        /// <returns></returns>
+        private BehaviourTreeStatus Attack()
+        {
+            // If we are no longer in combat, fail out
+            if (!Player.IsInCombat) return BehaviourTreeStatus.Failure;
+
+            // If we are not attacking and we have a target selection then start doing some damage
+            if (!mIsAttackingTarget && mTargetSelection != null)
+            {
+                // Start attacking, this applies
+                Client.Attack(mTargetSelection.Guid.GetOldGuid());
+                mIsAttackingTarget = true;
+
+                // Start the do damage activity
+                StartActivity(new DoDamage(this));
+            }
+
+            return BehaviourTreeStatus.Running;
         }
     }
 }

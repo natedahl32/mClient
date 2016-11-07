@@ -115,10 +115,6 @@ namespace mClient.Clients
                             objectMgr.addObject(moveObject);
                         }
 
-                        // Log target moving forward
-                        if (player.PlayerAI.TargetSelection != null && moveGuid.GetOldGuid() == player.PlayerAI.TargetSelection.Guid.GetOldGuid())
-                            Log.WriteLine(LogType.Debug, "Received movement update packet for our target!");
-
                         HandleUpdateMovementBlock(packet, moveObject);
                         objectMgr.updateObject(moveObject);
 

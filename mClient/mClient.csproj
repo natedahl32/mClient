@@ -159,6 +159,13 @@
     <Compile Include="Shared\WoWGuid.cs" />
     <Compile Include="Utils\Log.cs" />
     <Compile Include="Utils\Time.cs" />
+    <Compile Include="World\AI\Activity\ActivityMessage.cs" />
+    <Compile Include="World\AI\Activity\BaseActivity.cs" />
+    <Compile Include="World\AI\Activity\Combat\DoDamage.cs" />
+    <Compile Include="World\AI\Activity\Death\FindCorpse.cs" />
+    <Compile Include="World\AI\Activity\Death\ReleaseSpirit.cs" />
+    <Compile Include="World\AI\Activity\Messages\CorpseQueryMessage.cs" />
+    <Compile Include="World\AI\Activity\Movement\TeleportToCoordinate.cs" />
     <Compile Include="World\AI\PlayerAI.Chat.cs" />
     <Compile Include="World\AI\PlayerAI.Combat.cs" />
     <Compile Include="World\AI\PlayerAI.cs" />
@@ -167,7 +174,6 @@
     <Compile Include="World\AI\PlayerAI.Inventory.cs" />
     <Compile Include="World\AI\PlayerAI.Loot.cs" />
     <Compile Include="World\AI\PlayerAI.Quest.cs" />
-    <Compile Include="World\CombatMgr.cs" />
     <Compile Include="World\Group.cs" />
     <Compile Include="World\Items\ItemInfo.cs" />
     <Compile Include="World\Items\ItemManager.cs" />

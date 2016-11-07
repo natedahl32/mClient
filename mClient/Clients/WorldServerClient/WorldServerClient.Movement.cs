@@ -12,12 +12,13 @@ using mClient.Shared;
 using mClient.Network;
 using mClient.Constants;
 using mClient.Terrain;
+using mClient.Clients.UpdateBlocks;
 
 namespace mClient.Clients
 {
     public partial class WorldServerClient
     {
-        private System.Object mMovementPacketLock = new System.Object();
+        #region Handlers
 
         [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_START_FORWARD)]
         [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_START_BACKWARD)]
@@ -59,10 +60,6 @@ namespace mClient.Clients
                 var o = packet.ReadFloat();
                 obj.Position= new Coordinate(x, y, z, o);
             }
-
-            // Debug movement for target
-            if (player.PlayerAI.TargetSelection != null && guid.GetOldGuid() == player.PlayerAI.TargetSelection.Guid.GetOldGuid())
-                Log.WriteLine(LogType.Debug, "Got movement packet for my target! {0}", obj.Name);
         }
 
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_MONSTER_MOVE)]
@@ -82,10 +79,6 @@ namespace mClient.Clients
                 objectMgr.addObject(obj);
             }
 
-            // Log position if this is our target
-            if (player.PlayerAI.TargetSelection != null && guid.GetOldGuid() == player.PlayerAI.TargetSelection.Guid.GetOldGuid())
-                Log.WriteLine(LogType.Debug, "Received target position: {0} {1} {2} for Op Code {3}", obj.Position.X, obj.Position.Y, obj.Position.Z, (WorldServerOpCode)packet.PacketId.RawId);
-
             // Create the monster movement manager if this object doesn't have one yet
             if (obj.MonsterMovement == null)
                 obj.MonsterMovement = new World.NpcMoveMgr(obj, terrainMgr);
@@ -97,17 +90,11 @@ namespace mClient.Clients
             {
                 // stop monster movement
                 obj.MonsterMovement.Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_NONE);
-                // log target stopped
-                if (player.PlayerAI.TargetSelection != null && guid.GetOldGuid() == player.PlayerAI.TargetSelection.Guid.GetOldGuid())
-                    Log.WriteLine(LogType.Debug, "Target has stopped.");
             }
             else if(monsterMoveType == 0)
             {
                 // update monster movement
                 obj.MonsterMovement.Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_FORWARD);
-                // Log target moving forward
-                if (player.PlayerAI.TargetSelection != null && guid.GetOldGuid() == player.PlayerAI.TargetSelection.Guid.GetOldGuid())
-                        Log.WriteLine(LogType.Debug, "Target is moving forward.");
             }
             else
             {
@@ -124,18 +111,12 @@ namespace mClient.Clients
                         var angle = TerrainMgr.CalculateAngle(obj.Position, target.Position);
                         obj.Position.O = angle;
                     }
-
-                    if (player.PlayerAI.TargetSelection != null && guid.GetOldGuid() == player.PlayerAI.TargetSelection.Guid.GetOldGuid())
-                        Log.WriteLine(LogType.Debug, "Target is facing another target: {0}", target.Name);
                 }
                 else if (monsterMoveType == 4)
                 {
                     // facing an angle
                     var angle = packet.ReadFloat();
                     obj.Position.O = angle;
-
-                    if (player.PlayerAI.TargetSelection != null && guid.GetOldGuid() == player.PlayerAI.TargetSelection.Guid.GetOldGuid())
-                        Log.WriteLine(LogType.Debug, "Target is facing an angle");
                 }
                 else if (monsterMoveType == 2)
                 {
@@ -146,9 +127,6 @@ namespace mClient.Clients
 
                     var angle = TerrainMgr.CalculateAngle(obj.Position, new Coordinate(x, y, z));
                     obj.Position.O = angle;
-
-                    if (player.PlayerAI.TargetSelection != null && guid.GetOldGuid() == player.PlayerAI.TargetSelection.Guid.GetOldGuid())
-                        Log.WriteLine(LogType.Debug, "Target is facing a point.");
                 }
             }
 
@@ -163,6 +141,44 @@ namespace mClient.Clients
                 obj.MonsterMovement.Destination = destination;
             }
         }
+
+        /// <summary>
+        /// Handles teleportation acknowledgement for the player. Positions us correctly after teleporting.
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_TELEPORT_ACK)]
+        public void TeleportAck(PacketIn packet)
+        {
+            var teleporterGuid = packet.ReadPackedGuidToWoWGuid();
+            packet.ReadUInt32();
+            var movementInfo = MovementInfo.Read(packet);
+
+            // update the players position
+            player.PlayerObject.Position = new Coordinate(movementInfo.Position.X, movementInfo.Position.Y, movementInfo.Position.Z, movementInfo.Facing);
+
+            // send back an ack
+            TeleportAck();
+        }
+
+        /// <summary>
+        /// Handles loading a new world. This is sent by the server so the client knows when to show the loading screen.
+        /// We don't need a loading screen so we can just set position straight away and be done with it.
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_NEW_WORLD)]
+        public void NewWorldLoad(PacketIn packet)
+        {
+            var mapId = packet.ReadUInt32();
+            // update the players position
+            player.PlayerObject.Position = new Coordinate(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
+
+            // send an ack
+            WorldportAck();
+        }
+
+        #endregion
+
+        #region Actions
 
         void Heartbeat(object source, ElapsedEventArgs e)
         {
@@ -180,7 +196,7 @@ namespace mClient.Clients
         /// <param name="mapid"></param>
         /// <param name="location"></param>
         /// <param name="orientation"></param>
-        void Teleport(UInt32 mapid, Coordinate location, float orientation = 3.141593f)
+        public void Teleport(UInt32 mapid, Coordinate location, float orientation = 3.141593f)
         {
             PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_WORLD_TELEPORT);
             packet.Write(MM_GetTime());
@@ -189,6 +205,27 @@ namespace mClient.Clients
             packet.Write(location.Y);
             packet.Write(location.Z);
             packet.Write(player.Position.O);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Acknowledges we received a near teleport (usually same map)
+        /// </summary>
+        void TeleportAck()
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.MSG_MOVE_TELEPORT_ACK);
+            packet.Write(player.PlayerObject.Guid.GetOldGuid());
+            packet.Write((UInt32)0);
+            packet.Write((UInt32)0);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Acknowledges we received a far teleport (usually different map)
+        /// </summary>
+        void WorldportAck()
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.MSG_MOVE_WORLDPORT_ACK);
             Send(packet);
         }
 
@@ -214,6 +251,8 @@ namespace mClient.Clients
             packet.Write((UInt32)0);
             Send(packet);
         }
+
+        #endregion
     }
 }
 

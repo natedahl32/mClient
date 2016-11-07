@@ -113,7 +113,7 @@ namespace mClient.Clients
 
 
             movementMgr.Start();
-            combatMgr.Start();
+            //combatMgr.Start();
             terrainMgr.ChangeMap(chr.MapID);
 
             CreatePlayer((PlayerObj)objectMgr.getPlayerObject(), chr);

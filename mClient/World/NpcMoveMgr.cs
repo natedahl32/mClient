@@ -77,6 +77,12 @@ namespace mClient.World
             if (oldLocation == null)
                 oldLocation = mUnit.Position;
 
+            // if we have a destination, update our orientation so we are facing the destination
+            if (mUnit.Position != null && Destination != null)
+            {
+                var angle = TerrainMgr.CalculateAngle(mUnit.Position, Destination);
+                mUnit.Position.O = angle;
+            }
 
             h = mUnit.Position.O;
 

@@ -250,10 +250,6 @@ namespace mClient.Clients
                 return;
 
             var targetPosition = mFollowTarget.Position;
-            var unit = (mFollowTarget as Unit);
-            if (unit != null && unit.IsNPC && unit.MonsterMovement != null && unit.MonsterMovement.Destination != null)
-                targetPosition = unit.MonsterMovement.Destination;
-
             var angle = TerrainMgr.CalculateAngle(objectMgr.getPlayerObject().Position, targetPosition);
             var dist = TerrainMgr.CalculateDistance(objectMgr.getPlayerObject().Position, targetPosition);
 
@@ -269,8 +265,6 @@ namespace mClient.Clients
             // check if we are within distance of the target position or not
             if (dist > MINIMUM_FOLLOW_DISTANCE && dist < MAXIMUM_FOLLOW_DISTANCE)
             {
-                Log.WriteLine(LogType.Debug, "The distance from my follow target is {0}", dist);
-
                 bool isMoving = IsMoving;
                 Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_FORWARD);
                 UpdatePosition(diff);
