@@ -82,6 +82,14 @@ namespace mClient.World.AI
             get { return mTargetSelection as Unit; }
         }
 
+        /// <summary>
+        /// Gets whether or not the there is a current activity
+        /// </summary>
+        protected bool HasCurrentActivity
+        {
+            get { return mActivityQueue.Count > 0; }
+        }
+
         #endregion
 
         #region Public Methods
@@ -198,7 +206,7 @@ namespace mClient.World.AI
                 .Selector("root-selector")
                     .Splice(CreateDeathAITree())
                     .Splice(CreateCombatAITree())
-                    //.Splice(CreateQuestAITree())
+                    .Splice(CreateQuestAITree())
                     //.Splice(CreateLootAITree())
                     //.Splice(CreateInventoryAITree())
                     .Splice(CreateIdleAITree())
@@ -215,6 +223,9 @@ namespace mClient.World.AI
             {
                 try
                 {
+                    // Wait 2 seconds before we start AI to make sure we are logged in to the game
+                    if ((MM_GetTime() - lastUpdateTime) < 2000) continue;
+
                     // Update NPC movement
                     var npcUnits = Client.objectMgr.GetNpcUnits().ToList();
                     foreach (var npc in npcUnits)

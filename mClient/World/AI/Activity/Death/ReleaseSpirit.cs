@@ -35,7 +35,8 @@ namespace mClient.World.AI.Activity.Death
 
         public override void Process()
         {
-            throw new NotImplementedException();
+            if (!PlayerAI.Player.PlayerObject.IsDead)
+                PlayerAI.CompleteActivity();
         }
 
         #endregion

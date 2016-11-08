@@ -236,7 +236,11 @@ namespace mClient.World
         /// </summary>
         public IEnumerable<QuestGiver> QuestGivers
         {
-            get { return mQuestGivers; }
+            get
+            {
+                lock (mQuestGiversLock)
+                    return mQuestGivers.ToList();
+            }
         }
 
         /// <summary>
@@ -405,8 +409,11 @@ namespace mClient.World
         /// <param name="questGivers"></param>
         public void UpdateQuestGivers(IList<QuestGiver> questGivers)
         {
+            List<QuestGiver> toRemove;
+            lock (mQuestGiversLock)
+                toRemove = mQuestGivers.Where(qg => !questGivers.Any(qg2 => qg.Guid == qg2.Guid)).ToList();
+
             // Remove any that don't exist anymore
-            var toRemove = mQuestGivers.Where(qg => !questGivers.Any(qg2 => qg.Guid == qg2.Guid)).ToList();
             foreach (var q in toRemove)
                 lock (mQuestGiversLock)
                     mQuestGivers.Remove(q);

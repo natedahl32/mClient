@@ -57,7 +57,8 @@ namespace mClient.World.AI.Activity
         public abstract void Process();
 
         /// <summary>
-        /// Handles messages from the server
+        /// Handles messages from the server. Don't complete activities from here because it isn't guaranteed
+        /// this activity is the one that is active.
         /// </summary>
         /// <param name="message"></param>
         public virtual void HandleMessage(ActivityMessage message)

@@ -80,7 +80,7 @@ namespace mClient.Clients
                 packet.ReadByte();
             }
 
-            SendChatMsg(ChatMsg.Party, Languages.Common, string.Format("Inventory change failure with msg {0}", inventoryResultMessage));
+            SendChatMsg(ChatMsg.Party, Languages.Universal, string.Format("Inventory change failure with msg {0}", inventoryResultMessage));
         }
 
         /// <summary>

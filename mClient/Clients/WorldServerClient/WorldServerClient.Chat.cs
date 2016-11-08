@@ -16,6 +16,13 @@ namespace mClient.Clients
     {
         private ArrayList ChatQueued = new ArrayList();
 
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_NOTIFICATION)]
+        public void HandleNotification(PacketIn packet)
+        {
+            var message = packet.ReadString();
+            Log.WriteLine(LogType.Debug, "Server Notification: {0}", message);
+        }
+
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_CHANNEL_NOTIFY)]
         public void HandleChannelNotify(PacketIn packet)
         {

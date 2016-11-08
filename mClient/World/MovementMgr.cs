@@ -34,6 +34,7 @@ namespace mClient.Clients
 
         // Movement variables
         private PObject mFollowTarget = null;
+        private System.Object mFollowTargetLock = new System.Object();
 
         Coordinate oldLocation;
         UInt32 lastUpdateTime;
@@ -62,7 +63,11 @@ namespace mClient.Clients
         public PObject FollowTarget
         {
             get { return mFollowTarget; }
-            set { mFollowTarget = value; }
+            set
+            {
+                lock(mFollowTargetLock)
+                    mFollowTarget = value;
+            }
         }
 
         /// <summary>
@@ -107,11 +112,12 @@ namespace mClient.Clients
                 try
                 {
                     // If we have a follow target, do our best to follow them
-                    if (mFollowTarget != null)
-                    {
-                        HandleFollowTarget();
-                        continue;
-                    }
+                    lock (mFollowTargetLock)
+                        if (mFollowTarget != null)
+                        {
+                            HandleFollowTarget();
+                            continue;
+                        }
 
                     // Otherwise follow any waypoints set for us
                     Coordinate Waypoint;

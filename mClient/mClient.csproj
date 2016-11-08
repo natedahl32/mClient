@@ -165,7 +165,13 @@
     <Compile Include="World\AI\Activity\Death\FindCorpse.cs" />
     <Compile Include="World\AI\Activity\Death\ReleaseSpirit.cs" />
     <Compile Include="World\AI\Activity\Messages\CorpseQueryMessage.cs" />
+    <Compile Include="World\AI\Activity\Messages\QuestCompleteMessage.cs" />
+    <Compile Include="World\AI\Activity\Messages\QuestListMessage.cs" />
+    <Compile Include="World\AI\Activity\Messages\QuestOfferRewards.cs" />
     <Compile Include="World\AI\Activity\Movement\TeleportToCoordinate.cs" />
+    <Compile Include="World\AI\Activity\Quest\AcceptQuest.cs" />
+    <Compile Include="World\AI\Activity\Quest\CompleteQuest.cs" />
+    <Compile Include="World\AI\Activity\Quest\TurnInQuests.cs" />
     <Compile Include="World\AI\PlayerAI.Chat.cs" />
     <Compile Include="World\AI\PlayerAI.Combat.cs" />
     <Compile Include="World\AI\PlayerAI.cs" />

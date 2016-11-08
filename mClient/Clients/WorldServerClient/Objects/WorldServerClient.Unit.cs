@@ -66,7 +66,8 @@ namespace mClient.Clients
         {
             get
             {
-                if (CurrentHealth <= 0)
+                // If we have no health left but we do have some max health (avoids death triggered when we login right away and haven't gotten data yet)
+                if (CurrentHealth <= 0 && MaxHealth > 0)
                     return true;
                 if (Auras.Any(a => a == SpellAuras.GHOST_1 || a == SpellAuras.GHOST_2 || a == SpellAuras.GHOST_WISP))
                     return true;
