@@ -159,6 +159,19 @@
     <Compile Include="Shared\WoWGuid.cs" />
     <Compile Include="Utils\Log.cs" />
     <Compile Include="Utils\Time.cs" />
+    <Compile Include="World\AI\Activity\ActivityMessage.cs" />
+    <Compile Include="World\AI\Activity\BaseActivity.cs" />
+    <Compile Include="World\AI\Activity\Combat\DoDamage.cs" />
+    <Compile Include="World\AI\Activity\Death\FindCorpse.cs" />
+    <Compile Include="World\AI\Activity\Death\ReleaseSpirit.cs" />
+    <Compile Include="World\AI\Activity\Messages\CorpseQueryMessage.cs" />
+    <Compile Include="World\AI\Activity\Messages\QuestCompleteMessage.cs" />
+    <Compile Include="World\AI\Activity\Messages\QuestListMessage.cs" />
+    <Compile Include="World\AI\Activity\Messages\QuestOfferRewards.cs" />
+    <Compile Include="World\AI\Activity\Movement\TeleportToCoordinate.cs" />
+    <Compile Include="World\AI\Activity\Quest\AcceptQuest.cs" />
+    <Compile Include="World\AI\Activity\Quest\CompleteQuest.cs" />
+    <Compile Include="World\AI\Activity\Quest\TurnInQuests.cs" />
     <Compile Include="World\AI\PlayerAI.Chat.cs" />
     <Compile Include="World\AI\PlayerAI.Combat.cs" />
     <Compile Include="World\AI\PlayerAI.cs" />
@@ -167,7 +180,6 @@
     <Compile Include="World\AI\PlayerAI.Inventory.cs" />
     <Compile Include="World\AI\PlayerAI.Loot.cs" />
     <Compile Include="World\AI\PlayerAI.Quest.cs" />
-    <Compile Include="World\CombatMgr.cs" />
     <Compile Include="World\Group.cs" />
     <Compile Include="World\Items\ItemInfo.cs" />
     <Compile Include="World\Items\ItemManager.cs" />
@@ -175,6 +187,7 @@
     <Compile Include="World\Items\ItemSpellEffect.cs" />
     <Compile Include="World\Items\ItemStat.cs" />
     <Compile Include="World\Items\LootItem.cs" />
+    <Compile Include="World\NpcMoveMgr.cs" />
     <Compile Include="World\MovementMgr.cs" />
     <Compile Include="World\ObjectMgr.cs" />
     <Compile Include="World\Player.cs" />

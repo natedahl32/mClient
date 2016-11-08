@@ -1,6 +1,7 @@
 ﻿using mClient.Constants;
 using mClient.Network;
 using mClient.Shared;
+using mClient.World.AI.Activity.Messages;
 
 namespace mClient.Clients
 {
@@ -22,6 +23,14 @@ namespace mClient.Clients
             // corpse was found
             var mapId = packet.ReadUInt32();
             var corpseLocation = packet.ReadCoords3();
+
+            // send an activity message with the information
+            var message = new CorpseQueryMessage()
+            {
+                MapId = mapId,
+                Location = new Coordinate(corpseLocation.X, corpseLocation.Y, corpseLocation.Z)
+            };
+            player.PlayerAI.SendMessageToAllActivities(message);
 
             // teleport to our corpse
             var newPosition = new Coordinate(corpseLocation.X, corpseLocation.Y, corpseLocation.Z);

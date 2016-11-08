@@ -6,9 +6,17 @@ using mClient.Shared;
 using System.Runtime.InteropServices;
 using System.Threading;
 using FluentBehaviourTree;
+using mClient.World.AI.Activity;
+using System.Collections.Generic;
 
 namespace mClient.World.AI
 {
+    /// <summary>
+    /// Player AI consists of the following:
+    /// 1) A behavior tree that determines the current activity of the bot (ie. the state)
+    /// 2) Activity queue that determines what the bot is doing at that moment in time. This is a FIFO queue that processes
+    ///    the top activity in the stack until it is complete or another activity is moved on to the stack.
+    /// </summary>
     public partial class PlayerAI
     {
         [DllImport("winmm.dll", EntryPoint = "timeGetTime")]
@@ -22,6 +30,7 @@ namespace mClient.World.AI
         private Player mPlayer;
         private WorldServerClient mClient;
         private IBehaviourTreeNode mTree;
+        private Queue<BaseActivity> mActivityQueue;
 
         // Combat variables
         private PObject mTargetSelection = null;
@@ -37,6 +46,7 @@ namespace mClient.World.AI
             if (client == null) throw new ArgumentNullException("client");
             mPlayer = player;
             mClient = client;
+            mActivityQueue = new Queue<BaseActivity>();
 
             // Defaults
             NotInMeleeRange = false;
@@ -70,6 +80,14 @@ namespace mClient.World.AI
         public Unit TargetSelection
         {
             get { return mTargetSelection as Unit; }
+        }
+
+        /// <summary>
+        /// Gets whether or not the there is a current activity
+        /// </summary>
+        protected bool HasCurrentActivity
+        {
+            get { return mActivityQueue.Count > 0; }
         }
 
         #endregion
@@ -117,6 +135,47 @@ namespace mClient.World.AI
                 Client.movementMgr.FollowTarget = obj;
         }
 
+        /// <summary>
+        /// Adds a new activity to the queue and starts it immediately
+        /// </summary>
+        /// <param name="activity">Activity to start</param>
+        public void StartActivity(BaseActivity activity)
+        {
+            if (activity == null) throw new ArgumentNullException("activity");
+
+            // If the queue already contains an activity of this type then don't add it. This prevents our
+            // behavior tree from adding the same activity multiple times. Our game logic dictates the same activity
+            // should never be in the queue multiple times.
+            if (mActivityQueue.Any(a => a.GetType() == activity.GetType())) return;
+
+            // Pause the current activity
+            if (mActivityQueue.Count > 0)
+                mActivityQueue.Peek().Pause();
+
+            // Start the new activity
+            activity.Start();
+            mActivityQueue.Enqueue(activity);
+        }
+
+        /// <summary>
+        /// Completes the current activity
+        /// </summary>
+        public void CompleteActivity()
+        {
+            var currentActivity = mActivityQueue.Dequeue();
+            if (currentActivity != null)
+                currentActivity.Complete();
+        }
+
+        /// <summary>
+        /// Sends messages to all activities
+        /// </summary>
+        public void SendMessageToAllActivities(ActivityMessage message)
+        {
+            foreach (var activity in mActivityQueue)
+                activity.HandleMessage(message);
+        }
+
         #endregion
 
         #region Private Methods
@@ -148,8 +207,8 @@ namespace mClient.World.AI
                     .Splice(CreateDeathAITree())
                     .Splice(CreateCombatAITree())
                     .Splice(CreateQuestAITree())
-                    .Splice(CreateLootAITree())
-                    .Splice(CreateInventoryAITree())
+                    //.Splice(CreateLootAITree())
+                    //.Splice(CreateInventoryAITree())
                     .Splice(CreateIdleAITree())
                 .End()
                 .Build();
@@ -164,7 +223,21 @@ namespace mClient.World.AI
             {
                 try
                 {
+                    // Wait 2 seconds before we start AI to make sure we are logged in to the game
+                    if ((MM_GetTime() - lastUpdateTime) < 2000) continue;
+
+                    // Update NPC movement
+                    var npcUnits = Client.objectMgr.GetNpcUnits().ToList();
+                    foreach (var npc in npcUnits)
+                        if (npc.MonsterMovement != null)
+                            npc.MonsterMovement.UpdatePosition();
+
+                    // Update behavior tree
                     this.mTree.Tick(new TimeData());
+
+                    // Process the activity queue
+                    if (mActivityQueue.Count > 0)
+                        mActivityQueue.Peek().Process();
                 }
                 catch (Exception ex)
                 {

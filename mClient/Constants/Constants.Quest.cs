@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace mClient.Constants
 {
@@ -17,6 +13,11 @@ namespace mClient.Constants
         /// Maximum number of quests that can be in the log
         /// </summary>
         public const int MAX_QUEST_LOG_SIZE = 20;
+
+        /// <summary>
+        /// The maximum distance a bot will travel to turn in a quest
+        /// </summary>
+        public const float MAX_TURNIN_DISTANCE = 100.0f;
     }
 
     public enum QuestSlotOffsets

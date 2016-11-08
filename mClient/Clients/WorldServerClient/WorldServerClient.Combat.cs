@@ -7,6 +7,7 @@ using mClient.Shared;
 using mClient.Network;
 using mClient.Crypt;
 using mClient.Constants;
+using mClient.Terrain;
 
 namespace mClient.Clients
 {
@@ -33,7 +34,9 @@ namespace mClient.Clients
         public void HandleAttackSwingBadFacing(PacketIn packet)
         {
             // TODO: Face the target!
-            var i = 0;
+            var angle = TerrainMgr.CalculateAngle(objectMgr.getPlayerObject().Position, player.PlayerAI.TargetSelection.Position);
+            objectMgr.getPlayerObject().Position.O = angle;
+            SendMovementPacket(WorldServerOpCode.MSG_MOVE_SET_FACING);
         }
 
         /// <summary>
@@ -122,9 +125,13 @@ namespace mClient.Clients
             // If the attacker is in our party, than start attacking as well
             if (player.CurrentGroup != null && player.CurrentGroup.IsInGroup(attackerGuid))
             {
-                var victim = new WoWGuid(victimGuid);
-                player.CurrentGroup.GetGroupMember(attackerGuid).AddEnemy(victim);
-                player.AddEnemy(victim);
+                // On second thought, we don't actually want to do this. If an enemy is misclicked we don't want to
+                // run in and start attacking until we are told to do so or until the enemy starts attacking someone in
+                // our party.
+
+                //var victim = new WoWGuid(victimGuid);
+                //player.CurrentGroup.GetGroupMember(attackerGuid).AddEnemy(victim);
+                //player.AddEnemy(victim);
             }
                 
             // If someone in the group is being attacked, add the attacker as an enemy
@@ -162,43 +169,62 @@ namespace mClient.Clients
             var hitInfo = packet.ReadUInt32();
 
             // Attacker
-            byte mask = packet.ReadByte();
-            WoWGuid attackerGuid = new WoWGuid(mask, packet.ReadBytes(WoWGuid.BitCount8(mask)));
+            WoWGuid attackerGuid = packet.ReadPackedGuidToWoWGuid();
 
             // Target
-            mask = packet.ReadByte();
-            WoWGuid targetGuid = new WoWGuid(mask, packet.ReadBytes(WoWGuid.BitCount8(mask)));
+            WoWGuid targetGuid = packet.ReadPackedGuidToWoWGuid();
 
             // Damage applied (full damage taking into account absorbs, resists, and blocks
             var fullDamageApplied = packet.ReadUInt32();
 
-            // Check if the target is us or someone in our party
+            // Check if the target is us or someone in our party. If so, make sure the enemy is in our list
+            if (player.CurrentGroup != null && player.CurrentGroup.IsInGroup(targetGuid.GetOldGuid()))
+            {
+                player.CurrentGroup.GetGroupMember(targetGuid.GetOldGuid()).AddEnemy(attackerGuid);
+                player.AddEnemy(attackerGuid);
+            }
+            // Check if someone in our group is attacking something
+            if (player.CurrentGroup != null && player.CurrentGroup.IsInGroup(attackerGuid.GetOldGuid()))
+            {
+                player.CurrentGroup.GetGroupMember(attackerGuid.GetOldGuid()).AddEnemy(targetGuid);
+                player.AddEnemy(targetGuid);
+            }
         }
 
         #endregion
 
         #region Actions
 
+        /// <summary>
+        /// Starts attacking a target
+        /// </summary>
+        /// <param name="target"></param>
         public void Attack(Object target)
         {
             Attack(target.Guid.GetOldGuid());
         }
 
-
+        /// <summary>
+        /// Starts attacking the target with a guid
+        /// </summary>
+        /// <param name="targetGuid"></param>
         public void Attack(UInt64 targetGuid)
         {
-            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_SET_SELECTION);
-            if (objectMgr.getPlayerObject() != null)
-            {
-                packet.Write(targetGuid);
-            }
-            Send(packet);
+            SetTarget(targetGuid);
 
-            packet = new PacketOut(WorldServerOpCode.CMSG_ATTACKSWING);
-            if (objectMgr.getPlayerObject() != null)
-            {
-                packet.Write(targetGuid);
-            }
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_ATTACKSWING);
+            packet.Write(targetGuid);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Sets our target selection to the object with this guid
+        /// </summary>
+        /// <param name="targetGuid"></param>
+        public void SetTarget(UInt64 targetGuid)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_SET_SELECTION);
+            packet.Write(targetGuid);
             Send(packet);
         }
 

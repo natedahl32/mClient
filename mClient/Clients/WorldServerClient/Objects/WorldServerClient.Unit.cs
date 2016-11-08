@@ -1,5 +1,6 @@
 ﻿using mClient.Constants;
 using mClient.Shared;
+using mClient.World;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,16 @@ namespace mClient.Clients
         }
 
         #region Properties
+
+        /// <summary>
+        /// Gets or sets the monster movement manager
+        /// </summary>
+        public NpcMoveMgr MonsterMovement { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether or not this object is an npc
+        /// </summary>
+        public bool IsNPC { get; set; }
 
         public UInt32 MaxHealth
         {
@@ -55,10 +66,24 @@ namespace mClient.Clients
         {
             get
             {
-                if (CurrentHealth <= 0)
+                // If we have no health left but we do have some max health (avoids death triggered when we login right away and haven't gotten data yet)
+                if (CurrentHealth <= 0 && MaxHealth > 0)
                     return true;
                 if (Auras.Any(a => a == SpellAuras.GHOST_1 || a == SpellAuras.GHOST_2 || a == SpellAuras.GHOST_WISP))
                     return true;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets whether or not the unit is moving
+        /// </summary>
+        public virtual bool IsMoving
+        {
+            get
+            {
+                if (IsNPC && MonsterMovement != null)
+                    return MonsterMovement.IsMoving;
                 return false;
             }
         }

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Timers;
-
+using System.Linq;
 
 using mClient.Constants;
 using mClient.Terrain;
@@ -41,6 +41,15 @@ namespace mClient.Clients
             }
             else
                 return mObjects[index];
+        }
+
+        public IList<Unit> GetNpcUnits()
+        {
+            List<Object> copy;
+            // avoid collection was modified errors by making a copy of the list
+            lock (mObjectsLock)
+                copy = mObjects.ToList();
+            return copy.Where(o => (o as Unit) != null && (o as Unit).IsNPC).Cast<Unit>().ToList();    
         }
 
         public void addObject(Object obj)

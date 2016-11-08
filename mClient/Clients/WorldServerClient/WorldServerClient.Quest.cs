@@ -1,6 +1,7 @@
 ﻿using mClient.Constants;
 using mClient.Network;
 using mClient.Shared;
+using mClient.World.AI.Activity.Messages;
 using mClient.World.Quest;
 using System;
 using System.Collections.Generic;
@@ -25,8 +26,9 @@ namespace mClient.Clients
             var guid = packet.ReadUInt64(); // Quest giver guid
             var questId = packet.ReadUInt32();
 
-            // Accept the quest
-            AcceptQuest(guid, questId);
+            // Send message to activities
+            var message = new QuestListMessage() { FromEntityGuid = guid, QuestIdList = new List<uint>() { questId }  };
+            player.PlayerAI.SendMessageToAllActivities(message);
         }
 
         /// <summary>
@@ -59,7 +61,7 @@ namespace mClient.Clients
             // Get the quest from the quest manager
             var quest = QuestManager.Instance.Get(questId);
             if (quest != null)
-                SendChatMsg(ChatMsg.Party, Languages.Common, string.Format("My quest '{0}' failed. I dropped the quest.", quest.QuestName));
+                SendChatMsg(ChatMsg.Party, Languages.Universal, string.Format("My quest '{0}' failed. I dropped the quest.", quest.QuestName));
         }
 
         /// <summary>
@@ -78,7 +80,7 @@ namespace mClient.Clients
             // Get the quest from the quest manager
             var quest = QuestManager.Instance.Get(questId);
             if (quest != null)
-                SendChatMsg(ChatMsg.Party, Languages.Common, string.Format("My quest '{0}' failed. I dropped the quest.", quest.QuestName));
+                SendChatMsg(ChatMsg.Party, Languages.Universal, string.Format("My quest '{0}' failed. I dropped the quest.", quest.QuestName));
         }
 
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_QUEST_QUERY_RESPONSE)]
@@ -158,7 +160,6 @@ namespace mClient.Clients
             }
 
             player.UpdateQuestGivers(questGivers);
-            player.PlayerAI.WaitingToUpdateQuestGivers = false;
         }
 
         /// <summary>
@@ -192,6 +193,11 @@ namespace mClient.Clients
                 quests.Add(questId);
             }
 
+            // Send message to activities
+            var message = new QuestListMessage() { FromEntityGuid = entityGuid, QuestIdList = quests };
+            player.PlayerAI.SendMessageToAllActivities(message);
+
+            /*
             // First, try to complete all the quests if we have them in our log to make room for new ones
             foreach (var q in quests)
                 if (player.PlayerObject.GetQuestSlot(q) < QuestConstants.MAX_QUEST_LOG_SIZE)
@@ -211,6 +217,7 @@ namespace mClient.Clients
 
             // Finally update any quest giver statuses
             GetQuestGiverStatuses();
+            */
         }
 
         /// <summary>
@@ -236,6 +243,11 @@ namespace mClient.Clients
                 quests.Add(questId);
             }
 
+            // Send message to activities
+            var message = new QuestListMessage() { FromEntityGuid = entityGuid, QuestIdList = quests };
+            player.PlayerAI.SendMessageToAllActivities(message);
+
+            /*
             // First, try to complete all the quests if we have them in our log to make room for new ones
             foreach (var q in quests)
                 if (player.PlayerObject.GetQuestSlot(q) < QuestConstants.MAX_QUEST_LOG_SIZE)
@@ -256,6 +268,7 @@ namespace mClient.Clients
 
             // Finally update any quest giver statuses
             GetQuestGiverStatuses();
+            */
         }
 
         /// <summary>
@@ -300,20 +313,18 @@ namespace mClient.Clients
 
             // Rewards we have a choice of selecting
             var rewardsChoiceItemCount = packet.ReadUInt32();
-            for (int i = 0; i < rewardsChoiceItemCount; i++)
+            var rewardItems = new List<QuestOfferRewards.RewardItem>();
+            for (uint i = 0; i < rewardsChoiceItemCount; i++)
             {
                 var itemId = packet.ReadUInt32();
                 var itemCount = packet.ReadUInt32();
                 packet.ReadUInt32();    // Display Info
+                rewardItems.Add(new QuestOfferRewards.RewardItem() { ItemId = itemId, ItemCount = itemCount, ItemChoiceIndex = i });
             }
 
-            // TODO: Make an intelligent choice! And put it in the AI, don't do it here.
-            // For now just choose the first item if we have a choice
-
-            if (rewardsChoiceItemCount > 0)
-                ChooseQuestReward(entityGuid, questId, 0);
-            else // In this case there were no rewards to choose, but we still need to send something back
-                ChooseQuestReward(entityGuid, questId, 0);
+            // Send a message with the reward items to the activities
+            var message = new QuestOfferRewards() { RewardItems = rewardItems };
+            player.PlayerAI.SendMessageToAllActivities(message);
 
             // I don't think we need anything below this. It is just for display purposes for a client.
 
@@ -342,6 +353,10 @@ namespace mClient.Clients
             var questId = packet.ReadUInt32();
             packet.ReadUInt32();    // unknown
 
+            // Send message to all activities
+            var message = new QuestCompleteMessage() { QuestId = questId };
+            player.PlayerAI.SendMessageToAllActivities(message);
+
             // Not sure that we need anything below here or not yet.
 
             //var experienceAwarded = packet.ReadUInt32();
@@ -355,13 +370,40 @@ namespace mClient.Clients
             //    // Note - I don't think we need these at all. We will get a SMSG_ITEM_PUSH_RESULT from
             //    // the server for all rewards.
             //}
+        }
 
-            // Remove the quest from our log now that we have completed it. NOTE - call the one on the player object
-            // otherwise will try to send the drop to the server (which we don't want to do because we just completed it)
-            player.PlayerObject.DropQuest(questId);
+        /// <summary>
+        /// Handles an update that a quest we have is completed
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_QUESTUPDATE_COMPLETE)]
+        public void HandleQuestCompleteUpdate(PacketIn packet)
+        {
+            var questId = packet.ReadUInt32();
 
-            // Notify AI that we have completed a quest
-            player.PlayerAI.WaitingToTurnInQuests = false;
+            // Get the quest from the quest manager
+            var quest = QuestManager.Instance.Get(questId);
+            if (quest != null)
+                SendChatMsg(ChatMsg.Party, Languages.Universal, string.Format("My quest '{0}' is complete.", quest.QuestName));
+        }
+
+        /// <summary>
+        /// Handles an update that a quest we have is completed
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_QUESTUPDATE_ADD_KILL)]
+        public void HandleQuestKillUpdate(PacketIn packet)
+        {
+            var questId = packet.ReadUInt32();
+            var creatureTemplateEntry = packet.ReadUInt32();
+            var killCount = packet.ReadUInt32();
+            var requiredCount = packet.ReadUInt32();
+            var guid = packet.ReadUInt64(); // not sure, guid of the creature that was killed?
+
+            // Get the quest from the quest manager
+            var quest = QuestManager.Instance.Get(questId);
+            if (quest != null)
+                SendChatMsg(ChatMsg.Party, Languages.Universal, string.Format("Quest '{0}' Update: {1} of {2} killed.", quest.QuestName, killCount, requiredCount));
         }
 
         #endregion
@@ -442,7 +484,7 @@ namespace mClient.Clients
         /// </summary>
         public void GetQuestListFromQuestGiver(UInt64 guid)
         {
-            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_GOSSIP_HELLO);
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_QUESTGIVER_HELLO);
             packet.Write(guid);
             Send(packet);
         }

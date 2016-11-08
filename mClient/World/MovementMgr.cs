@@ -34,6 +34,7 @@ namespace mClient.Clients
 
         // Movement variables
         private PObject mFollowTarget = null;
+        private System.Object mFollowTargetLock = new System.Object();
 
         Coordinate oldLocation;
         UInt32 lastUpdateTime;
@@ -62,7 +63,19 @@ namespace mClient.Clients
         public PObject FollowTarget
         {
             get { return mFollowTarget; }
-            set { mFollowTarget = value; }
+            set
+            {
+                lock(mFollowTargetLock)
+                    mFollowTarget = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets whether or not there the unit is moving
+        /// </summary>
+        public bool IsMoving
+        {
+            get { return Flag.IsMoveFlagSet(MovementFlags.MOVEMENTFLAG_FORWARD); }
         }
 
         #endregion
@@ -99,11 +112,12 @@ namespace mClient.Clients
                 try
                 {
                     // If we have a follow target, do our best to follow them
-                    if (mFollowTarget != null)
-                    {
-                        HandleFollowTarget();
-                        continue;
-                    }
+                    lock (mFollowTargetLock)
+                        if (mFollowTarget != null)
+                        {
+                            HandleFollowTarget();
+                            continue;
+                        }
 
                     // Otherwise follow any waypoints set for us
                     Coordinate Waypoint;
@@ -231,8 +245,14 @@ namespace mClient.Clients
         private void HandleFollowTarget()
         {
             if (mFollowTarget == null) return;
+            if ((mFollowTarget as Unit) != null && (mFollowTarget as Unit).IsDead)
+            {
+                mFollowTarget = null;
+                return;
+            }
+
             // Make sure the follow target has a coordinate
-            if (mFollowTarget.Position == null)
+            if (mFollowTarget == null || mFollowTarget.Position == null)
                 return;
 
             var targetPosition = mFollowTarget.Position;
@@ -246,12 +266,12 @@ namespace mClient.Clients
             // if the angle is not correct, send a set facing packet and face the client in the right direction
             if (angle != objectMgr.getPlayerObject().Position.O)
                 objectMgr.getPlayerObject().Position.O = angle;
-                
+
 
             // check if we are within distance of the target position or not
             if (dist > MINIMUM_FOLLOW_DISTANCE && dist < MAXIMUM_FOLLOW_DISTANCE)
             {
-                bool isMoving = Flag.IsMoveFlagSet(MovementFlags.MOVEMENTFLAG_FORWARD);
+                bool isMoving = IsMoving;
                 Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_FORWARD);
                 UpdatePosition(diff);
                 lastUpdateTime = timeNow;
@@ -260,7 +280,7 @@ namespace mClient.Clients
             }
             else
             {
-                bool isMoving = Flag.IsMoveFlagSet(MovementFlags.MOVEMENTFLAG_FORWARD);
+                bool isMoving = IsMoving;
                 Flag.SetMoveFlag(MovementFlags.MOVEMENTFLAG_NONE);
                 UpdatePosition(diff);
                 if (isMoving)

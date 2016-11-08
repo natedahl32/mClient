@@ -1,4 +1,5 @@
 ﻿using FluentBehaviourTree;
+using mClient.World.AI.Activity.Death;
 
 namespace mClient.World.AI
 {
@@ -15,38 +16,47 @@ namespace mClient.World.AI
             var builder = new BehaviourTreeBuilder();
             return builder
                 .Sequence("death-sequence")
-                    .Do("Is Dead?", t =>
-                    {
-                        if (Player.PlayerObject.IsDead)
-                            return BehaviourTreeStatus.Success;
-                        return BehaviourTreeStatus.Failure;
-                    })
-                    .Do("Do I have a corpse?", t =>
-                    {
-                        if (Player.PlayerCorpse == null)
-                        {
-                            if (!IsTeleportingToCorpse)
-                            {
-                                Client.SendCorpseQuery();
-                                IsTeleportingToCorpse = true;
-                                return BehaviourTreeStatus.Running;
-                            }
-                            else
-                                return BehaviourTreeStatus.Running;
-                        }
-
-                        // We have our corpse now
-                        IsTeleportingToCorpse = false;
-                        return BehaviourTreeStatus.Success;
-                    })
-                    .Do("Release spirit!!", t =>
-                    {
-                        Client.ReclaimCorpse();
-                        Player.ResurrectFromDeath();
-                        return BehaviourTreeStatus.Success;
-                    })
+                    .Do("Is Dead?", t =>IsDead())
+                    .Do("Find Corpse", t => FindCorpse())
+                    .Do("Release spirit!!", t => ReleaseSpirit())
                  .End()
                  .Build();
+        }
+
+        /// <summary>
+        /// Determines whether or not we are dead
+        /// </summary>
+        /// <returns></returns>
+        private BehaviourTreeStatus IsDead()
+        {
+            if (Player.PlayerObject.IsDead)
+                return BehaviourTreeStatus.Success;
+            return BehaviourTreeStatus.Failure;
+        }
+
+        /// <summary>
+        /// Finds the corpse 
+        /// </summary>
+        /// <returns></returns>
+        private BehaviourTreeStatus FindCorpse()
+        {
+            if (Player.PlayerCorpse != null)
+                return BehaviourTreeStatus.Success;
+
+            // Start the find corpse activity to the queue
+            Player.PlayerAI.StartActivity(new FindCorpse(this));
+            return BehaviourTreeStatus.Running;
+        }
+
+        /// <summary>
+        /// Releases spirit for the player
+        /// </summary>
+        /// <returns></returns>
+        private BehaviourTreeStatus ReleaseSpirit()
+        {
+            // Start the release spirit activity
+            Player.PlayerAI.StartActivity(new ReleaseSpirit(this));
+            return BehaviourTreeStatus.Success;
         }
     }
 }

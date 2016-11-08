@@ -52,7 +52,6 @@ namespace mClient.Clients
         //Managers
         public ObjectMgr objectMgr = null;
         public MovementMgr movementMgr = null;
-        public CombatMgr combatMgr = null;
         public TerrainMgr terrainMgr = null;
 
         // Player
@@ -72,7 +71,6 @@ namespace mClient.Clients
             objectMgr = new ObjectMgr();
             terrainMgr = new TerrainMgr();
             movementMgr = new MovementMgr(this);
-            combatMgr = new CombatMgr(this);
             realm = rl;
             mKey = key;
         }
@@ -82,7 +80,6 @@ namespace mClient.Clients
             mUsername = Config.Login.ToUpper();
             objectMgr = new ObjectMgr();
             movementMgr = new MovementMgr(this);
-            combatMgr = new CombatMgr(this);
             terrainMgr = new TerrainMgr();
             realm = rl;
             mKey = key;
@@ -216,8 +213,6 @@ namespace mClient.Clients
             
             if (movementMgr != null)
                 movementMgr.Stop();
-            if (combatMgr != null)
-                combatMgr.Stop();
             if (pLoop != null)
                 pLoop.Stop();
             Connected = false;
