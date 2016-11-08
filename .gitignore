@@ -1,0 +1,13 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+*.suo
+/bin
+/BotServer/bin/Debug
+/BotServer/obj/Debug
+*.user
+/mClient.BotServer/obj/Debug
+/obj
+/packages
+/UpgradeLog.htm
