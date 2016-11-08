@@ -9,6 +9,7 @@ using mClient.Shared;
 using mClient.Network;
 using mClient.Crypt;
 using mClient.Constants;
+using System.Collections.Generic;
 
 namespace mClient.Clients
 {
@@ -47,6 +48,9 @@ namespace mClient.Clients
 
         public Socket mSocket = null;
         public TextWriter tw;
+
+        // Event dispatched when we get the realm list
+        public event EventHandler<RealmListEventArgs> ReceivedRealmList;
 
         #region Constructors
 
@@ -316,6 +320,8 @@ namespace mClient.Clients
                }
 
                 Realmlist = realms;
+                if (ReceivedRealmList != null)
+                    this.ReceivedRealmList(this, new RealmListEventArgs() { Realms = Realmlist });
                 mCore.Event(new Event(EventType.EVENT_REALMLIST, "", new object[] { Realmlist }));
 
             }
@@ -405,5 +411,10 @@ namespace mClient.Clients
             HardDisconnect();
         }
         
+    }
+
+    public class RealmListEventArgs : EventArgs
+    {
+        public IList<Realm> Realms { get; set; }
     }
 }

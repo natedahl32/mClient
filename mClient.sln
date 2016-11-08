@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mClient", "mClient\mClient.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mConsole", "mConsole\mConsole.csproj", "{71AA911F-6EFD-44CC-9555-AFB2CB9DFB6C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotServer", "BotServer\BotServer.csproj", "{08203FD9-2D8A-4A0E-8CB8-FEE3DDFF4324}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mClient.BotServer", "mClient.BotServer\mClient.BotServer.csproj", "{F2304967-F882-41A9-A134-F20AF7FF0A36}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{71AA911F-6EFD-44CC-9555-AFB2CB9DFB6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71AA911F-6EFD-44CC-9555-AFB2CB9DFB6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71AA911F-6EFD-44CC-9555-AFB2CB9DFB6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08203FD9-2D8A-4A0E-8CB8-FEE3DDFF4324}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08203FD9-2D8A-4A0E-8CB8-FEE3DDFF4324}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08203FD9-2D8A-4A0E-8CB8-FEE3DDFF4324}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08203FD9-2D8A-4A0E-8CB8-FEE3DDFF4324}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2304967-F882-41A9-A134-F20AF7FF0A36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2304967-F882-41A9-A134-F20AF7FF0A36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2304967-F882-41A9-A134-F20AF7FF0A36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2304967-F882-41A9-A134-F20AF7FF0A36}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
