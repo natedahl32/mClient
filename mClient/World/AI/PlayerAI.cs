@@ -31,6 +31,7 @@ namespace mClient.World.AI
         private WorldServerClient mClient;
         private IBehaviourTreeNode mTree;
         private Queue<BaseActivity> mActivityQueue;
+        private System.Object mActivityQueueLock = new System.Object();
 
         // Combat variables
         private PObject mTargetSelection = null;
@@ -154,7 +155,8 @@ namespace mClient.World.AI
 
             // Start the new activity
             activity.Start();
-            mActivityQueue.Enqueue(activity);
+            lock (mActivityQueueLock)
+                mActivityQueue.Enqueue(activity);
         }
 
         /// <summary>
@@ -162,9 +164,12 @@ namespace mClient.World.AI
         /// </summary>
         public void CompleteActivity()
         {
-            var currentActivity = mActivityQueue.Dequeue();
-            if (currentActivity != null)
-                currentActivity.Complete();
+            lock (mActivityQueueLock)
+            {
+                var currentActivity = mActivityQueue.Dequeue();
+                if (currentActivity != null)
+                    currentActivity.Complete();
+            }
         }
 
         /// <summary>
@@ -172,8 +177,9 @@ namespace mClient.World.AI
         /// </summary>
         public void SendMessageToAllActivities(ActivityMessage message)
         {
-            foreach (var activity in mActivityQueue)
-                activity.HandleMessage(message);
+            lock (mActivityQueueLock)
+                foreach (var activity in mActivityQueue)
+                    activity.HandleMessage(message);
         }
 
         #endregion

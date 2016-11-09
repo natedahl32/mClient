@@ -12,6 +12,7 @@ namespace mClient.World.AI.Activity.Loot
         private Object mLootableObject;
         private bool mIsLooting;
         private List<LootItem> mItemsToLoot;
+        private LootItem mCurrentlyLootingItem;
 
         #endregion
 
@@ -62,26 +63,35 @@ namespace mClient.World.AI.Activity.Loot
             // If we have items to loot still do that now
             if (mItemsToLoot.Count > 0)
             {
-                var item = mItemsToLoot[0];
+                // If we are already looting an item don't try to loot another one until we are done
+                if (mCurrentlyLootingItem != null)
+                    return;
+
+                mCurrentlyLootingItem = mItemsToLoot[0];
                 mItemsToLoot.RemoveAt(0);
 
                 // Loot the item
-                if (item != null)
-                    if (item.LootSlotType == 0)
-                        PlayerAI.Client.LootItem(item.LootSlot);
+                if (mCurrentlyLootingItem != null)
+                    if (mCurrentlyLootingItem.LootSlotType == 0)
+                        PlayerAI.Client.LootItem(mCurrentlyLootingItem.LootSlot);
 
                 return;
             }
 
-            // No more items to loot. Remove the lootable and end the activity
-            PlayerAI.Player.RemoveLootable(mLootableObject.Guid);
-            PlayerAI.CompleteActivity();
+            // We aren't done until we have looted the last item, meaning our mCurrentlyLootingItem would be null
+            if (mCurrentlyLootingItem == null)
+            {
+                // No more items to loot. Remove the lootable and end the activity
+                PlayerAI.Player.RemoveLootable(mLootableObject.Guid);
+                PlayerAI.CompleteActivity();
+            }
         }
 
         public override void HandleMessage(ActivityMessage message)
         {
             base.HandleMessage(message);
 
+            // Handle loot response message
             if (message.MessageType == Constants.WorldServerOpCode.SMSG_LOOT_RESPONSE)
             {
                 var lootMessage = message as LootMessage;
@@ -95,6 +105,51 @@ namespace mClient.World.AI.Activity.Loot
                     mItemsToLoot = lootMessage.Items;
                 }
             }
+
+            // Handle inventory change result message
+            if (message.MessageType == Constants.WorldServerOpCode.SMSG_INVENTORY_CHANGE_FAILURE)
+            {
+                var inventoryMessage = message as InventoryChangeMessage;
+                if (inventoryMessage != null)
+                    HandleInventoryMessage(inventoryMessage);
+            }
+
+            // Handle item push
+            if (message.MessageType == Constants.WorldServerOpCode.SMSG_ITEM_PUSH_RESULT)
+            {
+                // TODO: Should we do anything else with this message? Add it to our inventory
+                // or try to equip it if it is an item
+                var itemPushMessage = message as ItemPushResultMessage;
+                if (itemPushMessage != null)
+                    if (itemPushMessage.ItemId == mCurrentlyLootingItem.ItemId)
+                        mCurrentlyLootingItem = null;
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Handles different message types from an inventory change message
+        /// </summary>
+        /// <param name="message"></param>
+        private void HandleInventoryMessage(InventoryChangeMessage message)
+        {
+            // if inventory is full, we can't loot anymore
+            if (message.ResultMessage == Constants.InventoryResult.EQUIP_ERR_INVENTORY_FULL)
+            {
+                // Clear the current item we are looting and all other items
+                mCurrentlyLootingItem = null;
+                mItemsToLoot.Clear();
+
+                // Send release loot
+                PlayerAI.Client.ReleaseLoot(mLootableObject.Guid.GetOldGuid());
+                return;
+            }
+
+            if (message.ResultMessage != Constants.InventoryResult.EQUIP_ERR_OK)
+                mCurrentlyLootingItem = null;
         }
 
         #endregion

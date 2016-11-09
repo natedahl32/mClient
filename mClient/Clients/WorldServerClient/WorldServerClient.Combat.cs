@@ -157,6 +157,9 @@ namespace mClient.Clients
             var killingBlowGuid = packet.ReadUInt64();
             var victimGuid = packet.ReadUInt64();
             player.RemoveEnemy(victimGuid);
+
+            // Try to loot every NPC that is killed in case there is a quest item or something on it that we need
+            player.AddLootable(new WoWGuid(victimGuid));
         }
 
         /// <summary>

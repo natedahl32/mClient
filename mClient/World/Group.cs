@@ -59,12 +59,12 @@ namespace mClient.World
         /// <summary>
         /// Gets the loot method of the group
         /// </summary>
-        public byte LootMethod { get; private set; }
+        public LootMethod LootMethod { get; private set; }
 
         /// <summary>
         /// Gets the loot threshold of the group
         /// </summary>
-        public byte LootThreshold { get; private set; }
+        public ItemQualities LootThreshold { get; private set; }
 
         /// <summary>
         /// Gets the leader of the group
@@ -153,7 +153,7 @@ namespace mClient.World
         /// <param name="masterLooterGuid"></param>
         /// <param name="lootMethod"></param>
         /// <param name="lootThreshold"></param>
-        public void UpdateGroupData(UInt64 masterLooterGuid, byte lootMethod, byte lootThreshold)
+        public void UpdateGroupData(UInt64 masterLooterGuid, LootMethod lootMethod, ItemQualities lootThreshold)
         {
             this.MasterLooterGuid = masterLooterGuid;
             this.LootMethod = lootMethod;

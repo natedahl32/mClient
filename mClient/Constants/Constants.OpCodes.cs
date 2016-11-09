@@ -783,6 +783,7 @@ namespace mClient.Constants
         CMSG_SET_GUILD_INFORMATION = 764,  //(0x2FC)
         SMSG_UNKNOWN_PET = 772,  //(0x304)
         SMSG_SPLINE_MOVE_SET_RUN_MODE = 781, //(0x30D)
+        SMSG_SPLINE_MOVE_SET_WALK_MODE = 782, //(0x30E)
         CMSG_SET_FACTION_INACTIVE = 791,  //(0x317)
         CMSG_SET_WATCHED_FACTION_INDEX = 792,  //(0x318)
         CMSG_UNKNOWN_1 = 793,  //(0x319)

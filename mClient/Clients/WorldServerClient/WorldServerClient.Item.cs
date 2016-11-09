@@ -13,19 +13,35 @@ namespace mClient.Clients
         #region Packet Handlers
 
         /// <summary>
+        /// Handles loot being released by a player
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_LOOT_RELEASE_RESPONSE)]
+        public void HandleLootRelease(PacketIn packet)
+        {
+            var lootGuid = packet.ReadUInt64();
+            // TODO: Figure out under what circumstances this is called?
+        }
+
+        /// <summary>
         /// Handles loot lists
         /// </summary>
         /// <param name="packet"></param>
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_LOOT_LIST)]
         public void HandleLootList(PacketIn packet)
         {
+            // note - we don't get this opcode for free for all loot
             var lootGuid = packet.ReadUInt64();
             var masterLooterGuid = packet.ReadPackedGuidToWoWGuid();
             var currentLooterGuid = packet.ReadPackedGuidToWoWGuid();
 
+            // We are now adding all killed enemies to our loot list so we at least try and loot items we might
+            // need, such as quest items. Adding the below line while also adding each killed enemy to our lootable list
+            // causes issues.
+
             // if this is our loot then add it to our Loot
-            if (currentLooterGuid.GetOldGuid() == player.Guid.GetOldGuid())
-                player.AddLootable(new WoWGuid(lootGuid));
+            //if (currentLooterGuid.GetOldGuid() == player.Guid.GetOldGuid())
+            //    player.AddLootable(new WoWGuid(lootGuid));
         }
 
         /// <summary>
@@ -59,21 +75,21 @@ namespace mClient.Clients
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_INVENTORY_CHANGE_FAILURE)]
         public void HandleInventoryChangeFailure(PacketIn packet)
         {
-            var inventoryResultMessage = (InventoryResult)packet.ReadByte();
-            if (inventoryResultMessage != InventoryResult.EQUIP_ERR_OK)
+            var message = new InventoryChangeMessage();
+            message.ResultMessage = (InventoryResult)packet.ReadByte();
+            if (message.ResultMessage != InventoryResult.EQUIP_ERR_OK)
             {
-                var requiredLevel = (UInt32)0;
-                if (inventoryResultMessage == InventoryResult.EQUIP_ERR_CANT_EQUIP_LEVEL_I)
-                {
-                    requiredLevel = packet.ReadUInt32();
-                }
+                if (message.ResultMessage == InventoryResult.EQUIP_ERR_CANT_EQUIP_LEVEL_I)
+                    message.RequiredLevel = packet.ReadUInt32();
+                
 
-                var itemGuid = packet.ReadUInt64();
-                var item2Guid = packet.ReadUInt64();
+                message.ItemGuid = packet.ReadUInt64();
+                message.Item2Guid = packet.ReadUInt64();
                 packet.ReadByte();
             }
 
-            SendChatMsg(ChatMsg.Party, Languages.Universal, string.Format("Inventory change failure with msg {0}", inventoryResultMessage));
+            player.PlayerAI.SendMessageToAllActivities(message);
+            SendChatMsg(ChatMsg.Party, Languages.Universal, string.Format("Inventory change failure with msg {0}", message.ResultMessage));
         }
 
         /// <summary>
@@ -104,6 +120,29 @@ namespace mClient.Clients
                 default:
                     break;
             }
+        }
+
+        /// <summary>
+        /// Handles item pushed to us from server (usually after looting an item)
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_ITEM_PUSH_RESULT)]
+        public void HandleItemPushResult(PacketIn packet)
+        {
+            var message = new ItemPushResultMessage();
+            message.PlayerGuid = packet.ReadUInt64();
+            message.Looted = (packet.ReadUInt32() == 0);
+            message.Created = (packet.ReadUInt32() != 0);
+            packet.ReadUInt32();
+            message.BagSlot = packet.ReadByte();
+            message.ItemSlot = packet.ReadUInt32();
+            message.ItemId = packet.ReadUInt32();
+            message.ItemSuffixFactor = packet.ReadUInt32();
+            message.RandomPropertyId = packet.ReadUInt32();
+            message.Count = packet.ReadUInt32();
+            message.CountInInventory = packet.ReadUInt32();
+
+            player.PlayerAI.SendMessageToAllActivities(message);
         }
 
         /// <summary>
@@ -305,6 +344,17 @@ namespace mClient.Clients
         {
             PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_AUTOSTORE_LOOT_ITEM);
             packet.Write(itemSlot);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Releases an item we are currently looting
+        /// </summary>
+        /// <param name="guid"></param>
+        public void ReleaseLoot(ulong guid)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_LOOT_RELEASE);
+            packet.Write(guid);
             Send(packet);
         }
 

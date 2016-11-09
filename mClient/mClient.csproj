@@ -117,6 +117,7 @@
     <Compile Include="Constants\Constants.Auth.cs" />
     <Compile Include="Constants\Constants.Chat.cs" />
     <Compile Include="Constants\Constants.Combat.cs" />
+    <Compile Include="Constants\Constants.Group.cs" />
     <Compile Include="Constants\Constants.Items.cs" />
     <Compile Include="Constants\Constants.Movement.cs" />
     <Compile Include="Constants\Constants.Npc.cs" />
@@ -166,6 +167,8 @@
     <Compile Include="World\AI\Activity\Death\ReleaseSpirit.cs" />
     <Compile Include="World\AI\Activity\Loot\LootObject.cs" />
     <Compile Include="World\AI\Activity\Messages\CorpseQueryMessage.cs" />
+    <Compile Include="World\AI\Activity\Messages\InventoryChangeMessage.cs" />
+    <Compile Include="World\AI\Activity\Messages\ItemPushResultMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\LootMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\QuestCompleteMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\QuestListMessage.cs" />
