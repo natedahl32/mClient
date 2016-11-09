@@ -129,7 +129,7 @@ namespace mClient.Clients
                 player.HandleChatMessage(this, (ChatMsg)Type, fguid, username, Message, channel);
 
                 object[] param = new object[] { (ChatMsg)Type, channel, username, Message };
-                mCore.Event(new Event(EventType.EVENT_CHAT_MSG, "0", param)); 
+                mCore.SendEvent(new Event(mId, EventType.EVENT_CHAT_MSG, "0", param)); 
             }
             catch (Exception ex)
             {
@@ -151,7 +151,7 @@ namespace mClient.Clients
             player.HandleChatMessage(this, (ChatMsg)data.Type, obj.Guid, obj.Name, data.Message, data.Channel);
 
             object[] param = new object[] { (ChatMsg)data.Type, data.Channel, obj.Name, data.Message };
-            mCore.Event(new Event(EventType.EVENT_CHAT_MSG, "0", param));
+            mCore.SendEvent(new Event(mId, EventType.EVENT_CHAT_MSG, "0", param));
         }
 
         public void SendChatMsg(ChatMsg Type, Languages Language, string Message)

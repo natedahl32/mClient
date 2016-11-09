@@ -130,10 +130,10 @@ namespace mClient.Shared
 
 
 
-            if (((UInt32)type & Config.LogFilter) > 0)
-                return;
-            else
-                mCore.Event(new Event(EventType.EVENT_LOG, "0", new object[] { msg }));
+            //if (((UInt32)type & Config.LogFilter) > 0)
+            //    return;
+            //else
+            //    mCore.SendEvent(new Event(EventType.EVENT_LOG, "0", new object[] { msg }));
         }
 
     }

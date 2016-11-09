@@ -21,6 +21,7 @@ namespace mClient.Clients
 {
     public partial class WorldServerClient
     {
+        private Guid mId;
 
         private UInt32 ServerSeed;
         private UInt32 ClientSeed;
@@ -64,9 +65,15 @@ namespace mClient.Clients
         //
         public Realm realm;
         public Character[] Charlist = new Character[0];
-        
+
+        // Events dispatched
+        public event EventHandler<CharacterListEventArgs> ReceivedCharacterList;
+        public event EventHandler<LoginEventArgs> LoggedIn;
+        public event EventHandler Disconnected;
+
         public WorldServerClient(string user, Realm rl, byte[] key)
         {
+            mId = Guid.NewGuid();
             mUsername = user.ToUpper();
             objectMgr = new ObjectMgr();
             terrainMgr = new TerrainMgr();
@@ -77,6 +84,7 @@ namespace mClient.Clients
 
         public WorldServerClient(Realm rl, byte[] key)
         {
+            mId = Guid.NewGuid();
             mUsername = Config.Login.ToUpper();
             objectMgr = new ObjectMgr();
             movementMgr = new MovementMgr(this);
@@ -84,6 +92,11 @@ namespace mClient.Clients
             realm = rl;
             mKey = key;
         }
+
+        /// <summary>
+        /// Gets the id for this client
+        /// </summary>
+        public Guid Id { get { return mId; } }
 
 
         public void Connect()
@@ -202,8 +215,10 @@ namespace mClient.Clients
 
         public void Disconnect()
         {
-            Event e = new Event(EventType.EVENT_DISCONNECT, "", null);
-            mCore.Event(e);
+            if (Disconnected != null)
+                Disconnected(this, new EventArgs());
+            Event e = new Event(mId, EventType.EVENT_DISCONNECT_WS, "", null);
+            mCore.SendEvent(e);
         }
 
         public void HardDisconnect()
@@ -221,6 +236,16 @@ namespace mClient.Clients
         ~WorldServerClient()
         {
             HardDisconnect();
+        }
+
+        public class CharacterListEventArgs : EventArgs
+        {
+            public IList<Character> Characters { get; set; }
+        }
+
+        public class LoginEventArgs : EventArgs
+        {
+            public Player Player { get; set; }
         }
     }
 }

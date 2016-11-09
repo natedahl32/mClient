@@ -39,6 +39,8 @@
             this.editBiSListsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
+            this.serverInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -51,7 +53,7 @@
             this.dataToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(2048, 40);
+            this.menuStrip1.Size = new System.Drawing.Size(1431, 42);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -61,6 +63,8 @@
             this.createNewBotAccountToolStripMenuItem,
             this.addExistingBotAccountToolStripMenuItem,
             this.toolStripMenuItem1,
+            this.serverInfoToolStripMenuItem,
+            this.toolStripMenuItem2,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(64, 38);
@@ -77,6 +81,7 @@
             this.addExistingBotAccountToolStripMenuItem.Name = "addExistingBotAccountToolStripMenuItem";
             this.addExistingBotAccountToolStripMenuItem.Size = new System.Drawing.Size(383, 38);
             this.addExistingBotAccountToolStripMenuItem.Text = "Add Existing Bot Account";
+            this.addExistingBotAccountToolStripMenuItem.Click += new System.EventHandler(this.addExistingBotAccountToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
@@ -96,7 +101,7 @@
             this.editStatWeightsToolStripMenuItem,
             this.editBiSListsToolStripMenuItem});
             this.dataToolStripMenuItem.Name = "dataToolStripMenuItem";
-            this.dataToolStripMenuItem.Size = new System.Drawing.Size(76, 38);
+            this.dataToolStripMenuItem.Size = new System.Drawing.Size(76, 36);
             this.dataToolStripMenuItem.Text = "Data";
             // 
             // editStatWeightsToolStripMenuItem
@@ -113,11 +118,15 @@
             // 
             // dataGridView1
             // 
+            this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.AllowUserToDeleteRows = false;
+            this.dataGridView1.AllowUserToResizeRows = false;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Location = new System.Drawing.Point(12, 157);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 33;
-            this.dataGridView1.Size = new System.Drawing.Size(2024, 415);
+            this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView1.Size = new System.Drawing.Size(1407, 415);
             this.dataGridView1.TabIndex = 1;
             // 
             // label1
@@ -129,11 +138,23 @@
             this.label1.TabIndex = 2;
             this.label1.Text = "All Available Bots";
             // 
+            // serverInfoToolStripMenuItem
+            // 
+            this.serverInfoToolStripMenuItem.Name = "serverInfoToolStripMenuItem";
+            this.serverInfoToolStripMenuItem.Size = new System.Drawing.Size(383, 38);
+            this.serverInfoToolStripMenuItem.Text = "Server Info";
+            this.serverInfoToolStripMenuItem.Click += new System.EventHandler(this.serverInfoToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(380, 6);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(2048, 809);
+            this.ClientSize = new System.Drawing.Size(1431, 809);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.menuStrip1);
@@ -164,6 +185,8 @@
         private System.Windows.Forms.ToolStripMenuItem editBiSListsToolStripMenuItem;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ToolStripMenuItem serverInfoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
     }
 }
 

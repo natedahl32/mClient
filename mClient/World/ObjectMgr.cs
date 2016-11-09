@@ -64,11 +64,6 @@ namespace mClient.Clients
             {
                 lock(mObjectsLock)
                     mObjects.Add(obj);
-
-                Object[] test = new Object[1];
-                test[0] = obj;
-                Event m2 = new Event(EventType.EVENT_ADD_OBJECT, "0", test);
-                mCore.Event(m2);
             }
         }
 
@@ -86,9 +81,6 @@ namespace mClient.Clients
                     test = new Object[1];
                     test[0] = obj;
                 }
-
-                Event m2 = new Event(EventType.EVENT_UDT_OBJECT, "0", test);
-                mCore.Event(m2);
             }
             else
             {

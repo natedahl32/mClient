@@ -112,7 +112,8 @@ namespace mConsole
                 case EventType.EVENT_ERROR:
                     //MessageBox.Show((string)e.eventArgs[0], "Error!");
                     break;
-                case EventType.EVENT_DISCONNECT:
+                case EventType.EVENT_DISCONNECT_LS:
+                case EventType.EVENT_DISCONNECT_WS:
                     //HandleDisconnect();
                     break;
             }

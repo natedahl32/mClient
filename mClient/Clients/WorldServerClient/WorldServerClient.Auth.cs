@@ -90,7 +90,9 @@ namespace mClient.Clients
             Log.WriteLine(LogType.Success, "Received info about {0} characters", count);
 
             Charlist = characterList;
-            mCore.Event(new Event(EventType.EVENT_CHARLIST, "", new object[] { Charlist }));
+            if (ReceivedCharacterList != null)
+                ReceivedCharacterList(this, new CharacterListEventArgs() { Characters = Charlist });
+            mCore.SendEvent(new Event(mId, EventType.EVENT_CHARLIST, "", new object[] { Charlist }));
             PingLoop();
         }
 
@@ -117,6 +119,8 @@ namespace mClient.Clients
             terrainMgr.ChangeMap(chr.MapID);
 
             CreatePlayer((PlayerObj)objectMgr.getPlayerObject(), chr);
+            if (LoggedIn != null)
+                LoggedIn(this, new LoginEventArgs() { Player = player });
             Log.WriteLine(LogType.Success, "Logged into world as {0}.", chr.Name);
         }
 

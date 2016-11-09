@@ -15,6 +15,8 @@ namespace mClient.Clients
 {
     public class LogonServerClient
     {
+        private Guid mId;
+
         // Connection Info
         readonly string mHost;
         readonly int mPort;
@@ -49,8 +51,9 @@ namespace mClient.Clients
         public Socket mSocket = null;
         public TextWriter tw;
 
-        // Event dispatched when we get the realm list
+        // Events dispatched
         public event EventHandler<RealmListEventArgs> ReceivedRealmList;
+        public event EventHandler Disconnected;
 
         #region Constructors
 
@@ -61,13 +64,10 @@ namespace mClient.Clients
         /// <param name="port">Port on which LogonServer listens for connection</param>
         /// <param name="username">Username</param>
         /// <param name="password">Password</param>
-        public LogonServerClient(string host, int port, string username, string password)
+        public LogonServerClient(string host, int port, string username, string password) : this(host, username, password)
         {
             Time.GetTime();
-            mHost = host;
             mPort = port;
-            mUsername = username.ToUpper();
-            mPassword = password.ToUpper();
         }
 
 
@@ -78,12 +78,10 @@ namespace mClient.Clients
         /// <param name="host">Host to LogonServer</param>
         /// <param name="username">Username</param>
         /// <param name="password">Password</param>
-        public LogonServerClient(string host, string username, string password)
+        public LogonServerClient(string host, string username, string password) : this(username, password)
         {
             mHost = host;
             mPort = 3724;
-            mUsername = username.ToUpper();
-            mPassword = password.ToUpper();
         }
 
 
@@ -94,11 +92,21 @@ namespace mClient.Clients
         /// <param name="password">Password</param>
         public LogonServerClient(string username, string password)
         {
+            mId = Guid.NewGuid();
             mHost = "localhost";
             mPort = 3724;
             mUsername = username.ToUpper();
             mPassword = password.ToUpper();
         }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the id for this client
+        /// </summary>
+        public Guid Id { get { return mId; } }
 
         #endregion
 
@@ -322,7 +330,7 @@ namespace mClient.Clients
                 Realmlist = realms;
                 if (ReceivedRealmList != null)
                     this.ReceivedRealmList(this, new RealmListEventArgs() { Realms = Realmlist });
-                mCore.Event(new Event(EventType.EVENT_REALMLIST, "", new object[] { Realmlist }));
+                mCore.SendEvent(new Event(mId, EventType.EVENT_REALMLIST, "", new object[] { Realmlist }));
 
             }
             catch (Exception ex)
@@ -391,8 +399,10 @@ namespace mClient.Clients
 
         public void Disconnect()
         {
-            Event e = new Event(EventType.EVENT_DISCONNECT, "", null);
-            mCore.Event(e);
+            if (Disconnected != null)
+                Disconnected(this, new EventArgs());
+            Event e = new Event(mId, EventType.EVENT_DISCONNECT_LS, "", null);
+            mCore.SendEvent(e);
         }
 
         public void HardDisconnect()

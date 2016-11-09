@@ -7,11 +7,11 @@ namespace mClient
 {
     public static class mCore
     {
-        public static CallBackEvent Event;             // For sending events to the UI
+        private static CallBackEvent Event;             // For sending events to the UI
 
-        public static void Debug()
+        public static void Debug(Guid clientId)
         {
-            Event m2 = new Event(EventType.EVENT_LOG, "0", new object[0]);
+            Event m2 = new Event(clientId, EventType.EVENT_LOG, "0", new object[0]);
             Event(m2);
         }
 
@@ -20,10 +20,16 @@ namespace mClient
             Event = e;
         }
 
-        public static void SendError(string msg)
+        public static void SendError(Guid clientId, string msg)
         {
-            Event m2 = new Event(EventType.EVENT_ERROR, "0", new object[1] { msg });
+            Event m2 = new Event(clientId, EventType.EVENT_ERROR, "0", new object[1] { msg });
             Event(m2);
+        }
+
+        public static void SendEvent(Event e)
+        {
+            if (Event != null)
+                Event(e);
         }
     }
 
@@ -31,12 +37,14 @@ namespace mClient
 
     public class Event
     {
+        public Guid ClientId;
         public EventType eventType;
         public string eventTime;
         public object[] eventArgs;
 
-        public Event(EventType type, string time, params object[] parms)
+        public Event(Guid clientId, EventType type, string time, params object[] parms)
         {
+            ClientId = clientId;
             eventType = type;
             eventTime = time;
             eventArgs = parms;
@@ -53,7 +61,8 @@ namespace mClient
         EVENT_LOG,
         EVENT_CHAT_MSG,
         EVENT_ERROR,
-        EVENT_DISCONNECT,
+        EVENT_DISCONNECT_LS,
+        EVENT_DISCONNECT_WS
     }
 
     // Delegates - Used to make calls to the UI from this .dll
