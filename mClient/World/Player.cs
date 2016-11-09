@@ -409,20 +409,11 @@ namespace mClient.World
         /// <param name="questGivers"></param>
         public void UpdateQuestGivers(IList<QuestGiver> questGivers)
         {
-            List<QuestGiver> toRemove;
             lock (mQuestGiversLock)
-                toRemove = mQuestGivers.Where(qg => !questGivers.Any(qg2 => qg.Guid == qg2.Guid)).ToList();
-
-            // Remove any that don't exist anymore
-            foreach (var q in toRemove)
-                lock (mQuestGiversLock)
-                    mQuestGivers.Remove(q);
-
-            // Add any that don't exist already
-            foreach (var q in questGivers)
-                if (!mQuestGivers.Any(qg => qg.Guid == q.Guid))
-                    lock (mQuestGiversLock)
-                        mQuestGivers.Add(q);
+            {
+                mQuestGivers.Clear();
+                mQuestGivers = questGivers.ToList();
+            }
         }
 
         /// <summary>

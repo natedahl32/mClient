@@ -2,6 +2,7 @@
 using mClient.Clients;
 using mClient.Constants;
 using mClient.Shared;
+using mClient.Terrain;
 using mClient.World.AI.Activity.Quest;
 using mClient.World.Quest;
 using System;
@@ -14,6 +15,8 @@ namespace mClient.World.AI
     public partial class PlayerAI
     {
         #region Declarations
+
+        private const float DISTANCE_TRAVELED_TO_UPDATE_QUEST_GIVERS = 20.0f;
 
         // Holds the last coordinate that we did a quest status update check
         private Coordinate mLastQuestStatusCheckCoordinate;
@@ -71,85 +74,6 @@ namespace mClient.World.AI
                             .End()
                         .End()
                     .End()
-                    /*
-                    .Selector("Get or Turn In Quests")
-                        .Do("Do I have a quest to turn in?", t =>
-                        {
-                            // Try to turn in quests first to make room for new ones and open up new quest chains
-
-                            // If I don't have a guid with a quest to turn in
-                            if (mTurningInQuestTo == 0) return BehaviourTreeStatus.Failure;
-
-                            // Does this object exist currently?
-                            var obj = Client.objectMgr.getObject(new WoWGuid(mTurningInQuestTo));
-                            if (obj == null)
-                            {
-                                mTurningInQuestTo = 0;
-                                return BehaviourTreeStatus.Failure;
-                            }
-
-                            // Are we in range to accept the quest?
-                            if (Client.movementMgr.CalculateDistance(obj.Position) > MovementMgr.MINIMUM_FOLLOW_DISTANCE)
-                            {
-                                // TODO: Blindly setting the quest giver as follow target is dangerous. We could run
-                                // right into a pack of hostiles. Should fix this!
-                                SetFollowTarget(obj);
-                                return BehaviourTreeStatus.Success;
-                            }
-
-                            // Get the quest list from the quest giver and accept all quests they have to offer for us
-                            Client.GetQuestListFromQuestGiver(mTurningInQuestTo);
-                            // Clear the guid of the person we are accepting quests from
-                            mTurningInQuestTo = 0;
-                            // Set flag that we are waiting to turn in quests from the quest giver. We don't want to start
-                            // walking away before we have turned in the quest.
-                            WaitingToTurnInQuests = true;
-                            // Now wait to accept the quests. If timeout elapses just continue on. This can happen if
-                            // the server doesn't think we are close enough to the quest giver.
-                            Wait(ref mWaitingToTurnInQuests, () => { WaitingToTurnInQuests = false; });
-
-                            return BehaviourTreeStatus.Success;
-                        })
-                        .Do("Do I have a quest to accept?", t =>
-                        {
-                            // If I don't have a guid with a quest to accept
-                            if (mAcceptingQuestFrom == 0) return BehaviourTreeStatus.Failure;
-
-                            // Does this object exist currently?
-                            var obj = Client.objectMgr.getObject(new WoWGuid(mAcceptingQuestFrom));
-                            if (obj == null)
-                            {
-                                mAcceptingQuestFrom = 0;
-                                return BehaviourTreeStatus.Failure;
-                            }
-
-                            // Are we in range to accept the quest?
-                            if (Client.movementMgr.CalculateDistance(obj.Position) > MovementMgr.MINIMUM_FOLLOW_DISTANCE)
-                            {
-                                // TODO: Blindly setting the quest giver as follow target is dangerous. We could run
-                                // right into a pack of hostiles. Should fix this!
-                                SetFollowTarget(obj);
-                                return BehaviourTreeStatus.Success;
-                            }
-
-                            // Get the quest list from the quest giver and accept all quests they have to offer for us
-                            Client.GetQuestListFromQuestGiver(mAcceptingQuestFrom);
-                            // Clear the guid of the person we are accepting quests from
-                            mAcceptingQuestFrom = 0;
-                            // Set flag that we are waiting to accept quests from the quest giver. We don't want to start
-                            // walking away before we have accepted the quest.
-                            WaitingToAcceptQuests = true;
-                            // Now wait to accept the quests. If timeout elapses just continue on. This can happen if
-                            // the server doesn't think we are close enough to the quest giver.
-                            Wait(ref mWaitingToAcceptQuests, () => 
-                            {
-                                WaitingToAcceptQuests = false;
-                            });
-
-                            return BehaviourTreeStatus.Success;
-                        })
-                    .End()
-                    */
                  .End()
                  .Build();
         }
@@ -172,7 +96,7 @@ namespace mClient.World.AI
 
             // If we have moved more than 20 yards since the last update, do another update and
             // return failure. We will revisit this once we get back quest statuses.
-            if (Client.movementMgr.CalculateDistance(mLastQuestStatusCheckCoordinate) >= 20.0f)
+            if (TerrainMgr.CalculateDistance(Player.Position, mLastQuestStatusCheckCoordinate) >= DISTANCE_TRAVELED_TO_UPDATE_QUEST_GIVERS)
             {
                 mLastQuestStatusCheckCoordinate = Player.Position;
                 Client.GetQuestGiverStatuses();

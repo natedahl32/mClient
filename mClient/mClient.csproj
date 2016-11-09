@@ -165,6 +165,7 @@
     <Compile Include="World\AI\Activity\Combat\DoDamage.cs" />
     <Compile Include="World\AI\Activity\Death\FindCorpse.cs" />
     <Compile Include="World\AI\Activity\Death\ReleaseSpirit.cs" />
+    <Compile Include="World\AI\Activity\Loot\LootItemFromObject.cs" />
     <Compile Include="World\AI\Activity\Loot\LootObject.cs" />
     <Compile Include="World\AI\Activity\Messages\CorpseQueryMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\InventoryChangeMessage.cs" />

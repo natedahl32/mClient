@@ -41,6 +41,12 @@ namespace mClient.World.AI.Activity.Quest
 
         #region Public Methods
 
+        public override void Start()
+        {
+            base.Start();
+            PlayerAI.Client.SendChatMsg(ChatMsg.Party, Languages.Universal, "I'm getting an available quest.");
+        }
+
         public override void Complete()
         {
             base.Complete();
@@ -77,7 +83,7 @@ namespace mClient.World.AI.Activity.Quest
                     return;
                 }
 
-                // Get a quest to try and complete
+                // Get a quest to try and accept
                 var selectedQuest = mQuestsWeDoNotHave[0];
                 mQuestsWeDoNotHave.RemoveAt(0);
 

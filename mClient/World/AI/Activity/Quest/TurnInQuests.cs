@@ -44,6 +44,12 @@ namespace mClient.World.AI.Activity.Quest
 
         #region Public Methods
 
+        public override void Start()
+        {
+            base.Start();
+            PlayerAI.Client.SendChatMsg(ChatMsg.Party, Languages.Universal, "I'm turning in some quests now.");
+        }
+
         public override void Complete()
         {
             base.Complete();
