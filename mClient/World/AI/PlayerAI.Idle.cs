@@ -15,6 +15,12 @@ namespace mClient.World.AI
             var builder = new BehaviourTreeBuilder();
             return builder
                 .Selector("idle-selector")
+                    .Do("Has Current Activity?", t =>            // idel logic doesn't run if we have an activity we are currently doing
+                    {
+                        if (HasCurrentActivity)
+                            return BehaviourTreeStatus.Success;
+                        return BehaviourTreeStatus.Failure;
+                    })
                     .Do("Should I stay?", t => Stay())
                     .Do("Should I follow?", t => Follow())
                     .Do("Do I have a move command?", t => NoMoveCommand())

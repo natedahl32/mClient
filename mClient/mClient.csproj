@@ -164,7 +164,9 @@
     <Compile Include="World\AI\Activity\Combat\DoDamage.cs" />
     <Compile Include="World\AI\Activity\Death\FindCorpse.cs" />
     <Compile Include="World\AI\Activity\Death\ReleaseSpirit.cs" />
+    <Compile Include="World\AI\Activity\Loot\LootObject.cs" />
     <Compile Include="World\AI\Activity\Messages\CorpseQueryMessage.cs" />
+    <Compile Include="World\AI\Activity\Messages\LootMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\QuestCompleteMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\QuestListMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\QuestOfferRewards.cs" />
@@ -180,7 +182,11 @@
     <Compile Include="World\AI\PlayerAI.Inventory.cs" />
     <Compile Include="World\AI\PlayerAI.Loot.cs" />
     <Compile Include="World\AI\PlayerAI.Quest.cs" />
+    <Compile Include="World\Creature\CreatureInfo.cs" />
+    <Compile Include="World\Creature\CreatureManager.cs" />
+    <Compile Include="World\GameObject\GameObjectManager.cs" />
     <Compile Include="World\Group.cs" />
+    <Compile Include="World\GameObject\GameObjectInfo.cs" />
     <Compile Include="World\Items\ItemInfo.cs" />
     <Compile Include="World\Items\ItemManager.cs" />
     <Compile Include="World\Items\ItemSpellDamage.cs" />
@@ -195,6 +201,7 @@
     <Compile Include="World\Quest\QuestGiver.cs" />
     <Compile Include="World\Quest\QuestInfo.cs" />
     <Compile Include="World\Quest\QuestManager.cs" />
+    <Compile Include="World\Quest\QuestObjective.cs" />
     <Compile Include="World\TerrainManager.cs" />
     <Compile Include="World\Terrain\ADTProcessor.cs" />
     <Compile Include="World\Terrain\BlizChunkHeader.cs" />

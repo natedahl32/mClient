@@ -11,6 +11,8 @@ using mClient.Shared;
 using mConsole.Commands;
 using mClient.World.Quest;
 using mClient.World.Items;
+using mClient.World.Creature;
+using mClient.World.GameObject;
 
 namespace mConsole
 {
@@ -36,6 +38,8 @@ namespace mConsole
             CommandHandler.Initialize();
 
             // Load our caches
+            CreatureManager.Instance.Load();
+            GameObjectManager.Instance.Load();
             QuestManager.Instance.Load();
             ItemManager.Instance.Load();
 
@@ -54,6 +58,8 @@ namespace mConsole
             if (eventType == 2)
             {
                 // Serialize our managers
+                CreatureManager.Instance.Serialize();
+                GameObjectManager.Instance.Serialize();
                 QuestManager.Instance.Serialize();
                 ItemManager.Instance.Serialize();
             }

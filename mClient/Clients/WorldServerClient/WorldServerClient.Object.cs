@@ -7,6 +7,8 @@ using mClient.Constants;
 using System.Collections;
 using System.Collections.Generic;
 using mClient.Clients.UpdateBlocks;
+using mClient.World.Creature;
+using mClient.World.GameObject;
 
 namespace mClient.Clients
 {
@@ -225,7 +227,7 @@ namespace mClient.Clients
             if (query.QueryType == QueryQueueType.Creature)
                 CreatureQuery(fguid, query.Entry);
             else if (query.QueryType == QueryQueueType.Object)
-                ObjectQuery(fguid, query.Entry);
+                GameObjectQuery(fguid, query.Entry);
             else if (query.QueryType == QueryQueueType.Name)
                 QueryName(fguid);
 
@@ -241,15 +243,31 @@ namespace mClient.Clients
 			Send(packet);
 		}
 
-		public void ObjectQuery(WoWGuid guid, UInt32 entry)
+        public void CreatureQuery(UInt32 entry)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_CREATURE_QUERY);
+            packet.Write(entry);
+            packet.Write((UInt64)0);
+            Send(packet);
+        }
+
+        public void GameObjectQuery(WoWGuid guid, UInt32 entry)
 		{
-			PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_Object_QUERY);
+			PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_GAMEOBJECT_QUERY);
 			packet.Write(entry);
             packet.Write(guid.GetNewGuid());
 			Send(packet);
 		}
 
-		public void QueryName(WoWGuid guid)
+        public void GameObjectQuery(UInt32 entry)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_GAMEOBJECT_QUERY);
+            packet.Write(entry);
+            packet.Write((UInt64)0);
+            Send(packet);
+        }
+
+        public void QueryName(WoWGuid guid)
 		{
 			PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_NAME_QUERY);
             packet.Write(guid.GetNewGuid());
@@ -262,6 +280,29 @@ namespace mClient.Clients
 			packet.Write(guid);
 			Send(packet);
 		}
+
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_GAMEOBJECT_QUERY_RESPONSE)]
+        public void Handle_GameObjectQuery(PacketIn packet)
+        {
+            var go = new GameObjectInfo();
+            go.GameObjectId = packet.ReadUInt32();
+
+            try
+            {
+                go.GameObjectType = packet.ReadUInt32();
+                packet.ReadUInt32();
+                go.Name = packet.ReadString();
+                packet.ReadBytes(3);
+                var data = new List<UInt32>();
+                for (int i = 0; i < GameObjectInfo.MAX_GAMEOBJECT_DATA_COUNT; i++)
+                    data.Add(packet.ReadUInt32());
+                go.Data = data;
+
+                GameObjectManager.Instance.Add(go);
+            }
+            catch(Exception ex)
+            { }
+        }
 
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_CREATURE_QUERY_RESPONSE)]
         public void Handle_CreatureQuery(PacketIn packet)
@@ -297,9 +338,18 @@ namespace mClient.Clients
                 }
             }
 
-                
-
-
+            // Add them to the creature manager
+            var creatureInfo = new CreatureInfo()
+            {
+                CreatureId = entry.entry,
+                Name = entry.name,
+                SubName = entry.subname,
+                CreatureFlags = entry.flags,
+                CreatureType = entry.subtype,
+                CreatureFamily = entry.family,
+                CreatureRank = entry.rank
+            };
+            CreatureManager.Instance.Add(creatureInfo);
         }
 
 

@@ -453,7 +453,7 @@ namespace mClient.World
         /// <param name="guid"></param>
         public void RemoveLootable(WoWGuid guid)
         {
-            mLootable.Remove(guid);
+            mLootable.RemoveAll(l => l.GetOldGuid() == guid.GetOldGuid());
         }
 
         #endregion

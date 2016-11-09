@@ -1,6 +1,7 @@
 ﻿using mClient.Constants;
 using mClient.Network;
 using mClient.Shared;
+using mClient.World.AI.Activity.Messages;
 using mClient.World.Items;
 using System;
 using System.Collections.Generic;
@@ -47,16 +48,8 @@ namespace mClient.Clients
                 itemsToLoot.Add(lootItem);
             }
 
-            // If there is money to loot, do that also
-            if (goldAmount > 0) LootMoney();
-
-            // Loot all items that we can
-            foreach (var item in itemsToLoot)
-                if (item.LootSlotType == 0)
-                    LootItem(item.LootSlot);
-
-            // Set flag to notify AI we are done looting
-            player.PlayerAI.IsLooting = false;
+            var message = new LootMessage() { CoinAmount = goldAmount, Items = itemsToLoot };
+            player.PlayerAI.SendMessageToAllActivities(message);
         }
 
         /// <summary>

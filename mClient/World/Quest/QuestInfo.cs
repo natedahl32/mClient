@@ -10,6 +10,15 @@ namespace mClient.World.Quest
 {
     public class QuestInfo
     {
+        #region Constructors
+
+        public QuestInfo()
+        {
+            QuestObjectives = new List<QuestObjective>();
+        }
+
+        #endregion
+
         #region Properties
 
         /// <summary>
@@ -51,6 +60,11 @@ namespace mClient.World.Quest
         /// Gets or sets the point of the quest on the map
         /// </summary>
         public Coords3 QuestPoint { get; set; }
+
+        /// <summary>
+        /// Gets or sets all objectives for this quest
+        /// </summary>
+        public List<QuestObjective> QuestObjectives { get; set; }
 
         #endregion
     }

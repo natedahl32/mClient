@@ -2,6 +2,9 @@
 using mClient.Network;
 using mClient.Shared;
 using mClient.World.AI.Activity.Messages;
+using mClient.World.Creature;
+using mClient.World.GameObject;
+using mClient.World.Items;
 using mClient.World.Quest;
 using System;
 using System.Collections.Generic;
@@ -125,6 +128,48 @@ namespace mClient.Clients
             packet.ReadUInt32();
 
             var questTitle = packet.ReadString();
+            packet.ReadString(); // Objectives
+            packet.ReadString(); // Details
+            packet.ReadString(); // EndText
+
+            // Quest objectives
+            var objectives = new List<QuestObjective>();
+            for (int i = 0; i < 4; i++)
+            {
+                var creatureOrGOId = packet.ReadUInt32(); // this is the template id
+                var creatureOrGOCount = packet.ReadUInt32();
+                var requiredItemId = packet.ReadUInt32();
+                var requiredItemCount = packet.ReadUInt32();
+
+                var objective = new QuestObjective()
+                {
+                    RequiredCreatureOrGameObjectId = creatureOrGOId,
+                    RequiredCreatureOrGameObjectCount = creatureOrGOCount,
+                    RequiredItemId = requiredItemId,
+                    RequiredItemCount = requiredItemCount
+                };
+                objectives.Add(objective);
+
+                if (creatureOrGOId > 0)
+                {
+                    // Check for the creature
+                    var creature = CreatureManager.Instance.Get(creatureOrGOId);
+                    if (creature == null)
+                        CreatureQuery(creatureOrGOId);
+                    // Check for the game object
+                    var go = GameObjectManager.Instance.Get(creatureOrGOId);
+                    if (go == null)
+                        GameObjectQuery(creatureOrGOId);
+                }
+
+                if (requiredItemId > 0)
+                {
+                    // Check for item
+                    var item = ItemManager.Instance.Get(requiredItemId);
+                    if (item == null)
+                        QueryItemPrototype(requiredItemId);
+                }
+            }
 
             var questInfo = new QuestInfo()
             {
@@ -135,7 +180,8 @@ namespace mClient.Clients
                 NextQuestInChain = nextQuestInChain,
                 QuestFlags = questFlags,
                 QuestPointMapId = questPointMapId,
-                QuestPoint = new Coords3() { X = questPointX, Y = questPointY }
+                QuestPoint = new Coords3() { X = questPointX, Y = questPointY },
+                QuestObjectives = objectives
             };
 
             QuestManager.Instance.Add(questInfo);
@@ -388,7 +434,7 @@ namespace mClient.Clients
         }
 
         /// <summary>
-        /// Handles an update that a quest we have is completed
+        /// Handles an update of an objective for a quest
         /// </summary>
         /// <param name="packet"></param>
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_QUESTUPDATE_ADD_KILL)]
@@ -403,7 +449,64 @@ namespace mClient.Clients
             // Get the quest from the quest manager
             var quest = QuestManager.Instance.Get(questId);
             if (quest != null)
-                SendChatMsg(ChatMsg.Party, Languages.Universal, string.Format("Quest '{0}' Update: {1} of {2} killed.", quest.QuestName, killCount, requiredCount));
+            {
+                // Get the creature
+                var creature = CreatureManager.Instance.Get(creatureTemplateEntry);
+                if (creature == null)
+                {
+                    SendChatMsg(ChatMsg.Party, Languages.Universal, string.Format("Quest '{0}' Update: {1} of {2} killed.", quest.QuestName, killCount, requiredCount));
+                    CreatureQuery(creatureTemplateEntry);
+                }
+                else
+                {
+                    SendChatMsg(ChatMsg.Party, Languages.Universal, string.Format("Quest '{0}' Update: {1} of {2} {3} killed.", quest.QuestName, killCount, requiredCount, creature.Name));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles an update of an objective for a quest
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_QUESTUPDATE_ADD_ITEM)]
+        public void HandleQuestAddItemUpdate(PacketIn packet)
+        {
+            var itemId = packet.ReadUInt32();
+            var itemCount = packet.ReadUInt32();
+
+            // Get the item in question
+            var item = ItemManager.Instance.Get(itemId);
+            if (item == null)
+            {
+                QueryItemPrototype(itemId);
+                return;
+            }
+
+            // Get the number of items we already have in inventory
+            uint currentCount = 0;
+            var itemInInventory = player.PlayerObject.InventoryItems.Where(i => i.Item.ObjectFieldEntry == itemId).FirstOrDefault();
+            if (itemInInventory != null)
+                currentCount = itemInInventory.Item.StackCount;
+            currentCount += itemCount;
+
+            // Get all quests that we have in our log that have this item as an objective
+            var questsWithItem = new List<QuestInfo>();
+            foreach (uint questId in player.PlayerObject.Quests)
+            {
+                var quest = QuestManager.Instance.Get(questId);
+                if (quest != null)
+                {
+                    if (quest.QuestObjectives.Any(o => o.RequiredItemId == itemId))
+                        questsWithItem.Add(quest);
+                }
+            }
+
+            foreach (var quest in questsWithItem)
+            {
+                // Get the amount we need
+                var amountNeed = quest.QuestObjectives.Where(o => o.RequiredItemId == itemId).Select(o => o.RequiredItemCount).FirstOrDefault();
+                SendChatMsg(ChatMsg.Party, Languages.Universal, string.Format("Quest '{0}' Update: {1} of {2} {3} items collected.", quest.QuestName, currentCount, amountNeed, item.ItemName));
+            }
         }
 
         #endregion

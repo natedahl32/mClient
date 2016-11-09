@@ -52,7 +52,7 @@ namespace mClient.World.AI
                 .Sequence("quest-sequence")
                     .Sequence("Find Quests to Get or Turn In")
                         .Do("Need Quest Status Update?", t => QuestGiverStatusUpdate())
-                        .Do("", t =>            // quest logic doesn't run if we have an activity we are currently doing
+                        .Do("Has Current Activity?", t =>            // quest logic doesn't run if we have an activity we are currently doing
                                 {
                                     if (HasCurrentActivity)
                                         return BehaviourTreeStatus.Failure;
