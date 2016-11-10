@@ -7,9 +7,13 @@ First, let us give credit where credit is do. This project would not be possible
 and work of the following people/teams.
 
 justMaku - For creating the original version of mClient that can connect to an emulated WOTLK server.
+
 cMangos Team - For creating the core that I have found a plethora information from and learned a great deal from
+
 WCell Team - For converting a lot of C++ code that I had no idea what it was doing to C#
+
 All other server core teams - For continually pushing forward the emulation boundaries
+
 USB, ClassicDB and other content teams - For all your hard work in populating the worlds with database content
 
 ## Benefits of M Client compared to other Bots
