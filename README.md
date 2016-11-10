@@ -14,4 +14,4 @@ USB, ClassicDB and other content teams - For all your hard work in populating th
 
 ## Benefits of M Client compared to other Bots
 
-There biggest benefit that can be realized by this project is a core agnostic Bot. All other Bots are built directly into the core itself, so they don't work for other cores without being ported. Since this Bot project is client based, it should work with any core. No more having to choose which core you are going to use based on the Bot functionality available!
+There biggest benefit that can be realized by this project is a core agnostic Bot. All other Bots are built directly into the core itself or highly dependent on the core code, so they don't work for other cores without being ported. Since this Bot project is client based, it should work with any core. No more having to choose which core you are going to use based on the Bot functionality available!
