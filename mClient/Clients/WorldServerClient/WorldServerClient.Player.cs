@@ -77,6 +77,33 @@ namespace mClient.Clients
             }
         }
 
+        /// <summary>
+        /// Handles the player leveling up
+        /// </summary>
+        /// <param name="inpacket"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_LEVELUP_INFO)]
+        public void HandleLevelUp(PacketIn packet)
+        {
+            var level = packet.ReadUInt32();
+            var hpIncrease = packet.ReadUInt32();
+            var manaIncrease = packet.ReadUInt32();
+            packet.ReadUInt32();
+            packet.ReadUInt32();
+            packet.ReadUInt32();
+            packet.ReadUInt32();
+
+            // Stat increases
+            for (int i = 0; i < 5; i++)
+            {
+                var stat = packet.ReadUInt32();
+            }
+
+            // TODO: Need to find whether or not we have spells/skills that need to be updated
+            // via a trainer. If there are we need to talk to a trainer to learn them.
+
+            // TODO: Need to handle unspent talent points. They should be spent based on the spec assigned to the bot
+        }
+
         #endregion
 
         #region Actions

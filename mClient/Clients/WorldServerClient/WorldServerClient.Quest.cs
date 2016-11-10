@@ -34,6 +34,44 @@ namespace mClient.Clients
             player.PlayerAI.SendMessageToAllActivities(message);
         }
 
+        
+        /// <summary>
+        /// Handles a quest giver requesting items
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_QUESTGIVER_REQUEST_ITEMS)]
+        public void HandleQuestGiverRequestItems(PacketIn packet)
+        {
+            var npcGuid = packet.ReadUInt64();
+            var questId = packet.ReadUInt32();
+            var title = packet.ReadString();
+            var requestItemsText = packet.ReadString();
+            packet.ReadUInt32();    // emote delay
+            packet.ReadUInt32();    // emote id
+            var autoFinish = (packet.ReadUInt32() == 1);
+            var requiredMoney = packet.ReadUInt32();
+            var requiredItemsCount = packet.ReadUInt32();
+
+            for (int i = 0; i < requiredItemsCount; i++)
+            {
+                var reqItemId = packet.ReadUInt32();
+                var reqItemCount = packet.ReadUInt32();
+                packet.ReadUInt32();    // DisplayInfoId
+            }
+
+            packet.ReadUInt32();
+            var completable = (packet.ReadUInt32() == 3);
+            packet.ReadUInt32();
+            packet.ReadUInt32();
+            packet.ReadUInt32();
+
+            var message = new QuestGiverRequestItemsMessage();
+            message.NpcId = npcGuid;
+            message.QuestId = questId;
+            message.IsCompletable = completable;
+            player.PlayerAI.SendMessageToAllActivities(message);
+        }
+
         /// <summary>
         /// Handles quest confirmation acceptance when starting group/raid quests
         /// </summary>
@@ -315,25 +353,6 @@ namespace mClient.Clients
             // Finally update any quest giver statuses
             GetQuestGiverStatuses();
             */
-        }
-
-        /// <summary>
-        /// Handles quest giver request items when trying to completing a quest
-        /// </summary>
-        /// <param name="packet"></param>
-        [PacketHandlerAtribute(WorldServerOpCode.SMSG_QUESTGIVER_REQUEST_ITEMS)]
-        public void HandleQuestGiverRequestItems(PacketIn packet)
-        {
-            var entityGuid = packet.ReadUInt64();
-            var questId = packet.ReadUInt32();
-            var questTitle = packet.ReadString();    // Quest title
-            packet.ReadString();    // Request items text
-            packet.ReadUInt32();    // Emote delay
-            packet.ReadUInt32();    // Emote Id
-
-            // TODO: Finish this up by sending a message via chat as to what items are still missing
-            // from the quest requirements and for what quest. Not certain under what circumstances we would
-            // receive this op code.
         }
 
         /// <summary>

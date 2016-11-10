@@ -1,15 +1,22 @@
 ﻿using mClient.Clients;
+using mClient.Constants;
 using mClient.World.AI.Activity.Messages;
 using mClient.World.Items;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace mClient.World.AI.Activity.Loot
 {
-    public class LootObject : BaseActivity
+    public class LootGameObject : BaseActivity
     {
         #region Declarations
 
-        private Object mLootableObject;
+        private const int OPEN_SPELL_ID = 6478;
+
+        private mClient.Clients.Object mLootableObject;
         private bool mIsLooting;
         private List<LootItem> mItemsToLoot;
 
@@ -17,10 +24,10 @@ namespace mClient.World.AI.Activity.Loot
 
         #region Constructors
 
-        public LootObject(Object lootable, PlayerAI ai) : base(ai)
+        public LootGameObject(mClient.Clients.Object obj, PlayerAI ai) : base(ai)
         {
-            if (lootable == null) throw new System.ArgumentNullException("lootable");
-            mLootableObject = lootable;
+            if (obj == null) throw new ArgumentNullException("obj");
+            mLootableObject = obj;
         }
 
         #endregion
@@ -29,19 +36,17 @@ namespace mClient.World.AI.Activity.Loot
 
         public override string ActivityName
         {
-            get { return "Looting Object"; }
+            get { return "Looting Game Object"; }
         }
 
         #endregion
 
         #region Public Methods
 
-        public override void Complete()
+        public override void Start()
         {
-            base.Complete();
-
-            // Send release loot
-            PlayerAI.Client.ReleaseLoot(mLootableObject.Guid.GetOldGuid());
+            base.Start();
+            PlayerAI.Client.SendChatMsg(ChatMsg.Party, Languages.Universal, "I'm looting a chest real quick.");
         }
 
         public override void Process()
@@ -59,14 +64,16 @@ namespace mClient.World.AI.Activity.Loot
                 }
 
                 // We are close enough, now loot it
-                PlayerAI.Client.Loot(mLootableObject.Guid);
+                // TODO: I'm not sure this is the correct way to do it, I think what spell/how we open
+                // the chest has to do with one of the data fields.
+                PlayerAI.Client.CastSpell(mLootableObject, OPEN_SPELL_ID);
                 mIsLooting = true;
                 return;
             }
 
             // If we don't have items to loot yet keep waiting for them
             if (mItemsToLoot == null) return;
-            
+
             // If we have items to loot still do that now
             if (mItemsToLoot.Count > 0)
             {
@@ -81,7 +88,9 @@ namespace mClient.World.AI.Activity.Loot
             }
 
             // No more items to loot. Remove the lootable and end the activity
-            PlayerAI.Player.RemoveLootable(mLootableObject.Guid);
+
+            // Remove the game object from the object manager or we will try to loot it again
+            PlayerAI.Client.objectMgr.delObject(mLootableObject.Guid);
             PlayerAI.CompleteActivity();
         }
 
@@ -102,24 +111,6 @@ namespace mClient.World.AI.Activity.Loot
                     // Set the items to loot
                     mItemsToLoot = lootMessage.Items;
                 }
-            }
-        }
-
-        #endregion
-
-        #region Private Methods
-
-        /// <summary>
-        /// Handles different message types from an inventory change message
-        /// </summary>
-        /// <param name="message"></param>
-        private void HandleInventoryMessage(InventoryChangeMessage message)
-        {
-            // if inventory is full, we can't loot anymore
-            if (message.ResultMessage == Constants.InventoryResult.EQUIP_ERR_INVENTORY_FULL)
-            {
-                // Clear the loot list so we don't keep trying to loot
-                mItemsToLoot.Clear();
             }
         }
 

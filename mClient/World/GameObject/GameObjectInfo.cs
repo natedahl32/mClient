@@ -1,4 +1,5 @@
-﻿using System;
+﻿using mClient.Constants;
+using System;
 using System.Collections.Generic;
 
 namespace mClient.World.GameObject
@@ -15,7 +16,7 @@ namespace mClient.World.GameObject
 
         public GameObjectInfo()
         {
-            Data = new List<uint>();
+            Data = new int[24];
         }
 
         #endregion
@@ -31,7 +32,7 @@ namespace mClient.World.GameObject
         /// <summary>
         /// Gets or sets the type
         /// </summary>
-        public UInt32 GameObjectType { get; set; }
+        public GameObjectType GameObjectType { get; set; }
 
         /// <summary>
         /// Gets or sets the name
@@ -41,7 +42,7 @@ namespace mClient.World.GameObject
         /// <summary>
         /// Gets or sets the game object data
         /// </summary>
-        public List<UInt32> Data { get; set; }
+        public int[] Data { get; set; }
 
         #endregion
     }

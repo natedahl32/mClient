@@ -1,6 +1,7 @@
 ﻿
 using FluentBehaviourTree;
 using mClient.Clients;
+using mClient.Terrain;
 using mClient.World.AI.Activity.Loot;
 using System;
 using System.Linq;
@@ -9,6 +10,8 @@ namespace mClient.World.AI
 {
     public partial class PlayerAI
     {
+        private const float MAX_DISTANCE_FOR_CHEST = 10.0f;
+
         protected IBehaviourTreeNode CreateLootAITree()
         {
             // TODO: Need to code in a wait for rez if we are in combat
@@ -21,11 +24,52 @@ namespace mClient.World.AI
                             return BehaviourTreeStatus.Failure;
                         return BehaviourTreeStatus.Success;
                     })
-                    .Do("Do we have loot?", t => CheckForLootable())
-                    .Do("Do we have an object for a lootable?", t => CheckForLootableObjects())
-                    .Do("Loot", t => LootObject())
+                    .Selector("Choose Loot Type")
+                        .Sequence("Lootable Corpses")
+                            .Do("Do we have loot?", t => CheckForLootable())
+                            .Do("Do we have an object for a lootable?", t => CheckForLootableObjects())
+                            .Do("Loot", t => LootObject())
+                        .End()
+                        .Sequence("Find Quest Objects Near Us")
+                            .Do("Has Gameobjects To Loot", t => LootableChests())
+                            .Do("Loot Close Chest", t => LootCloseChest())
+                        .End()
+                    .End()
                  .End()
                  .Build();
+        }
+
+        /// <summary>
+        /// Checks for a quest object that is near us
+        /// </summary>
+        /// <returns></returns>
+        private BehaviourTreeStatus LootableChests()
+        {
+            // Are there any game objects near us that we can loot?
+            if (Client.objectMgr.getObjectArray().Any(o => o.Type == Constants.ObjectType.GameObject && (o as mClient.Clients.GameObject).BaseInfo.GameObjectType == Constants.GameObjectType.Chest))
+                return BehaviourTreeStatus.Success;
+
+            return BehaviourTreeStatus.Failure;
+        }
+
+        /// <summary>
+        /// Finds a chest gameobject that is close and tries to loot it
+        /// </summary>
+        /// <returns></returns>
+        private BehaviourTreeStatus LootCloseChest()
+        {
+            var chests = Client.objectMgr.getObjectArray().Where(o => o.Type == Constants.ObjectType.GameObject && (o as mClient.Clients.GameObject) != null && (o as mClient.Clients.GameObject).BaseInfo.GameObjectType == Constants.GameObjectType.Chest);
+            foreach (var chest in chests)
+            {
+                if (TerrainMgr.CalculateDistance(Player.Position, chest.Position) <= MAX_DISTANCE_FOR_CHEST)
+                {
+                    // Start a new activity
+                    StartActivity(new LootGameObject(chest, this));
+                    return BehaviourTreeStatus.Success;
+                }
+            }
+
+            return BehaviourTreeStatus.Failure;
         }
 
         /// <summary>

@@ -35,8 +35,35 @@ namespace mClient.Network
 			if (Text != null) Write(Encoding.Default.GetBytes(Text));
 			Write((byte)0); // String terminator
 		}
-		
-		public byte[] ToArray()
+
+        public int WritePackedUInt64(ulong number)
+        {
+            var buffer = BitConverter.GetBytes(number);
+
+            byte mask = 0;
+            var startPos = this.BaseStream.Position;
+
+            this.Write(mask);
+
+            for (var i = 0; i < 8; i++)
+            {
+                if (buffer[i] != 0)
+                {
+                    mask |= (byte)(1 << i);
+                    this.Write(buffer[i]);
+                }
+            }
+
+            var endPos = this.BaseStream.Position;
+
+            this.BaseStream.Position = startPos;
+            this.Write(mask);
+            this.BaseStream.Position = endPos;
+
+            return (int)(endPos - startPos);
+        }
+
+        public byte[] ToArray()
 		{
 			return ((MemoryStream)BaseStream).ToArray();
 		}

@@ -165,6 +165,7 @@
     <Compile Include="World\AI\Activity\Combat\DoDamage.cs" />
     <Compile Include="World\AI\Activity\Death\FindCorpse.cs" />
     <Compile Include="World\AI\Activity\Death\ReleaseSpirit.cs" />
+    <Compile Include="World\AI\Activity\Loot\LootGameObject.cs" />
     <Compile Include="World\AI\Activity\Loot\LootItemFromObject.cs" />
     <Compile Include="World\AI\Activity\Loot\LootObject.cs" />
     <Compile Include="World\AI\Activity\Messages\CorpseQueryMessage.cs" />
@@ -172,6 +173,7 @@
     <Compile Include="World\AI\Activity\Messages\ItemPushResultMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\LootMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\QuestCompleteMessage.cs" />
+    <Compile Include="World\AI\Activity\Messages\QuestGiverRequestItemsMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\QuestListMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\QuestOfferRewards.cs" />
     <Compile Include="World\AI\Activity\Movement\TeleportToCoordinate.cs" />

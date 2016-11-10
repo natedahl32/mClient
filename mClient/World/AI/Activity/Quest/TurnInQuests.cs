@@ -105,6 +105,7 @@ namespace mClient.World.AI.Activity.Quest
         {
             base.HandleMessage(message);
 
+            // Handles a quest list returned from an npc
             if (message.MessageType == Constants.WorldServerOpCode.SMSG_QUESTGIVER_QUEST_LIST)
             {
                 // Get the quest id list returned from this quest giver
@@ -115,6 +116,39 @@ namespace mClient.World.AI.Activity.Quest
                     {
                         mQuestsRetrieved = questListMessage.QuestIdList.ToList();
                         mQuestsWeHaveInLog = mQuestsRetrieved.Where(q => PlayerAI.Player.PlayerObject.GetQuestSlot(q) < QuestConstants.MAX_QUEST_LOG_SIZE).ToList();
+                    }
+                }
+            }
+
+            // Handles a single quest returned from an npc as opposed to a list
+            if (message.MessageType == WorldServerOpCode.SMSG_QUESTGIVER_REQUEST_ITEMS)
+            {
+                var requestItemsMessage = message as QuestGiverRequestItemsMessage;
+                if (requestItemsMessage != null)
+                {
+                    // Make sure it's the correct npc
+                    if (requestItemsMessage.NpcId == mTurningInToQuestGiver.Guid.GetOldGuid())
+                    {
+                        // If the quest is completable
+                        if (requestItemsMessage.IsCompletable)
+                        {
+                            // Make sure we have the quest in our log
+                            if (PlayerAI.Player.PlayerObject.GetQuestSlot(requestItemsMessage.QuestId) < QuestConstants.MAX_QUEST_LOG_SIZE)
+                            {
+                                mQuestsWeHaveInLog = new List<uint>() { requestItemsMessage.QuestId };
+                            }
+                            else
+                            {
+                                PlayerAI.Client.SendChatMsg(ChatMsg.Party, Languages.Universal, string.Format("I received quest {0} from Npc but it isn't in my log!", requestItemsMessage.QuestId));
+                            }
+                        }
+                        else
+                        {
+                            // TODO: Finish this up by sending a message via chat as to what items are still missing
+                            // from the quest requirements and for what quest. Not certain under what circumstances we would
+                            // receive this op code.
+                            PlayerAI.Client.SendChatMsg(ChatMsg.Party, Languages.Universal, string.Format("I received quest {0} from Npc but it isn't completable. I must be missing some items!", requestItemsMessage.QuestId));
+                        }
                     }
                 }
             }

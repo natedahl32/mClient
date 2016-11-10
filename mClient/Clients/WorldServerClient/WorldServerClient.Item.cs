@@ -358,6 +358,17 @@ namespace mClient.Clients
             Send(packet);
         }
 
+        /// <summary>
+        /// Uses a game object in the world
+        /// </summary>
+        /// <param name="guid"></param>
+        public void UseGameObject(WoWGuid guid)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_GAMEOBJ_USE);
+            packet.Write(guid.GetOldGuid());
+            Send(packet);
+        }
+
         #endregion
     }
 }

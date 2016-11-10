@@ -7,30 +7,24 @@ namespace mClient.Constants
 {
     public enum SpellTargetFlags : uint
     {
-        Self = 0,
-        SpellTargetFlag_Dynamic_0x1 = 0x1,
-        Unit = 0x0002,
-        SpellTargetFlag_Dynamic_0x4 = 0x4,
-        SpellTargetFlag_Dynamic_0x8 = 0x8,
-        Item = 0x10,
-        SourceLocation = 0x20,
-        DestinationLocation = 0x40,
-        UnkObject_0x80 = 0x80,
-        UnkUnit_0x100 = 0x100,
-        PvPCorpse = 0x200,
-        UnitCorpse = 0x400,
-        Object = 0x800,
-        TradeItem = 0x1000,
-        String = 0x2000,
-        /// <summary>
-        /// For spells that open an object
-        /// </summary>
-        OpenObject = 0x4000,
-        Corpse = 0x8000,
-        SpellTargetFlag_Dynamic_0x10000 = 0x10000,
-        Glyph = 0x20000,
-
-        Flag_0x200000 = 0x200000,
+        TARGET_FLAG_SELF = 0x00000000,
+        TARGET_FLAG_UNUSED1 = 0x00000001,               // not used in any spells (can be set dynamically)
+        TARGET_FLAG_UNIT = 0x00000002,                  // pguid
+        TARGET_FLAG_UNUSED2 = 0x00000004,               // not used in any spells (can be set dynamically)
+        TARGET_FLAG_UNUSED3 = 0x00000008,               // not used in any spells (can be set dynamically)
+        TARGET_FLAG_ITEM = 0x00000010,                  // pguid
+        TARGET_FLAG_SOURCE_LOCATION = 0x00000020,       // 3 float
+        TARGET_FLAG_DEST_LOCATION = 0x00000040,         // 3 float
+        TARGET_FLAG_OBJECT_UNK = 0x00000080,            // used in 7 spells only
+        TARGET_FLAG_UNIT_UNK = 0x00000100,              // looks like self target (389 spells)
+        TARGET_FLAG_PVP_CORPSE = 0x00000200,            // pguid
+        TARGET_FLAG_UNIT_CORPSE = 0x00000400,           // 10 spells (gathering professions)
+        TARGET_FLAG_OBJECT = 0x00000800,                // pguid, 0 spells
+        TARGET_FLAG_TRADE_ITEM = 0x00001000,            // pguid, 0 spells
+        TARGET_FLAG_STRING = 0x00002000,                // string, 0 spells
+        TARGET_FLAG_UNK1 = 0x00004000,                  // 199 spells, opening object/lock
+        TARGET_FLAG_CORPSE = 0x00008000,                // pguid, resurrection spells
+        TARGET_FLAG_UNK2 = 0x00010000,                  // pguid, not used in any spells (can be set dynamically)
     }
 
     public static class SpellEnumExtensions

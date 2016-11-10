@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using mClient.Clients.UpdateBlocks;
 using mClient.World.Creature;
 using mClient.World.GameObject;
+using mClient.World.Items;
 
 namespace mClient.Clients
 {
@@ -80,11 +81,12 @@ namespace mClient.Clients
                             newObject = Object.CreateObjectByType(updateGuid, (ObjectType)objectType);
                             objectMgr.addObject(newObject);
                         }
-                        
+
                         HandleUpdateMovementBlock(packet, newObject);
                         HandleUpdateObjectFieldBlock(packet, newObject);
                         objectMgr.updateObject(newObject);
                         player.ObjectAdded(newObject);
+                        CheckForOrQueryObjectEntry(newObject.Type, newObject.ObjectFieldEntry);
                         //Log.WriteLine(LogType.Normal, "Handling Creation of object: {0}", newObject.Guid.ToString());
                         break;
 
@@ -134,6 +136,28 @@ namespace mClient.Clients
                 }
             }
               
+        }
+
+        private void CheckForOrQueryObjectEntry(ObjectType type, uint entry)
+        {
+            if (type == ObjectType.Container || type == ObjectType.Item)
+            {
+                var existing = ItemManager.Instance.Get(entry);
+                if (existing == null)
+                    QueryItemPrototype(entry);
+            }
+            if (type == ObjectType.DynamicObject || type == ObjectType.GameObject || type == ObjectType.Object)
+            {
+                var existing = GameObjectManager.Instance.Get(entry);
+                if (existing == null)
+                    GameObjectQuery(entry);
+            }
+            if (type == ObjectType.Unit)
+            {
+                var existing = CreatureManager.Instance.Get(entry);
+                if (existing == null)
+                    CreatureQuery(entry);
+            }
         }
         
 
@@ -289,14 +313,16 @@ namespace mClient.Clients
 
             try
             {
-                go.GameObjectType = packet.ReadUInt32();
-                packet.ReadUInt32();
+                go.GameObjectType = (GameObjectType)packet.ReadUInt32();
+                packet.ReadUInt32();    // display Id
                 go.Name = packet.ReadString();
-                packet.ReadBytes(3);
-                var data = new List<UInt32>();
+                var name2 = packet.ReadUInt16();
+                var name3 = packet.ReadByte();
+                var name4 = packet.ReadByte();
+                var data = new List<int>();
                 for (int i = 0; i < GameObjectInfo.MAX_GAMEOBJECT_DATA_COUNT; i++)
-                    data.Add(packet.ReadUInt32());
-                go.Data = data;
+                    data.Add(packet.ReadInt32());
+                go.Data = data.ToArray();
 
                 GameObjectManager.Instance.Add(go);
             }

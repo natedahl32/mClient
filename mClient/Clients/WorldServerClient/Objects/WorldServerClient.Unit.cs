@@ -1,6 +1,7 @@
 ﻿using mClient.Constants;
 using mClient.Shared;
 using mClient.World;
+using mClient.World.Creature;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,18 +26,32 @@ namespace mClient.Clients
         /// </summary>
         public bool IsNPC { get; set; }
 
+        /// <summary>
+        /// Gets the base CreatureInfo for this unit if it is a creature
+        /// </summary>
+        public CreatureInfo BaseCreatureInfo { get { return CreatureManager.Instance.Get(this.ObjectFieldEntry); } }
+
+        /// <summary>
+        /// Gets the max health for this unit
+        /// </summary>
         public UInt32 MaxHealth
         {
             get { return GetFieldValue((int)UnitFields.UNIT_FIELD_MAXHEALTH); }
             private set { SetField((int)UnitFields.UNIT_FIELD_MAXHEALTH, value); }
         }
 
+        /// <summary>
+        /// Gets the current health for this unit
+        /// </summary>
         public UInt32 CurrentHealth
         {
             get { return GetFieldValue((int)UnitFields.UNIT_FIELD_HEALTH); }
             private set { SetField((int)UnitFields.UNIT_FIELD_HEALTH, value); }
         }
 
+        /// <summary>
+        /// Gets the current level of this unit
+        /// </summary>
         public UInt32 Level
         {
             get { return GetFieldValue((int)UnitFields.UNIT_FIELD_LEVEL); }

@@ -117,4 +117,37 @@ namespace mClient.Constants
         None = 0xFF
     }
 
+    public enum GameObjectType
+    {
+        Door,
+        Button,
+        QuestGiver,
+        Chest,
+        Binder,
+        Generic,
+        Trap,
+        Chair,
+        SpellFocus,
+        Text,
+        Goober,
+        Transport,
+        AreaDamage,
+        Camera,
+        MapObject,
+        MOTransport,
+        DuelFlag,
+        FishingNode,
+        SummoningRitual,
+        Mailbox,
+        AuctionHouse,
+        GuardPost,
+        SpellCaster,
+        MeetingStone,
+        FlagStand,
+        FishingHole,
+        FlagDrop,
+        MiniGame,
+        CapturePoint = 29,
+        AuraGenerator = 30
+    }
 }
