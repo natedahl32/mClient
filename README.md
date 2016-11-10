@@ -11,3 +11,7 @@ cMangos Team - For creating the core that I have found a plethora information fr
 WCell Team - For converting a lot of C++ code that I had no idea what it was doing to C#
 All other server core teams - For continually pushing forward the emulation boundaries
 USB, ClassicDB and other content teams - For all your hard work in populating the worlds with database content
+
+## Benefits of M Client compared to other Bots
+
+There biggest benefit that can be realized by this project is a core agnostic Bot. All other Bots are built directly into the core itself, so they don't work for other cores without being ported. Since this Bot project is client based, it should work with any core. No more having to choose which core you are going to use based on the Bot functionality available!
