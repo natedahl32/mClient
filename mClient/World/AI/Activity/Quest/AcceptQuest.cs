@@ -61,6 +61,9 @@ namespace mClient.World.AI.Activity.Quest
 
         public override void Process()
         {
+            // If our expectation for a quest has elapsed, then complete the activity
+            if (ExpectationHasElapsed) PlayerAI.CompleteActivity();
+
             // Are we in range to accept the questgiver?
             if (PlayerAI.Client.movementMgr.CalculateDistance(mAcceptingFromQuestGiver.Position) > MovementMgr.MINIMUM_FOLLOW_DISTANCE)
             {
@@ -96,6 +99,8 @@ namespace mClient.World.AI.Activity.Quest
             // Get the quest list from the quest giver and accept all quests they have to offer us
             PlayerAI.Client.GetQuestListFromQuestGiver(mAcceptingFromQuestGiver.Guid.GetOldGuid());
             mRetrievedQuestsFromGiver = true;
+            // Start an expectation that we get an available quest we don't already have from the server
+            Expect(() => mQuestsWeDoNotHave != null);
         }
 
         public override void HandleMessage(ActivityMessage message)

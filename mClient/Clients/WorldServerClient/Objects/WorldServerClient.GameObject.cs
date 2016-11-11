@@ -23,6 +23,11 @@ namespace mClient.Clients
             get { return GameObjectManager.Instance.Get(this.ObjectFieldEntry); }
         }
 
+        /// <summary>
+        /// Gets or sets whether or not this game object has been looted (if it is lootable)
+        /// </summary>
+        public bool HasBeenLooted { get; set; }
+
         #endregion
     }
 }

@@ -61,7 +61,9 @@ namespace mClient.World.AI
             var chests = Client.objectMgr.getObjectArray().Where(o => o.Type == Constants.ObjectType.GameObject && (o as mClient.Clients.GameObject) != null && (o as mClient.Clients.GameObject).BaseInfo.GameObjectType == Constants.GameObjectType.Chest);
             foreach (var chest in chests)
             {
-                if (TerrainMgr.CalculateDistance(Player.Position, chest.Position) <= MAX_DISTANCE_FOR_CHEST)
+                // If the chest has not been looted yet and it is within distance for us to loot
+                var chestGO = chest as Clients.GameObject;
+                if (!chestGO.HasBeenLooted && TerrainMgr.CalculateDistance(Player.Position, chest.Position) <= MAX_DISTANCE_FOR_CHEST)
                 {
                     // Start a new activity
                     StartActivity(new LootGameObject(chest, this));
@@ -116,6 +118,11 @@ namespace mClient.World.AI
                 var obj = Client.objectMgr.getObject(lootable);
                 if (obj != null)
                 {
+                    // Don't  loot if this is a unit that has been looted
+                    var unitGO = obj as Unit;
+                    if (unitGO != null && unitGO.HasBeenLooted)
+                        continue;
+
                     StartActivity(new LootObject(obj, this));
                     return BehaviourTreeStatus.Success;
                 }

@@ -49,6 +49,18 @@ namespace mClient.World.AI.Activity.Loot
             PlayerAI.Client.SendChatMsg(ChatMsg.Party, Languages.Universal, "I'm looting a chest real quick.");
         }
 
+        public override void Complete()
+        {
+            base.Complete();
+
+            // Set it as looted so we don't try to loot it again.
+            if ((mLootableObject as Clients.GameObject) != null)
+                (mLootableObject as Clients.GameObject).HasBeenLooted = true;
+
+            // Send release loot
+            PlayerAI.Client.ReleaseLoot(mLootableObject.Guid.GetOldGuid());
+        }
+
         public override void Process()
         {
             // We are close enough, if we aren't looting start looting 
@@ -65,7 +77,7 @@ namespace mClient.World.AI.Activity.Loot
 
                 // We are close enough, now loot it
                 // TODO: I'm not sure this is the correct way to do it, I think what spell/how we open
-                // the chest has to do with one of the data fields.
+                // the chest has to do with one of the data fields and the Lock.dbc file, but I can't find a connection.
                 PlayerAI.Client.CastSpell(mLootableObject, OPEN_SPELL_ID);
                 mIsLooting = true;
                 return;
@@ -87,10 +99,7 @@ namespace mClient.World.AI.Activity.Loot
                 return;
             }
 
-            // No more items to loot. Remove the lootable and end the activity
-
-            // Remove the game object from the object manager or we will try to loot it again
-            PlayerAI.Client.objectMgr.delObject(mLootableObject.Guid);
+            // Complete the activity
             PlayerAI.CompleteActivity();
         }
 

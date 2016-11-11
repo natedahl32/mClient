@@ -40,6 +40,10 @@ namespace mClient.World.AI.Activity.Loot
         {
             base.Complete();
 
+            // Set it as looted so we don't try to loot it again.
+            if ((mLootableObject as Clients.Unit) != null)
+                (mLootableObject as Clients.Unit).HasBeenLooted = true;
+
             // Send release loot
             PlayerAI.Client.ReleaseLoot(mLootableObject.Guid.GetOldGuid());
         }

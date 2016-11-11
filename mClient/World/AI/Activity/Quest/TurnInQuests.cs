@@ -64,6 +64,9 @@ namespace mClient.World.AI.Activity.Quest
 
         public override void Process()
         {
+            // If our expectation for quests has elapsed, complete this activity
+            if (ExpectationHasElapsed) PlayerAI.CompleteActivity();
+
             // Are we in range to accept the questgiver?
             if (PlayerAI.Client.movementMgr.CalculateDistance(mTurningInToQuestGiver.Position) > MovementMgr.MINIMUM_FOLLOW_DISTANCE)
             {
@@ -99,6 +102,8 @@ namespace mClient.World.AI.Activity.Quest
             // Get the quest list from the quest giver and turn in all quests they have to offer us
             PlayerAI.Client.GetQuestListFromQuestGiver(mTurningInToQuestGiver.Guid.GetOldGuid());
             mRetrievedQuestsFromGiver = true;
+            // Start an expectation that we get quests back from the server
+            Expect(() => mQuestsWeHaveInLog != null);
         }
 
         public override void HandleMessage(ActivityMessage message)
@@ -148,6 +153,7 @@ namespace mClient.World.AI.Activity.Quest
                             // from the quest requirements and for what quest. Not certain under what circumstances we would
                             // receive this op code.
                             PlayerAI.Client.SendChatMsg(ChatMsg.Party, Languages.Universal, string.Format("I received quest {0} from Npc but it isn't completable. I must be missing some items!", requestItemsMessage.QuestId));
+                            mQuestsWeHaveInLog = new List<uint>();
                         }
                     }
                 }

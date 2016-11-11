@@ -103,6 +103,11 @@ namespace mClient.Clients
             }
         }
 
+        /// <summary>
+        /// Gets or sets whether or not this unit has been looted (if it is lootable)
+        /// </summary>
+        public bool HasBeenLooted { get; set; }
+
         #endregion
 
         #region Public Methods
