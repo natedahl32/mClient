@@ -21,7 +21,7 @@ namespace mClient.World.AI
                             var itemsThatStartQuest = Player.PlayerObject.InventoryItems.Where(i => i.Item.BaseInfo != null && i.Item.BaseInfo.StartsQuestId > 0).ToList();
                             foreach (var item in itemsThatStartQuest)
                             {
-                                if (!Player.PlayerObject.Quests.Any(q => q == item.Item.BaseInfo.StartsQuestId))
+                                if (!Player.PlayerObject.Quests.Any(q => q.QuestId == item.Item.BaseInfo.StartsQuestId))
                                 {
                                     // TODO: Start the quest from the item
                                     return BehaviourTreeStatus.Success;

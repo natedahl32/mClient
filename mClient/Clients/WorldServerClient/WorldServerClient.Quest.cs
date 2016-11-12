@@ -510,9 +510,9 @@ namespace mClient.Clients
 
             // Get all quests that we have in our log that have this item as an objective
             var questsWithItem = new List<QuestInfo>();
-            foreach (uint questId in player.PlayerObject.Quests)
+            foreach (var q in player.PlayerObject.Quests)
             {
-                var quest = QuestManager.Instance.Get(questId);
+                var quest = QuestManager.Instance.Get(q.QuestId);
                 if (quest != null)
                 {
                     if (quest.QuestObjectives.Any(o => o.RequiredItemId == itemId))

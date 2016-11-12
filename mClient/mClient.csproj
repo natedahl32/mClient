@@ -206,6 +206,7 @@
     <Compile Include="World\Player.Proficiency.cs" />
     <Compile Include="World\Quest\QuestGiver.cs" />
     <Compile Include="World\Quest\QuestInfo.cs" />
+    <Compile Include="World\Quest\QuestLogItem.cs" />
     <Compile Include="World\Quest\QuestManager.cs" />
     <Compile Include="World\Quest\QuestObjective.cs" />
     <Compile Include="World\TerrainManager.cs" />

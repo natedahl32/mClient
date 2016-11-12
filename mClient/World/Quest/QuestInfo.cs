@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace mClient.World.Quest
 {
+    /// <summary>
+    /// Quest template information received from the server
+    /// </summary>
     public class QuestInfo
     {
         #region Constructors
