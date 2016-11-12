@@ -3,6 +3,9 @@ using System;
 
 namespace mClient.World.Quest
 {
+    /// <summary>
+    /// Quest giver data received from the server
+    /// </summary>
     public class QuestGiver
     {
         #region Properties

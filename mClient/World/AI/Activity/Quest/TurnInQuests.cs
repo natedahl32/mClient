@@ -93,6 +93,12 @@ namespace mClient.World.AI.Activity.Quest
                 var selectedQuest = mQuestsWeHaveInLog[0];
                 mQuestsWeHaveInLog.RemoveAt(0);
 
+                // The list we got from the quest giver may have included quests that we do not have complete
+                // Don't try to complete those or we can get stuck trying to continually complete quests that we can't
+                var questLogItem = PlayerAI.Player.PlayerObject.GetQuestInLog(selectedQuest);
+                if (questLogItem == null || !questLogItem.IsComplete)
+                    return;
+
                 // Complete the quest
                 PlayerAI.StartActivity(new CompleteQuest(mTurningInToQuestGiver.Guid.GetOldGuid(), selectedQuest, PlayerAI));
 

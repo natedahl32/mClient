@@ -35,14 +35,22 @@ namespace mClient.Clients
         /// <summary>
         /// Gets all quest ids the player currently has in their Quest Log
         /// </summary>
-        public IEnumerable<UInt32> Quests
+        public IEnumerable<QuestLogItem> Quests
         {
             get
             {
-                var quests = new List<UInt32>();
+                var quests = new List<QuestLogItem>();
                 for (var i = (int)PlayerFields.PLAYER_QUEST_LOG_1_1; i < (int)PlayerFields.PLAYER_QUEST_LOG_LAST_3; i += QuestConstants.MAX_QUEST_OFFSET)
+                {
                     if (GetFieldValue(i) > 0)
-                        quests.Add(GetFieldValue(i));
+                    {
+                        var questId = GetFieldValue(i);
+                        var counterAndState = GetFieldValue(i + (int)QuestSlotOffsets.QUEST_COUNT_STATE_OFFSET);
+                        var time = GetFieldValue(i + (int)QuestSlotOffsets.QUEST_TIME_OFFSET);
+                        quests.Add(new QuestLogItem(questId, counterAndState, time));
+                    }
+                }
+                    
                 return quests;
             }
         }
@@ -365,6 +373,30 @@ namespace mClient.Clients
             }
 
             return QuestConstants.MAX_QUEST_LOG_SIZE;
+        }
+
+        /// <summary>
+        /// Returns the quest in the player log by quest id. Returns null if the quest is not in the quest log
+        /// </summary>
+        /// <param name="questId"></param>
+        /// <returns></returns>
+        public QuestLogItem GetQuestInLog(uint questId)
+        {
+            byte slot = 0;
+            for (var i = (int)PlayerFields.PLAYER_QUEST_LOG_1_1; i < (int)PlayerFields.PLAYER_QUEST_LOG_LAST_3; i += QuestConstants.MAX_QUEST_OFFSET)
+            {
+                if (GetFieldValue(i) == questId)
+                {
+                    var id = GetFieldValue(i);
+                    var counterState = GetFieldValue(i + (int)QuestSlotOffsets.QUEST_COUNT_STATE_OFFSET);
+                    var time = GetFieldValue(i + (int)QuestSlotOffsets.QUEST_TIME_OFFSET);
+                    return new QuestLogItem(id, counterState, time);
+                }
+
+                slot++;
+            }
+
+            return null;
         }
 
         #endregion

@@ -43,10 +43,15 @@ namespace mClient.World.AI.Activity.Quest
         {
             base.Start();
             PlayerAI.Client.CompleteQuest(mQuestGiverGuid, mCompletingQuestId);
+            // Start an expectation that we receive completion of the quest, if we don't we probably can't complete it
+            Expect(() => mReceivedCompletion);
         }
 
         public override void Process()
         {
+            // Complete the activity if the expectation elapsed
+            if (ExpectationHasElapsed) PlayerAI.CompleteActivity();
+
             // if we have quest rewards we need to either choose a reward or just send back a response
             // to complete the quest
             if (mQuestRewardOptions != null)
