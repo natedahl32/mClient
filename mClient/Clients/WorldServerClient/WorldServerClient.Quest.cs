@@ -481,6 +481,11 @@ namespace mClient.Clients
                     SendChatMsg(ChatMsg.Party, Languages.Universal, string.Format("Quest '{0}' Update: {1} of {2} {3} killed.", quest.QuestName, killCount, requiredCount, creature.Name));
                 }
             }
+
+            // If the amount we need is the amount we currently have, send a quest giver update status query so we update our quest givers statuses
+            // and can turn in the quest if need be
+            if (killCount >= requiredCount)
+                GetQuestGiverStatuses();
         }
 
         /// <summary>
@@ -525,6 +530,10 @@ namespace mClient.Clients
                 // Get the amount we need
                 var amountNeed = quest.QuestObjectives.Where(o => o.RequiredItemId == itemId).Select(o => o.RequiredItemCount).FirstOrDefault();
                 SendChatMsg(ChatMsg.Party, Languages.Universal, string.Format("Quest '{0}' Update: {1} of {2} {3} items collected.", quest.QuestName, currentCount, amountNeed, item.ItemName));
+                // If the amount we need is the amount we currently have, send a quest giver update status query so we update our quest givers statuses
+                // and can turn in the quest if need be
+                if (currentCount >= amountNeed)
+                    GetQuestGiverStatuses();
             }
         }
 

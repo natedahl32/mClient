@@ -14,7 +14,7 @@ namespace mClient.World.AI
     /// <summary>
     /// Player AI consists of the following:
     /// 1) A behavior tree that determines the current activity of the bot (ie. the state)
-    /// 2) Activity queue that determines what the bot is doing at that moment in time. This is a FIFO queue that processes
+    /// 2) Activity stack that determines what the bot is doing at that moment in time. This is a FILO stack that processes
     ///    the top activity in the stack until it is complete or another activity is moved on to the stack.
     /// </summary>
     public partial class PlayerAI
@@ -30,8 +30,8 @@ namespace mClient.World.AI
         private Player mPlayer;
         private WorldServerClient mClient;
         private IBehaviourTreeNode mTree;
-        private Queue<BaseActivity> mActivityQueue;
-        private System.Object mActivityQueueLock = new System.Object();
+        private Stack<BaseActivity> mActivityStack;
+        private System.Object mActivityStackLock = new System.Object();
 
         // Combat variables
         private PObject mTargetSelection = null;
@@ -47,7 +47,7 @@ namespace mClient.World.AI
             if (client == null) throw new ArgumentNullException("client");
             mPlayer = player;
             mClient = client;
-            mActivityQueue = new Queue<BaseActivity>();
+            mActivityStack = new Stack<BaseActivity>();
 
             // Defaults
             NotInMeleeRange = false;
@@ -88,7 +88,7 @@ namespace mClient.World.AI
         /// </summary>
         protected bool HasCurrentActivity
         {
-            get { return mActivityQueue.Count > 0; }
+            get { return mActivityStack.Count > 0; }
         }
 
         #endregion
@@ -137,26 +137,26 @@ namespace mClient.World.AI
         }
 
         /// <summary>
-        /// Adds a new activity to the queue and starts it immediately
+        /// Adds a new activity to the stack and starts it immediately
         /// </summary>
         /// <param name="activity">Activity to start</param>
         public void StartActivity(BaseActivity activity)
         {
             if (activity == null) throw new ArgumentNullException("activity");
 
-            // If the queue already contains an activity of this type then don't add it. This prevents our
+            // If the stack already contains an activity of this type then don't add it. This prevents our
             // behavior tree from adding the same activity multiple times. Our game logic dictates the same activity
-            // should never be in the queue multiple times.
-            if (mActivityQueue.Any(a => a.GetType() == activity.GetType())) return;
+            // should never be in the stack multiple times.
+            if (mActivityStack.Any(a => a.GetType() == activity.GetType())) return;
 
             // Pause the current activity
-            if (mActivityQueue.Count > 0)
-                mActivityQueue.Peek().Pause();
+            if (mActivityStack.Count > 0)
+                mActivityStack.Peek().Pause();
 
             // Start the new activity
             activity.Start();
-            lock (mActivityQueueLock)
-                mActivityQueue.Enqueue(activity);
+            lock (mActivityStackLock)
+                mActivityStack.Push(activity);
         }
 
         /// <summary>
@@ -164,9 +164,9 @@ namespace mClient.World.AI
         /// </summary>
         public void CompleteActivity()
         {
-            lock (mActivityQueueLock)
+            lock (mActivityStackLock)
             {
-                var currentActivity = mActivityQueue.Dequeue();
+                var currentActivity = mActivityStack.Pop();
                 if (currentActivity != null)
                     currentActivity.Complete();
             }
@@ -177,8 +177,8 @@ namespace mClient.World.AI
         /// </summary>
         public void SendMessageToAllActivities(ActivityMessage message)
         {
-            lock (mActivityQueueLock)
-                foreach (var activity in mActivityQueue)
+            lock (mActivityStackLock)
+                foreach (var activity in mActivityStack)
                     activity.HandleMessage(message);
         }
 
@@ -241,9 +241,9 @@ namespace mClient.World.AI
                     // Update behavior tree
                     this.mTree.Tick(new TimeData());
 
-                    // Process the activity queue
-                    if (mActivityQueue.Count > 0)
-                        mActivityQueue.Peek().Process();
+                    // Process the activity stack
+                    if (mActivityStack.Count > 0)
+                        mActivityStack.Peek().Process();
                 }
                 catch (Exception ex)
                 {
