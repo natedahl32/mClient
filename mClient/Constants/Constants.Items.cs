@@ -14,6 +14,18 @@ namespace mClient.Constants
         public const int MAX_NUMBER_OF_EQUIPPABLE_BAGS = ((int)InventorySlots.INVENTORY_SLOT_BAG_END - (int)InventorySlots.INVENTORY_SLOT_BAG_START);
 
         public const int INVENTORY_SLOT_BAG_0 = 255;
+
+        public const int MAX_ITEM_QUALITY = 7;
+        public static uint[] ItemQualityColors = new uint[MAX_ITEM_QUALITY]
+        {
+            0xff9d9d9d,        // GREY
+            0xffffffff,        // WHITE
+            0xff1eff00,        // GREEN
+            0xff0070dd,        // BLUE
+            0xffa335ee,        // PURPLE
+            0xffff8000,        // ORANGE
+            0xffe6cc80         // LIGHT YELLOW
+        };
     }
 
     public enum EquipmentSlots

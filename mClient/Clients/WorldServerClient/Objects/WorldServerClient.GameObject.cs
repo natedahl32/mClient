@@ -38,7 +38,7 @@ namespace mClient.Clients
             {
                 var value = (GameObjectFlags)GetFieldValue((int)GameObjectFields.GAMEOBJECT_FLAGS);
                 // If the value has the NO_INTERACT flag we cannot interact
-                if (value.HasFlag(GameObjectFlags.GO_FLAG_NO_INTERACT) || value.HasFlag(GameObjectFlags.GO_FLAG_INTERACT_COND))
+                if (value.HasFlag(GameObjectFlags.GO_FLAG_NO_INTERACT))
                     return false;
 
                 // Questgivers and chests have a dynamic flag set that determines if we can interact

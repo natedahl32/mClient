@@ -27,6 +27,19 @@ namespace mClient.Clients
         }
 
         /// <summary>
+        /// Gets the in-game link for this item, which includes any enchants or modifications
+        /// </summary>
+        public string ItemGameLink
+        {
+            get
+            {
+                // TODO: Add enchants and/or modifications made to this item
+                // Link for enchants: http://www.ownedcore.com/forums/world-of-warcraft/world-of-warcraft-guides/101167-complete-guide-fake-item-links.html
+                return " |" + string.Format("c{0:X8}", ItemConstants.ItemQualityColors[(int)BaseInfo.Quality]).ToLower() + "|Hitem:" + BaseInfo.ItemId.ToString() + ":0:0:0:0:0:0:0|h[" + BaseInfo.ItemName + "]|h|r";
+            }
+        }
+
+        /// <summary>
         /// Gets the guid of the object that this item is contained in (if any)
         /// </summary>
         public WoWGuid ContainedInGuid

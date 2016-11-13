@@ -5,7 +5,7 @@ using System;
 
 namespace mClient.World.AI
 {
-    public class PlayerChatHandler
+    public partial class PlayerChatHandler
     {
         #region Constructors
 
@@ -91,6 +91,7 @@ namespace mClient.World.AI
 
             if (HandleChatCommands(senderGuid, senderName, message)) return;
             if (HandleQuestCommands(senderGuid, senderName, message)) return;
+            if (HandleInventoryCommands(senderGuid, senderName, message)) return;
         }
 
         /// <summary>
@@ -106,6 +107,7 @@ namespace mClient.World.AI
 
             if (HandleChatCommands(senderGuid, senderName, message)) return;
             if (HandleQuestCommands(senderGuid, senderName, message)) return;
+            if (HandleInventoryCommands(senderGuid, senderName, message)) return;
         }
 
         /// <summary>
@@ -161,38 +163,6 @@ namespace mClient.World.AI
                 return true;
             }
 
-            return false;
-        }
-
-        /// <summary>
-        /// Handles all quest commands
-        /// </summary>
-        /// <param name="senderGuid"></param>
-        /// <param name="senderName"></param>
-        /// <param name="message"></param>
-        /// <returns></returns>
-        private bool HandleQuestCommands(WoWGuid senderGuid, string senderName, string message)
-        {
-            var split = message.Split(new string[] { " " }, StringSplitOptions.None);
-            if (split.Length <= 1) return false;
-
-            // Make sure this is a quest command
-            if (split[0].ToLower() != "quest") return false;
-
-            switch(split[1].ToLower())
-            {
-                case "drop":
-                    // Get the title of the quest
-                    var questTitle = string.Empty;
-                    for (int i = 2; i < split.Length; i++)
-                        if (!string.IsNullOrEmpty(split[i]))
-                            questTitle += split[i] + " ";
-
-                    Player.DropQuest(questTitle.Trim());
-                    return true;
-            }
-
-            // No command found
             return false;
         }
 

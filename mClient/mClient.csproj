@@ -180,6 +180,8 @@
     <Compile Include="World\AI\Activity\Quest\AcceptQuest.cs" />
     <Compile Include="World\AI\Activity\Quest\CompleteQuest.cs" />
     <Compile Include="World\AI\Activity\Quest\TurnInQuests.cs" />
+    <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Inventory.cs" />
+    <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Quest.cs" />
     <Compile Include="World\AI\PlayerAI.Chat.cs" />
     <Compile Include="World\AI\PlayerAI.Combat.cs" />
     <Compile Include="World\AI\PlayerAI.cs" />

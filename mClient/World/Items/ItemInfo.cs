@@ -211,5 +211,42 @@ namespace mClient.World.Items
         /// Gets or sets the bag family
         /// </summary>
         public UInt32 BagFamily { get; set; }
+
+        /// <summary>
+        /// Gets the in-game link for this item
+        /// </summary>
+        public string ItemGameLink
+        {
+            get
+            {
+                return " |" + string.Format("c{0:X8}", ItemConstants.ItemQualityColors[(int)Quality]).ToLower() + "|Hitem:" + ItemId.ToString() + ":0:0:0:0:0:0:0|h[" + ItemName + "]|h|r";
+            }
+        }
+
+        #region Static Methods
+
+        /// <summary>
+        /// Extracts an item id from a message where an item was linked
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public static uint ExtractItemId(string message)
+        {
+            if (string.IsNullOrEmpty(message)) return 0;
+
+            var index = message.IndexOf("|Hitem:");
+            var startId = message.IndexOf(":", index);
+            if (startId > -1)
+            {
+                var endId = message.IndexOf(":", startId + 1);
+                var itemId = message.Substring(startId + 1, endId - (startId + 1));
+                return Convert.ToUInt32(itemId);
+            }
+
+            // Could not find item id in the message
+            return 0;
+        }
+
+        #endregion
     }
 }

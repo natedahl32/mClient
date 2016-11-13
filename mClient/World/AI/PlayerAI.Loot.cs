@@ -30,7 +30,7 @@ namespace mClient.World.AI
                             .Do("Do we have an object for a lootable?", t => CheckForLootableObjects())
                             .Do("Loot", t => LootObject())
                         .End()
-                        .Sequence("Find Quest Objects Near Us")
+                        .Sequence("Find Quest Objects or Chests Near Us")
                             .Do("Has Gameobjects To Loot", t => LootableChests())
                             .Do("Loot Close Chest", t => LootCloseChest())
                         .End()
@@ -46,7 +46,8 @@ namespace mClient.World.AI
         private BehaviourTreeStatus LootableChests()
         {
             // Are there any game objects near us that we can loot?
-            if (Client.objectMgr.getObjectArray().Any(o => o.Type == Constants.ObjectType.GameObject && (o as mClient.Clients.GameObject).BaseInfo.GameObjectType == Constants.GameObjectType.Chest))
+            var gameObjects = Client.objectMgr.getObjectArray().Where(o => o != null && o.Type == Constants.ObjectType.GameObject).Cast<Clients.GameObject>().ToList();
+            if (gameObjects.Any(o => o.BaseInfo.GameObjectType == Constants.GameObjectType.Chest && !o.HasBeenLooted && o.CanInteract))
                 return BehaviourTreeStatus.Success;
 
             return BehaviourTreeStatus.Failure;
@@ -58,12 +59,14 @@ namespace mClient.World.AI
         /// <returns></returns>
         private BehaviourTreeStatus LootCloseChest()
         {
-            var chests = Client.objectMgr.getObjectArray().Where(o => o.Type == Constants.ObjectType.GameObject && (o as mClient.Clients.GameObject) != null && (o as mClient.Clients.GameObject).BaseInfo.GameObjectType == Constants.GameObjectType.Chest);
-            foreach (var chest in chests)
+            // Get game objects
+            var gameObjects = Client.objectMgr.getObjectArray().Where(o => o != null && o.Type == Constants.ObjectType.GameObject).Cast<Clients.GameObject>().ToList();
+            // Check for chests that we haven't looted yet and can interact with
+            foreach (var chest in gameObjects.Where(o => o.BaseInfo.GameObjectType == Constants.GameObjectType.Chest && !o.HasBeenLooted && o.CanInteract))
             {
                 // If the chest has not been looted yet and it is within distance for us to loot
                 var chestGO = chest as Clients.GameObject;
-                if (!chestGO.HasBeenLooted && TerrainMgr.CalculateDistance(Player.Position, chest.Position) <= MAX_DISTANCE_FOR_CHEST)
+                if (TerrainMgr.CalculateDistance(Player.Position, chest.Position) <= MAX_DISTANCE_FOR_CHEST)
                 {
                     // Start a new activity
                     StartActivity(new LootGameObject(chest, this));

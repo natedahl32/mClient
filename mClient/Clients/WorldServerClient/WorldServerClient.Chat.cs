@@ -89,6 +89,7 @@ namespace mClient.Clients
                 // chat tag
                 packet.ReadByte();
 
+                // Need this because we want to be able to extract linked item id's from messages
                 //Message = Regex.Replace(Message, @"\|H[a-zA-z0-9:].|h", ""); // Why do i should need spells and quest linked? ;>
                 //Message = Regex.Replace(Message, @"\|[rc]{1}[a-zA-z0-9]{0,8}", ""); // Colorfull chat message also isn't the most important thing.
 
