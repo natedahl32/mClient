@@ -43,6 +43,7 @@ namespace mClient.World.AI
 
             switch (split[1].ToLower())
             {
+                // quest drop [quest name] - drops the quest that matches the name from the quest log
                 case QUEST_DROP_COMMAND:
                     // Get the title of the quest
                     var questTitle = string.Empty;
@@ -57,6 +58,7 @@ namespace mClient.World.AI
                         Player.DropQuest(questTitle.Trim());
                     return true;
 
+                // quest list - lists all quests in the quest log to chat
                 case QUEST_LIST_COMMAND:
                     Player.PlayerAI.Client.SendChatMsg(Constants.ChatMsg.Party, Constants.Languages.Universal, "I have the following quests in my quest log.");
                     foreach (var quest in Player.PlayerObject.Quests)

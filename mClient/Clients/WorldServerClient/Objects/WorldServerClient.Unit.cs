@@ -108,6 +108,20 @@ namespace mClient.Clients
         /// </summary>
         public bool HasBeenLooted { get; set; }
 
+        /// <summary>
+        /// Gets this units target guid
+        /// </summary>
+        public WoWGuid TargetGuid
+        {
+            get
+            {
+                var value1 = GetFieldValue((int)UnitFields.UNIT_FIELD_TARGET);
+                var value2 = GetFieldValue(((int)UnitFields.UNIT_FIELD_TARGET) + 1);
+                var guid = GetGuid(value1, value2);
+                return new WoWGuid(guid);
+            }
+        }
+
         #endregion
 
         #region Public Methods

@@ -99,7 +99,9 @@ namespace mClient.Clients
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_TRADE_STATUS)]
         public void HandleTradeStatus(PacketIn packet)
         {
+            var message = new TradeStatusMessage();
             var tradeStatus = (TradeStatus)packet.ReadUInt32();
+            message.TradeStatus = tradeStatus;
             switch(tradeStatus)
             {
                 case TradeStatus.TRADE_STATUS_BEGIN_TRADE:
@@ -120,6 +122,9 @@ namespace mClient.Clients
                 default:
                     break;
             }
+
+            // Send the message
+            player.PlayerAI.SendMessageToAllActivities(message);
         }
 
         /// <summary>
@@ -284,6 +289,26 @@ namespace mClient.Clients
         }
 
         /// <summary>
+        /// Initiates a trade with another PC or Bot
+        /// </summary>
+        /// <param name="otherTrader"></param>
+        public void InitiateTrade(WoWGuid otherTrader)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_INITIATE_TRADE);
+            packet.Write(otherTrader.GetOldGuid());
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Cancels the current trade
+        /// </summary>
+        public void CancelTrade()
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_CANCEL_TRADE);
+            Send(packet);
+        }
+
+        /// <summary>
         /// Begins a trade when initiated by another player
         /// </summary>
         public void BeginTrade()
@@ -299,6 +324,20 @@ namespace mClient.Clients
         {
             PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_ACCEPT_TRADE);
             packet.Write((UInt32)0);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Adds an item to the trade window
+        /// </summary>
+        /// <param name="tradeSlot">Slot in trade window to add</param>
+        /// <param name="inventoryItemSlot">Inventory slot to add to trade window</param>
+        public void AddItemToTradeWindow(byte tradeSlot, InventoryItemSlot inventoryItemSlot)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_SET_TRADE_ITEM);
+            packet.Write(tradeSlot);
+            packet.Write((byte)inventoryItemSlot.Bag);
+            packet.Write((byte)inventoryItemSlot.Slot);
             Send(packet);
         }
 
@@ -366,6 +405,32 @@ namespace mClient.Clients
         {
             PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_GAMEOBJ_USE);
             packet.Write(guid.GetOldGuid());
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Destroys an item in inventory
+        /// </summary>
+        /// <param name="itemSlot">Inventory slot to destroy</param>
+        public void DestroyItem(InventoryItemSlot itemSlot)
+        {
+            DestroyItem(itemSlot, 1);
+        }
+
+        /// <summary>
+        /// Destroys an item in inventory
+        /// </summary>
+        /// <param name="itemSlot">Inventory slot to destroy</param>
+        /// <param name="count">Number of items to destroy</param>
+        public void DestroyItem(InventoryItemSlot itemSlot, byte count)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_DESTROYITEM);
+            packet.Write((byte)itemSlot.Bag);
+            packet.Write((byte)itemSlot.Slot);
+            packet.Write(count);
+            packet.Write((byte)0);
+            packet.Write((byte)0);
+            packet.Write((byte)0);
             Send(packet);
         }
 

@@ -90,6 +90,7 @@ namespace mClient.World.AI
             if (string.IsNullOrEmpty(message)) return;
 
             if (HandleChatCommands(senderGuid, senderName, message)) return;
+            if (HandleCombatCommands(senderGuid, senderName, message)) return;
             if (HandleQuestCommands(senderGuid, senderName, message)) return;
             if (HandleInventoryCommands(senderGuid, senderName, message)) return;
         }
@@ -106,6 +107,7 @@ namespace mClient.World.AI
             if (string.IsNullOrEmpty(message)) return;
 
             if (HandleChatCommands(senderGuid, senderName, message)) return;
+            if (HandleCombatCommands(senderGuid, senderName, message)) return;
             if (HandleQuestCommands(senderGuid, senderName, message)) return;
             if (HandleInventoryCommands(senderGuid, senderName, message)) return;
         }

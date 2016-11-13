@@ -153,10 +153,11 @@ namespace mClient.World.AI
             if (mActivityStack.Count > 0)
                 mActivityStack.Peek().Pause();
 
-            // Start the new activity
-            activity.Start();
+            // Add the new activity to the stack and then start it. We start after it's added so that
+            // logic is possible in the start event to remove it right away.
             lock (mActivityStackLock)
                 mActivityStack.Push(activity);
+            activity.Start();
         }
 
         /// <summary>

@@ -154,6 +154,18 @@ namespace mClient.Clients
         }
 
         /// <summary>
+        /// Gets the first inventory item slot that contains the passed item id
+        /// </summary>
+        /// <param name="itemId"></param>
+        /// <param name="slot"></param>
+        /// <returns></returns>
+        public InventoryItemSlot GetInventoryItem(uint itemId)
+        {
+            var inventoryItemSlot = InventoryItems.Where(i => i.Item != null && i.Item.BaseInfo != null && i.Item.BaseInfo.ItemId == itemId).FirstOrDefault();
+            return inventoryItemSlot;
+        }
+
+        /// <summary>
         /// Equips the item in the bag and slot
         /// </summary>
         /// <param name="bag"></param>
@@ -397,6 +409,24 @@ namespace mClient.Clients
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Removes an item from inventory
+        /// </summary>
+        /// <param name="slot">Slot to remove</param>
+        public void RemoveInventoryItemSlot(InventoryItemSlot slot)
+        {
+            // Inventory items
+            if (slot.Bag == ItemConstants.INVENTORY_SLOT_BAG_0)
+                mInventory[slot.Slot] = null;
+            // Bags
+            else
+            {
+                var bag = mInventoryBags.Where(b => b.Key == slot.Bag).SingleOrDefault();
+                if (bag.Value != null)
+                    bag.Value.ClearSlot(slot.Slot);
+            }
         }
 
         #endregion

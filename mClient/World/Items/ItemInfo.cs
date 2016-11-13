@@ -226,7 +226,8 @@ namespace mClient.World.Items
         #region Static Methods
 
         /// <summary>
-        /// Extracts an item id from a message where an item was linked
+        /// Extracts an item id from a message where an item was linked. If multiple items are linked in the message
+        /// only the first item will be extracted.
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
@@ -245,6 +246,31 @@ namespace mClient.World.Items
 
             // Could not find item id in the message
             return 0;
+        }
+
+        /// <summary>
+        /// Extracts a list item ids from a message where an item or multiple items were linked. 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public static List<uint> ExtractItemIds(string message)
+        {
+            if (string.IsNullOrEmpty(message)) return new List<uint>();
+
+            var itemIds = new List<uint>();
+            var index = message.IndexOf("|Hitem:");
+            while (index > -1)
+            {
+                var startId = message.IndexOf(":", index);
+                var endId = message.IndexOf(":", startId + 1);
+                var itemId = message.Substring(startId + 1, endId - (startId + 1));
+                itemIds.Add(Convert.ToUInt32(itemId));
+
+                // Get the next index starting from the last end index
+                index = message.IndexOf("|Hitem:", endId);
+            }
+
+            return itemIds;
         }
 
         #endregion

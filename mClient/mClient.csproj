@@ -176,10 +176,14 @@
     <Compile Include="World\AI\Activity\Messages\QuestGiverRequestItemsMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\QuestListMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\QuestOfferRewards.cs" />
+    <Compile Include="World\AI\Activity\Messages\TradeStatusMessage.cs" />
     <Compile Include="World\AI\Activity\Movement\TeleportToCoordinate.cs" />
     <Compile Include="World\AI\Activity\Quest\AcceptQuest.cs" />
     <Compile Include="World\AI\Activity\Quest\CompleteQuest.cs" />
     <Compile Include="World\AI\Activity\Quest\TurnInQuests.cs" />
+    <Compile Include="World\AI\Activity\Trade\BeginTrade.cs" />
+    <Compile Include="World\AI\Activity\Trade\TradeItems.cs" />
+    <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Combat.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Inventory.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Quest.cs" />
     <Compile Include="World\AI\PlayerAI.Chat.cs" />
