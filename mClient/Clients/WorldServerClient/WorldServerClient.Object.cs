@@ -87,6 +87,8 @@ namespace mClient.Clients
                         objectMgr.updateObject(newObject);
                         player.ObjectAdded(newObject);
                         CheckForOrQueryObjectEntry(newObject.Type, newObject.ObjectFieldEntry);
+                        if (newObject.Type == ObjectType.Player)
+                            QueryName(newObject.Guid.GetOldGuid());
                         //Log.WriteLine(LogType.Normal, "Handling Creation of object: {0}", newObject.Guid.ToString());
                         break;
 
@@ -159,7 +161,6 @@ namespace mClient.Clients
                     CreatureQuery(entry);
             }
         }
-        
 
         public void HandleUpdateMovementBlock(PacketIn packet, Object newObject)
         {
@@ -402,24 +403,6 @@ namespace mClient.Clients
                 obj = Object.CreateObjectByType(guid, ObjectType.Player);
                 obj.Name = name;
                 objectMgr.addObject(obj);
-
-                // Now using the callbacks handler below
-                /* Process chat message if we looked them up now */
-                //for (int i = 0; i < ChatQueued.Count; i++)
-                //{
-                //    ChatQueue message = (ChatQueue)ChatQueued[i];
-                //    if (message.GUID.GetOldGuid() == guid.GetOldGuid())
-                //    {
-                //        // Process the chat event
-                //        object[] param = new object[] { (ChatMsg)message.Type, message.Channel, name, message.Message };
-                //        mCore.Event(new Event(EventType.EVENT_CHAT_MSG, "0", param));
-
-                //        // The event takes care of this now
-                //        //Log.WriteLine(LogType.Chat, "[{1}] {0}", message.Message, name);
-                //        ChatQueued.Remove(message);
-                //    }
-                //}
-
             }
 
             // Get any query associated with this object and invoke the callbacks

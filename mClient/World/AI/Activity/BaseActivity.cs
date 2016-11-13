@@ -55,6 +55,7 @@ namespace mClient.World.AI.Activity
         /// <summary>
         /// Called when the activity is started
         /// </summary>
+        /// <remarks>Do not complete the activity in this method, it is not guaranteed the activity is the current one yet.</remarks>
         public virtual void Start()
         {
             Log.WriteLine(LogType.Debug, "Starting activity {0}...", ActivityName);
@@ -69,8 +70,9 @@ namespace mClient.World.AI.Activity
         }
 
         /// <summary>
-        /// Called when an activity is being paused because a new activity has taken priority
+        /// Called when an activity is being paused because a new activity has taken priority.
         /// </summary>
+        /// <remarks>Do not complete the activity in this method, it is not guaranteed the activity is the current one yet.</remarks>
         public virtual void Pause()
         {
             Log.WriteLine(LogType.Debug, "Pausing activity {0}...", ActivityName);
@@ -82,10 +84,10 @@ namespace mClient.World.AI.Activity
         public abstract void Process();
 
         /// <summary>
-        /// Handles messages from the server. Don't complete activities from here because it isn't guaranteed
-        /// this activity is the one that is active.
+        /// Handles messages from the server.
         /// </summary>
         /// <param name="message"></param>
+        /// <remarks>Do not complete the activity in this method, it is not guaranteed the activity is the current one yet.</remarks>
         public virtual void HandleMessage(ActivityMessage message)
         {
 

@@ -67,6 +67,18 @@ namespace mClient.Clients
             get { return GetFieldValue((int)ItemFields.ITEM_FIELD_DURABILITY); }
         }
 
+        /// <summary>
+        /// Gets whether or not the item is bound to us
+        /// </summary>
+        public bool IsBound
+        {
+            get
+            {
+                var value = (ItemDynFlags)GetFieldValue((int)ItemFields.ITEM_FIELD_FLAGS);
+                return value.HasFlag(ItemDynFlags.ITEM_DYNFLAG_BINDED);
+            }
+        }
+
         #endregion
 
         #region Public Methods

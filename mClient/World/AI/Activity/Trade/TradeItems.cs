@@ -1,4 +1,5 @@
 ﻿using mClient.Clients;
+using mClient.Constants;
 using mClient.World.AI.Activity.Messages;
 using System;
 using System.Collections.Generic;
@@ -16,19 +17,23 @@ namespace mClient.World.AI.Activity.Trade
     {
         #region Declarations
 
+        private string mSenderName;
         private List<uint> mTradingItems;
         private byte mCurrentTradeSlot;
         private bool mTradeAccepted = false;
         private bool mIsTradeCompleted = false;
         private List<InventoryItemSlot> mItemsToRemove = new List<InventoryItemSlot>();
+        private int mItemsTradedCount = 0;
 
         #endregion
 
         #region Constructors
 
-        public TradeItems(IList<uint> tradingItems, PlayerAI ai) : base(ai)
+        public TradeItems(IList<uint> tradingItems, string senderName, PlayerAI ai) : base(ai)
         {
             if (tradingItems == null) throw new ArgumentNullException("tradingItems");
+            if (string.IsNullOrEmpty(senderName)) throw new ArgumentNullException("senderName");
+            mSenderName = senderName;
             mTradingItems = tradingItems.ToList();
             mCurrentTradeSlot = 0;
         }
@@ -51,8 +56,9 @@ namespace mClient.World.AI.Activity.Trade
             base.Start();
 
             // If we don't have any items to trade complete the activity
-            if (mTradingItems.Count <= 0) PlayerAI.CompleteActivity();
+            if (mTradingItems.Count <= 0) mIsTradeCompleted = true;
         }
+
         public override void Process()
         {
             // When the trade is completed, then complete the activity
@@ -68,15 +74,33 @@ namespace mClient.World.AI.Activity.Trade
                 if (inventoryItemSlot == null)
                     return;
 
+                // Make sure the item we are trying to trade is not bound to us
+                if (inventoryItemSlot.Item.BaseInfo.Bonding == Constants.ItemBondingType.BIND_QUEST_ITEM ||
+                    inventoryItemSlot.Item.BaseInfo.Bonding == Constants.ItemBondingType.BIND_WHEN_PICKED_UP ||
+                    inventoryItemSlot.Item.IsBound)
+                {
+                    PlayerAI.Client.SendChatMsg(ChatMsg.Whisper, Languages.Universal, $"I can't trade {inventoryItemSlot.Item.BaseInfo.ItemName}, it is bound to me.", mSenderName);
+                    return;
+                }
+
                 mItemsToRemove.Add(inventoryItemSlot);
                 PlayerAI.Client.AddItemToTradeWindow(mCurrentTradeSlot, inventoryItemSlot);
                 mCurrentTradeSlot++;
+                mItemsTradedCount++;
                 return;
             }
 
             // Trade items have been added to the trade window, now accept the trade
             if (!mTradeAccepted)
             {
+                // If we haven't actually traded any items (because of bonding) then just cancel the trade
+                if (mItemsTradedCount <= 0)
+                {
+                    PlayerAI.Client.CancelTrade();
+                    PlayerAI.CompleteActivity();
+                    return;
+                }
+
                 mTradeAccepted = true;
                 PlayerAI.Client.AcceptTrade();
             }

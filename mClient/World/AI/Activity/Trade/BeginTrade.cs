@@ -16,6 +16,7 @@ namespace mClient.World.AI.Activity.Trade
     {
         #region Declarations
 
+        private string mSenderName;
         private WoWGuid mTradingWithGuid;
         private List<uint> mItemsTradingAway;
         private bool mTradeIsCanceled = false;
@@ -52,6 +53,11 @@ namespace mClient.World.AI.Activity.Trade
         {
             base.Start();
 
+            // Get the sender object so we can grab their name
+            var senderObject = PlayerAI.Client.objectMgr.getObject(mTradingWithGuid);
+            if (senderObject != null)
+                mSenderName = senderObject.Name;
+
             // If we got no items to trade than complete this activity
             if (mItemsTradingAway.Count <= 0)
             {
@@ -63,10 +69,8 @@ namespace mClient.World.AI.Activity.Trade
             // complete the activity and send a message to the sender.
             if (mItemsTradingAway.Count > (int)Constants.TradeSlots.TRADE_SLOT_TRADED_COUNT)
             {
-                // Get the sender object so we can grab their name
-                var senderObject = PlayerAI.Client.objectMgr.getObject(mTradingWithGuid);
-                if (senderObject != null)
-                    PlayerAI.Client.SendChatMsg(ChatMsg.Whisper, Languages.Universal, "I'm turning in some quests now.", senderObject.Name);
+                if (!string.IsNullOrEmpty(mSenderName))
+                    PlayerAI.Client.SendChatMsg(ChatMsg.Whisper, Languages.Universal, $"I cannot trade that many items.", mSenderName);
                 
                 PlayerAI.CompleteActivity();
                 return;
@@ -91,7 +95,7 @@ namespace mClient.World.AI.Activity.Trade
             // If we can start trading, push the activity
             if (mCanStartTrading && !mIsTrading)
             {
-                PlayerAI.StartActivity(new TradeItems(mItemsTradingAway, PlayerAI));
+                PlayerAI.StartActivity(new TradeItems(mItemsTradingAway, mSenderName, PlayerAI));
                 mIsTrading = true;
             }
         }
