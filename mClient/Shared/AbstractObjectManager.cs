@@ -34,6 +34,20 @@ namespace mClient.Shared
         /// </summary>
         private string FilePath { get { return @"data\" + SerializeToFile; } }
 
+        /// <summary>
+        /// Default serializer implementation
+        /// </summary>
+        protected virtual JsonSerializer Serializer
+        {
+            get
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Converters.Add(new JavaScriptDateTimeConverter());
+                serializer.NullValueHandling = NullValueHandling.Ignore;
+                return serializer;
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -52,9 +66,7 @@ namespace mClient.Shared
                 lock (mLock)
                 lock (mWriteLock)
                 {
-                    JsonSerializer serializer = new JsonSerializer();
-                    serializer.Converters.Add(new JavaScriptDateTimeConverter());
-                    serializer.NullValueHandling = NullValueHandling.Ignore;
+                    JsonSerializer serializer = Serializer;
 
                     using (StreamWriter sw = new StreamWriter(FilePath))
                     using (JsonWriter writer = new JsonTextWriter(sw))

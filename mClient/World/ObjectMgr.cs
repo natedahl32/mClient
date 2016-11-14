@@ -213,6 +213,73 @@ namespace mClient.Clients
         {
             return mObjects.ToArray();
         }
+
+        #region Specific Objects
+
+        /// <summary>
+        /// Gets all containers
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Clients.Container> GetAllContainers()
+        {
+            return getObjectArray().Where(o => o != null && (o as Clients.Container) != null).Cast<Clients.Container>();
+        }
+
+        /// <summary>
+        /// Gets all corpses
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Clients.Corpse> GetAllCorpses()
+        {
+            return getObjectArray().Where(o => o != null && (o as Clients.Corpse) != null).Cast<Clients.Corpse>();
+        }
+
+        /// <summary>
+        /// Gets all dynamic objects
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Clients.DynamicObject> GetAllDynamicObjects()
+        {
+            return getObjectArray().Where(o => o != null && (o as Clients.DynamicObject) != null).Cast<Clients.DynamicObject>();
+        }
+
+        /// <summary>
+        /// Gets all items
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Clients.Item> GetAllItems()
+        {
+            return getObjectArray().Where(o => o != null && (o as Clients.Item) != null).Cast<Clients.Item>();
+        }
+
+        /// <summary>
+        /// Gets all game objects
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Clients.GameObject> GetAllGameObjects()
+        {
+            return getObjectArray().Where(o => o != null && (o as Clients.GameObject) != null).Cast<Clients.GameObject>();
+        }
+
+        /// <summary>
+        /// Gets all units
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Clients.Unit> GetAllUnits()
+        {
+            return getObjectArray().Where(o => o != null && (o as Clients.Unit) != null).Cast<Clients.Unit>();
+        }
+
+        /// <summary>
+        /// Gets all players
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Clients.PlayerObj> GetAllPlayers()
+        {
+            return getObjectArray().Where(o => o != null && (o as Clients.PlayerObj) != null).Cast<Clients.PlayerObj>();
+        }
+
+        #endregion
     }
 
 }

@@ -309,23 +309,22 @@ namespace mClient.Clients
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_GAMEOBJECT_QUERY_RESPONSE)]
         public void Handle_GameObjectQuery(PacketIn packet)
         {
-            var go = new GameObjectInfo();
-            go.GameObjectId = packet.ReadUInt32();
+            var goId = packet.ReadUInt32();
 
             try
             {
-                go.GameObjectType = (GameObjectType)packet.ReadUInt32();
+                var goType = (GameObjectType)packet.ReadUInt32();
                 packet.ReadUInt32();    // display Id
-                go.Name = packet.ReadString();
+                var goName = packet.ReadString();
                 var name2 = packet.ReadUInt16();
                 var name3 = packet.ReadByte();
                 var name4 = packet.ReadByte();
                 var data = new List<int>();
                 for (int i = 0; i < GameObjectInfo.MAX_GAMEOBJECT_DATA_COUNT; i++)
                     data.Add(packet.ReadInt32());
-                go.Data = data.ToArray();
+                var goData = data.ToArray();
 
-                GameObjectManager.Instance.Add(go);
+                GameObjectManager.Instance.Add(GameObjectInfo.Create(goId, goType, goName, goData));
             }
             catch(Exception ex)
             { }

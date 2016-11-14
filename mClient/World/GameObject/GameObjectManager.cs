@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace mClient.World.GameObject
 {
@@ -32,6 +33,16 @@ namespace mClient.World.GameObject
             }
         }
 
+        protected override JsonSerializer Serializer
+        {
+            get
+            {
+                var serializer = base.Serializer;
+                serializer.TypeNameHandling = TypeNameHandling.All;
+                return serializer;
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -50,6 +61,15 @@ namespace mClient.World.GameObject
         public override GameObjectInfo Get(uint id)
         {
             return mObjects.Where(i => i != null && i.GameObjectId == id).SingleOrDefault();
+        }
+
+        public T GetSpecific<T>(uint id) 
+            where T : GameObjectInfo
+        {
+            var obj = mObjects.Where(i => i != null && i.GameObjectId == id).SingleOrDefault();
+            if (obj != null)
+                return obj as T;
+            return null;
         }
 
         #endregion

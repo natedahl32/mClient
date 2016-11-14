@@ -95,6 +95,14 @@ namespace mClient.Clients
             }
         }
 
+        /// <summary>
+        /// Gets whether or not the game object is a quest giver
+        /// </summary>
+        public bool IsQuestGiver
+        {
+            get { return BaseInfo.GameObjectType == GameObjectType.QuestGiver; }
+        }
+
         #endregion
     }
 }
