@@ -36,7 +36,10 @@ namespace mClient.World.AI.Activity.Death
         public override void Process()
         {
             if (!PlayerAI.Player.PlayerObject.IsDead)
+            {
                 PlayerAI.CompleteActivity();
+                return;
+            }
         }
 
         #endregion

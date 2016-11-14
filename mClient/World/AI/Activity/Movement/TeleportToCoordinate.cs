@@ -47,7 +47,10 @@ namespace mClient.World.AI.Activity.Movement
         {
             // if we are at the spot we teleported to we are done
             if (PlayerAI.Player.Position == mTeleportTo)
+            {
                 PlayerAI.CompleteActivity();
+                return;
+            }
         }
 
         #endregion

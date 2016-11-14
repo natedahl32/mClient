@@ -447,6 +447,220 @@ namespace mClient.World
             mLootable.RemoveAll(l => l.GetOldGuid() == guid.GetOldGuid());
         }
 
+        /// <summary>
+        /// Gets whether or not the player has the skill for the item/subclass combination
+        /// </summary>
+        /// <param name="itemClass"></param>
+        /// <param name="subClass"></param>
+        /// <returns></returns>
+        public bool HasProficiency(ItemClass itemClass, uint subClass)
+        {
+            return mProficiencies.Any(p => p.ItemClass == itemClass && p.ItemSubClassMask == subClass);
+        }
+
+        /// <summary>
+        /// Gets whether or not the player has a spell
+        /// </summary>
+        /// <param name="spellId"></param>
+        /// <returns></returns>
+        public bool HasSpell(ushort spellId)
+        {
+            return mSpellList.Contains(spellId);
+        }
+
+        /// <summary>
+        /// Gets whether or not the player has all spells
+        /// </summary>
+        /// <param name="spellIds"></param>
+        /// <returns></returns>
+        public bool HasAllSpells(IEnumerable<ushort> spellIds)
+        {
+            foreach (var spellId in spellIds)
+                if (!HasSpell(spellId))
+                    return false;
+            return true;
+        }
+
+        /// <summary>
+        /// NOT WORKING - Gets the skill value of this player for the item/subclass combination
+        /// </summary>
+        /// <param name="itemClass"></param>
+        /// <param name="subClass"></param>
+        /// <returns></returns>
+        public uint GetProficiencyValue(ItemClass itemClass, uint subClass)
+        {
+            var proficiency = mProficiencies.Where(p => p.ItemClass == itemClass && p.ItemSubClassMask == subClass).SingleOrDefault();
+            if (proficiency != null)
+                return proficiency.ProficiencyLevel;
+            return 0;
+        }
+
+        /// <summary>
+        /// Determines whether or not the passed item is useful
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool IsItemUseful(Clients.Item item)
+        {
+            // If the item is grey quality it is not useful. Grey equipment can be useful at lower levels
+            // but it is assumed those items have already been equipped.
+            if (item.BaseInfo.Quality == ItemQualities.ITEM_QUALITY_POOR)
+                return false;
+
+            // Quest related items are useful
+            if (item.BaseInfo.StartsQuestId > 0)
+                return true;
+
+            switch (item.BaseInfo.ItemClass)
+            {
+                case ItemClass.ITEM_CLASS_QUEST:
+                    // TODO: Check if item is requirement for a quest we have. Or if it's used in a quest we are on.
+                    return true;
+
+                case ItemClass.ITEM_CLASS_WEAPON:
+                    if (item.BaseInfo.SubClass >= Constants.ItemConstants.MAX_ITEM_SUBCLASS_WEAPON)
+                        return false;
+                    if (!HasProficiency(ItemClass.ITEM_CLASS_WEAPON, item.BaseInfo.SubClass))
+                        return false;
+                    // TODO: Check if it's an upgrade for us or not, for both primary and off spec. If it is for either
+                    // it is useful.
+                    return true;
+
+                case ItemClass.ITEM_CLASS_ARMOR:
+                    if (item.BaseInfo.SubClass >= Constants.ItemConstants.MAX_ITEM_SUBCLASS_ARMOR)
+                        return false;
+                    if (!HasProficiency(ItemClass.ITEM_CLASS_ARMOR, item.BaseInfo.SubClass))
+                        return false;
+                    // TODO: Check if it's an upgrade for us or not, for both primary and off spec. If it is for either
+                    // it is useful.
+                    return true;
+
+                case ItemClass.ITEM_CLASS_KEY:
+                    return true;
+
+                case ItemClass.ITEM_CLASS_CONSUMABLE:
+                    // TODO: Only useful if we don't have better already.
+                    return true;
+
+                case ItemClass.ITEM_CLASS_CONTAINER:
+                    // TODO: Only useful if we don't have better already.
+                    return true;
+
+                case ItemClass.ITEM_CLASS_REAGENT:
+                    // TODO: Most likely useful depending on class
+                    return true;
+
+                case ItemClass.ITEM_CLASS_RECIPE:
+                    // If we have the spells for this item already than it is not useful
+                    if (HasAllSpells(item.BaseInfo.SpellEffects.Select(s => (ushort)s.SpellId)))
+                        return false;
+
+                    switch ((ItemSubclassRecipe)item.BaseInfo.SubClass)
+                    {
+                        case ItemSubclassRecipe.ITEM_SUBCLASS_LEATHERWORKING_PATTERN:
+                            if (PlayerObject.HasSkill(SkillType.SKILL_LEATHERWORKING))
+                                return true;
+                            break;
+                        case ItemSubclassRecipe.ITEM_SUBCLASS_TAILORING_PATTERN:
+                            if (PlayerObject.HasSkill(SkillType.SKILL_TAILORING))
+                                return true;
+                            break;
+                        case ItemSubclassRecipe.ITEM_SUBCLASS_ENGINEERING_SCHEMATIC:
+                            if (PlayerObject.HasSkill(SkillType.SKILL_ENGINEERING))
+                                return true;
+                            break;
+                        case ItemSubclassRecipe.ITEM_SUBCLASS_BLACKSMITHING:
+                            if (PlayerObject.HasSkill(SkillType.SKILL_BLACKSMITHING))
+                                return true;
+                            break;
+                        case ItemSubclassRecipe.ITEM_SUBCLASS_COOKING_RECIPE:
+                            if (PlayerObject.HasSkill(SkillType.SKILL_COOKING))
+                                return true;
+                            break;
+                        case ItemSubclassRecipe.ITEM_SUBCLASS_ALCHEMY_RECIPE:
+                            if (PlayerObject.HasSkill(SkillType.SKILL_ALCHEMY))
+                                return true;
+                            break;
+                        case ItemSubclassRecipe.ITEM_SUBCLASS_FIRST_AID_MANUAL:
+                            if (PlayerObject.HasSkill(SkillType.SKILL_FIRST_AID))
+                                return true;
+                            break;
+                        case ItemSubclassRecipe.ITEM_SUBCLASS_ENCHANTING_FORMULA:
+                            if (PlayerObject.HasSkill(SkillType.SKILL_ENCHANTING))
+                                return true;
+                            break;
+                        case ItemSubclassRecipe.ITEM_SUBCLASS_FISHING_MANUAL:
+                            if (PlayerObject.HasSkill(SkillType.SKILL_FISHING))
+                                return true;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+
+                case ItemClass.ITEM_CLASS_TRADE_GOODS:
+                    switch ((ItemSubclassTradeGoods)item.BaseInfo.SubClass)
+                    {
+                        case ItemSubclassTradeGoods.ITEM_SUBCLASS_PARTS:
+                        case ItemSubclassTradeGoods.ITEM_SUBCLASS_EXPLOSIVES:
+                        case ItemSubclassTradeGoods.ITEM_SUBCLASS_DEVICES:
+                            if (PlayerObject.HasSkill(SkillType.SKILL_ENGINEERING))
+                                return true;
+                            break;
+                        case ItemSubclassTradeGoods.ITEM_SUBCLASS_CLOTH:
+                            if (PlayerObject.HasSkill(SkillType.SKILL_TAILORING))
+                                return true;
+                            if (PlayerObject.HasSkill(SkillType.SKILL_FIRST_AID))
+                                return true;
+                            break;
+                        case ItemSubclassTradeGoods.ITEM_SUBCLASS_LEATHER:
+                            if (PlayerObject.HasSkill(SkillType.SKILL_LEATHERWORKING))
+                                return true;
+                            break;
+                        case ItemSubclassTradeGoods.ITEM_SUBCLASS_METAL_STONE:
+                            if (PlayerObject.HasSkill(SkillType.SKILL_BLACKSMITHING) ||
+                                PlayerObject.HasSkill(SkillType.SKILL_ENGINEERING) ||
+                                PlayerObject.HasSkill(SkillType.SKILL_MINING))
+                                return true;
+                            break;
+                        case ItemSubclassTradeGoods.ITEM_SUBCLASS_MEAT:
+                            if (PlayerObject.HasSkill(SkillType.SKILL_COOKING))
+                                return true;
+                            break;
+                        case ItemSubclassTradeGoods.ITEM_SUBCLASS_HERB:
+                            if (PlayerObject.HasSkill(SkillType.SKILL_HERBALISM) ||
+                                PlayerObject.HasSkill(SkillType.SKILL_ALCHEMY))
+                                return true;
+                            break;
+                        case ItemSubclassTradeGoods.ITEM_SUBCLASS_ELEMENTAL:
+                            return true;
+                        case ItemSubclassTradeGoods.ITEM_SUBCLASS_ENCHANTING:
+                            if (PlayerObject.HasSkill(SkillType.SKILL_ENCHANTING))
+                                return true;
+                            break;
+                        default:
+                            break;
+                    }
+                    return true;
+
+                case ItemClass.ITEM_CLASS_QUIVER:
+                    // TODO: Most likely useful depending on our class
+                    return true;
+
+                case ItemClass.ITEM_CLASS_PROJECTILE:
+                    // TODO: Most likely useful depending on our class
+                    return true;
+
+                case ItemClass.ITEM_CLASS_MONEY:
+                    return true; // Money is always useful, not sure how these items work though
+                default:
+                    break;
+            }
+
+            // By default return false.
+            return false;
+        }
+
         #endregion
     }
 }

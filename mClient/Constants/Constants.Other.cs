@@ -42,6 +42,13 @@ namespace mClient.Constants
         Name
     }
 
+    public enum MoneyConstants
+    {
+        COPPER = 1,
+        SILVER = COPPER * 100,
+        GOLD = SILVER * 100
+    }
+
     public static class ConstantValues
     {
         public const int MAXIMUM_PLAYERS_IN_GROUP = 5;

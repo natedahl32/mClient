@@ -215,7 +215,7 @@ namespace mClient.World.AI
                     .Splice(CreateCombatAITree())
                     .Splice(CreateLootAITree())
                     .Splice(CreateQuestAITree())
-                    //.Splice(CreateInventoryAITree())
+                    .Splice(CreateInventoryAITree())
                     .Splice(CreateIdleAITree())
                 .End()
                 .Build();

@@ -27,6 +27,86 @@ namespace mClient.Clients
         public bool IsNPC { get; set; }
 
         /// <summary>
+        /// Gets whether or not the unit is a vendor
+        /// </summary>
+        public bool IsVendor
+        {
+            get { return ((NPCFlags)GetFieldValue((int)UnitFields.UNIT_NPC_FLAGS)).HasFlag(NPCFlags.UNIT_NPC_FLAG_VENDOR); }
+        }
+
+        /// <summary>
+        /// Gets whether or not the unit has gossip
+        /// </summary>
+        public bool IsGossip
+        {
+            get { return ((NPCFlags)GetFieldValue((int)UnitFields.UNIT_NPC_FLAGS)).HasFlag(NPCFlags.UNIT_NPC_FLAG_GOSSIP); }
+        }
+
+        /// <summary>
+        /// Gets whether or not the unit is a repair npc
+        /// </summary>
+        public bool IsRepair
+        {
+            get { return ((NPCFlags)GetFieldValue((int)UnitFields.UNIT_NPC_FLAGS)).HasFlag(NPCFlags.UNIT_NPC_FLAG_REPAIR); }
+        }
+
+        /// <summary>
+        /// Gets whether or not this unit is a quest giver
+        /// </summary>
+        public bool IsQuestGiver
+        {
+            get { return ((NPCFlags)GetFieldValue((int)UnitFields.UNIT_NPC_FLAGS)).HasFlag(NPCFlags.UNIT_NPC_FLAG_QUESTGIVER); }
+        }
+
+        /// <summary>
+        /// Gets whether or not this unit is a flight master
+        /// </summary>
+        public bool IsFlightMaster
+        {
+            get { return ((NPCFlags)GetFieldValue((int)UnitFields.UNIT_NPC_FLAGS)).HasFlag(NPCFlags.UNIT_NPC_FLAG_FLIGHTMASTER); }
+        }
+
+        /// <summary>
+        /// Gets whether or not this unit is a trainer
+        /// </summary>
+        public bool IsTrainer
+        {
+            get { return ((NPCFlags)GetFieldValue((int)UnitFields.UNIT_NPC_FLAGS)).HasFlag(NPCFlags.UNIT_NPC_FLAG_TRAINER); }
+        }
+
+        /// <summary>
+        /// Gets whether or not this unit is an innkeeper
+        /// </summary>
+        public bool IsInnkeeper
+        {
+            get { return ((NPCFlags)GetFieldValue((int)UnitFields.UNIT_NPC_FLAGS)).HasFlag(NPCFlags.UNIT_NPC_FLAG_INNKEEPER); }
+        }
+
+        /// <summary>
+        /// Gets whether or not this unit is a banker
+        /// </summary>
+        public bool IsBanker
+        {
+            get { return ((NPCFlags)GetFieldValue((int)UnitFields.UNIT_NPC_FLAGS)).HasFlag(NPCFlags.UNIT_NPC_FLAG_BANKER); }
+        }
+
+        /// <summary>
+        /// Gets whether or not this unit is an auctioneer
+        /// </summary>
+        public bool IsAuctioneer
+        {
+            get { return ((NPCFlags)GetFieldValue((int)UnitFields.UNIT_NPC_FLAGS)).HasFlag(NPCFlags.UNIT_NPC_FLAG_AUCTIONEER); }
+        }
+
+        /// <summary>
+        /// Gets whether or not this unit is a stable master
+        /// </summary>
+        public bool IsStableMaster
+        {
+            get { return ((NPCFlags)GetFieldValue((int)UnitFields.UNIT_NPC_FLAGS)).HasFlag(NPCFlags.UNIT_NPC_FLAG_STABLEMASTER); }
+        }
+
+        /// <summary>
         /// Gets the base CreatureInfo for this unit if it is a creature
         /// </summary>
         public CreatureInfo BaseCreatureInfo { get { return CreatureManager.Instance.Get(this.ObjectFieldEntry); } }

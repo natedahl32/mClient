@@ -13,6 +13,32 @@ namespace mClient.Clients
         #region Packet Handlers
 
         /// <summary>
+        /// Handles inventory list from vendor
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_LIST_INVENTORY)]
+        public void HandleListInventory(PacketIn packet)
+        {
+            var message = new VendorInventoryListMessage();
+            var vendorGuid = packet.ReadUInt64();
+            var itemCount = packet.ReadByte();
+
+            if (itemCount > 0)
+            {
+                var itemIndex = packet.ReadUInt32(); // index in the inventory list, looks like this is 1-based
+                var itemId = packet.ReadUInt32();
+                packet.ReadUInt32();    // Display ID
+                var currentVendorCount = packet.ReadUInt32();
+                var price = packet.ReadUInt32();
+                var maxDurability = packet.ReadUInt32();
+                var buyCount = packet.ReadUInt32();
+            }
+
+            message.ItemCount = itemCount;
+            player.PlayerAI.SendMessageToAllActivities(message);
+        }
+
+        /// <summary>
         /// Handles loot being released by a player
         /// </summary>
         /// <param name="packet"></param>
@@ -175,7 +201,7 @@ namespace mClient.Clients
             {
                 ItemId = itemId,
                 ItemClass = (ItemClass)itemClass,
-                SubClassConsumable = (ItemSubclassConsumable)itemSubClass,
+                SubClass = itemSubClass,
                 ItemName = itemName
             };
 
@@ -431,6 +457,32 @@ namespace mClient.Clients
             packet.Write((byte)0);
             packet.Write((byte)0);
             packet.Write((byte)0);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Requests the inventory list for a vendor
+        /// </summary>
+        /// <param name="guid"></param>
+        public void ListVendorInventory(ulong guid)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_LIST_INVENTORY);
+            packet.Write(guid);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Sells an item to a vendor
+        /// </summary>
+        /// <param name="vendorGuid">Guid of vendor to sell to</param>
+        /// <param name="itemGuid">Guid of item to sell</param>
+        /// <param name="count">Number of items to sell</param>
+        public void SellItem(ulong vendorGuid, ulong itemGuid, byte count)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_SELL_ITEM);
+            packet.Write(vendorGuid);
+            packet.Write(itemGuid);
+            packet.Write(count);
             Send(packet);
         }
 

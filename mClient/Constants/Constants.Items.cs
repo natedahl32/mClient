@@ -15,6 +15,9 @@ namespace mClient.Constants
 
         public const int INVENTORY_SLOT_BAG_0 = 255;
 
+        public const int MAX_ITEM_SUBCLASS_WEAPON = 21;
+        public const int MAX_ITEM_SUBCLASS_ARMOR = 10;
+
         public const int MAX_ITEM_QUALITY = 7;
         public static uint[] ItemQualityColors = new uint[MAX_ITEM_QUALITY]
         {

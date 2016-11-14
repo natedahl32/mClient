@@ -35,7 +35,10 @@ namespace mClient.World.AI.Activity.Death
         {
             // if we have our corpse we can complete this activity
             if (PlayerAI.Player.PlayerCorpse != null)
+            {
                 PlayerAI.CompleteActivity();
+                return;
+            }
         }
 
         public override void HandleMessage(ActivityMessage message)

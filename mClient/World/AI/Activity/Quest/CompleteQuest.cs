@@ -50,7 +50,11 @@ namespace mClient.World.AI.Activity.Quest
         public override void Process()
         {
             // Complete the activity if the expectation elapsed
-            if (ExpectationHasElapsed) PlayerAI.CompleteActivity();
+            if (ExpectationHasElapsed)
+            {
+                PlayerAI.CompleteActivity();
+                return;
+            }
 
             // if we have quest rewards we need to either choose a reward or just send back a response
             // to complete the quest

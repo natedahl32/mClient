@@ -33,7 +33,7 @@ namespace mClient.World.Items
         /// <summary>
         /// Gets or sets the item sub class consumable
         /// </summary>
-        public ItemSubclassConsumable SubClassConsumable { get; set; }
+        public uint SubClass { get; set; }
 
         /// <summary>
         /// Gets or sets the item quality

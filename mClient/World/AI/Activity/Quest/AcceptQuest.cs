@@ -62,7 +62,11 @@ namespace mClient.World.AI.Activity.Quest
         public override void Process()
         {
             // If our expectation for a quest has elapsed, then complete the activity
-            if (ExpectationHasElapsed) PlayerAI.CompleteActivity();
+            if (ExpectationHasElapsed)
+            {
+                PlayerAI.CompleteActivity();
+                return;
+            }
 
             // Are we in range to accept the questgiver?
             if (PlayerAI.Client.movementMgr.CalculateDistance(mAcceptingFromQuestGiver.Position) > MovementMgr.MINIMUM_FOLLOW_DISTANCE)

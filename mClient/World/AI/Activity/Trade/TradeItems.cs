@@ -62,7 +62,11 @@ namespace mClient.World.AI.Activity.Trade
         public override void Process()
         {
             // When the trade is completed, then complete the activity
-            if (mIsTradeCompleted) PlayerAI.CompleteActivity();
+            if (mIsTradeCompleted)
+            {
+                PlayerAI.CompleteActivity();
+                return;
+            }
 
             // While we have items in our list to trade, add them to the trade window
             if (mTradingItems.Count > 0 && mCurrentTradeSlot < (int)Constants.TradeSlots.TRADE_SLOT_TRADED_COUNT)

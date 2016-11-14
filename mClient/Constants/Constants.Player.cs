@@ -2,6 +2,12 @@
 
 namespace mClient.Constants
 {
+    public static class PlayerConstants
+    {
+        public const int PLAYER_MAX_SKILLS = 127;
+        public const int PLAYER_EXPLORED_ZONES_SIZE = 64;
+    }
+
     public enum PowerType : UInt32
     {
         Mana = 0,

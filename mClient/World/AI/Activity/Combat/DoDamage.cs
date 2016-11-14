@@ -36,9 +36,15 @@ namespace mClient.World.AI.Activity.Combat
         {
             // Complete the activity if:
             if (PlayerAI.TargetSelection == null)
+            {
                 PlayerAI.CompleteActivity();
+                return;
+            }
             if (!PlayerAI.Player.IsInCombat)
+            {
                 PlayerAI.CompleteActivity();
+                return;
+            }
 
             // TOOD: Determine what abilities/spells to use here for damage purposes. Basically our rotation.
         }

@@ -47,7 +47,7 @@ namespace mClient.World.AI
             {
                 // inv list - lists all items in inventory (not equipped)
                 case INV_LIST_COMMAND:
-                    Player.PlayerAI.Client.SendChatMsg(Constants.ChatMsg.Party, Constants.Languages.Universal, "I have the following items in my bags.");
+                    Player.PlayerAI.Client.SendChatMsg(Constants.ChatMsg.Party, Constants.Languages.Universal, $"I have {Player.PlayerObject.MoneyDisplayString}and the following items in my bags.");
                     foreach (var invSlot in Player.PlayerObject.InventoryItems)
                     {
                         var item_msg = invSlot.Item.ItemGameLink + " x" + invSlot.Item.StackCount.ToString();

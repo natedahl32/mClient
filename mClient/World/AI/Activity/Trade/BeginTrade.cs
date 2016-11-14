@@ -83,7 +83,11 @@ namespace mClient.World.AI.Activity.Trade
         public override void Process()
         {
             // If the trade is canceled complete the activity
-            if (mTradeIsCanceled) PlayerAI.CompleteActivity();
+            if (mTradeIsCanceled)
+            {
+                PlayerAI.CompleteActivity();
+                return;
+            }
 
             // If we are trading and we are back here we can complete this activity, it means the trade is done
             if (mIsTrading)

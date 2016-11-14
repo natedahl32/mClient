@@ -155,6 +155,7 @@
     <Compile Include="Shared\Coordinate.cs" />
     <Compile Include="Shared\Coords3.cs" />
     <Compile Include="Shared\EntityId.cs" />
+    <Compile Include="Shared\HiLo.cs" />
     <Compile Include="Shared\QueryQueue.cs" />
     <Compile Include="Shared\UpdateMask.cs" />
     <Compile Include="Shared\WoWGuid.cs" />
@@ -162,6 +163,7 @@
     <Compile Include="Utils\Time.cs" />
     <Compile Include="World\AI\Activity\ActivityMessage.cs" />
     <Compile Include="World\AI\Activity\BaseActivity.cs" />
+    <Compile Include="World\AI\Activity\BuySell\SellItems.cs" />
     <Compile Include="World\AI\Activity\Combat\DoDamage.cs" />
     <Compile Include="World\AI\Activity\Death\FindCorpse.cs" />
     <Compile Include="World\AI\Activity\Death\ReleaseSpirit.cs" />
@@ -177,6 +179,7 @@
     <Compile Include="World\AI\Activity\Messages\QuestListMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\QuestOfferRewards.cs" />
     <Compile Include="World\AI\Activity\Messages\TradeStatusMessage.cs" />
+    <Compile Include="World\AI\Activity\Messages\VendorInventoryListMessage.cs" />
     <Compile Include="World\AI\Activity\Movement\TeleportToCoordinate.cs" />
     <Compile Include="World\AI\Activity\Quest\AcceptQuest.cs" />
     <Compile Include="World\AI\Activity\Quest\CompleteQuest.cs" />
@@ -215,6 +218,7 @@
     <Compile Include="World\Quest\QuestLogItem.cs" />
     <Compile Include="World\Quest\QuestManager.cs" />
     <Compile Include="World\Quest\QuestObjective.cs" />
+    <Compile Include="World\Skill\SkillData.cs" />
     <Compile Include="World\TerrainManager.cs" />
     <Compile Include="World\Terrain\ADTProcessor.cs" />
     <Compile Include="World\Terrain\BlizChunkHeader.cs" />

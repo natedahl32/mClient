@@ -2,6 +2,7 @@
 using mClient.Shared;
 using mClient.World.Items;
 using mClient.World.Quest;
+using mClient.World.Skill;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -112,9 +113,128 @@ namespace mClient.Clients
             get { return mInventoryBags.Where(b => b.Value != null).Count(); }
         }
 
+        /// <summary>
+        /// Gets the durability percentage for all equipped items
+        /// </summary>
+        public float EquipmentDurabilityPercentage
+        {
+            get
+            {
+                uint totalMaxDurability = 0;
+                uint totalDurability = 0;
+                for (int i = (int)EquipmentSlots.EQUIPMENT_SLOT_START; i < (int)EquipmentSlots.EQUIPMENT_SLOT_END; i++)
+                {
+                    var item = GetItemInEquipmentSlot((EquipmentSlots)i);
+                    if (item != null)
+                    {
+                        if (item.MaxDurability > 0)
+                        {
+                            totalDurability += item.Durability;
+                            totalMaxDurability += item.MaxDurability;
+                        }
+                    }
+                }
+
+                if (totalMaxDurability == 0)
+                    return 0f;
+
+                return totalDurability / totalMaxDurability;
+            }
+        }
+
+        /// <summary>
+        /// Gets all skill data for this player
+        /// </summary>
+        public IEnumerable<SkillData> Skills
+        {
+            get
+            {
+                var skills = new List<SkillData>();
+                for (int i = (int)PlayerFields.PLAYER_SKILL_INFO_1_1; i < (int)PlayerFields.PLAYER_CHARACTER_POINTS1; i += 3)
+                {
+                    var skill = GetFieldValue(i);
+                    var value = GetFieldValue(i + 1);
+                    var bonus = GetFieldValue(i + 2);
+                    if (skill > 0)
+                        skills.Add(new SkillData((SkillType)skill, value, bonus));
+                }
+                return skills;
+            }
+        }
+
+        /// <summary>
+        /// Gets the amount of money the player has
+        /// </summary>
+        public uint Money
+        {
+            get { return GetFieldValue((int)PlayerFields.PLAYER_FIELD_COINAGE); }
+        }
+
+        /// <summary>
+        /// Gets the amount of gold the player has
+        /// </summary>
+        public uint Gold
+        {
+            get { return Convert.ToUInt32(Math.Floor((decimal)Money / (int)MoneyConstants.GOLD)); }
+        }
+
+        /// <summary>
+        /// Gets the amount of silver the player has
+        /// </summary>
+        public uint Silver
+        {
+            get
+            {
+                var modGold = Money % (int)MoneyConstants.GOLD;
+                return Convert.ToUInt32(Math.Floor((decimal)modGold / (int)MoneyConstants.SILVER));
+            }
+        }
+
+        /// <summary>
+        /// Gets the amount of copper the player has
+        /// </summary>
+        public uint Copper
+        {
+            get
+            {
+                var modGold = Money % (int)MoneyConstants.GOLD;
+                var modSilver = modGold % (int)MoneyConstants.SILVER;
+                return modSilver;
+            }
+        }
+
+        /// <summary>
+        /// Gets a string that display how much money this player has
+        /// </summary>
+        public string MoneyDisplayString
+        {
+            get
+            {
+                var display = string.Empty;
+                if (Gold > 0)
+                    display += Gold.ToString() + "g ";
+                if (Silver > 0 || Gold > 0)
+                    display += Silver.ToString() + "s ";
+                // Always display copper since it's the least denomination
+                display += Copper.ToString() + "c ";
+                return display;
+            }
+        }
+
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// Gets whether or not the player has the specified skill
+        /// </summary>
+        /// <param name="skill"></param>
+        /// <returns></returns>
+        public bool HasSkill(SkillType skill)
+        {
+            var skillData = Skills.Where(s => s.Skill == skill).SingleOrDefault();
+            return skillData != null;
+        }
 
         /// <summary>
         /// Gets the item currently equipped in the given slot
@@ -162,6 +282,18 @@ namespace mClient.Clients
         public InventoryItemSlot GetInventoryItem(uint itemId)
         {
             var inventoryItemSlot = InventoryItems.Where(i => i.Item != null && i.Item.BaseInfo != null && i.Item.BaseInfo.ItemId == itemId).FirstOrDefault();
+            return inventoryItemSlot;
+        }
+
+        /// <summary>
+        /// Gets the first inventory item slot that contains the passed item guid
+        /// </summary>
+        /// <param name="itemGuid"></param>
+        /// <param name="slot"></param>
+        /// <returns></returns>
+        public InventoryItemSlot GetInventoryItem(WoWGuid itemGuid)
+        {
+            var inventoryItemSlot = InventoryItems.Where(i => i.Item != null && i.Item.Guid.GetOldGuid() == itemGuid.GetOldGuid()).FirstOrDefault();
             return inventoryItemSlot;
         }
 
@@ -427,6 +559,17 @@ namespace mClient.Clients
                 if (bag.Value != null)
                     bag.Value.ClearSlot(slot.Slot);
             }
+        }
+
+        /// <summary>
+        /// Removes an item from inventory
+        /// </summary>
+        /// <param name="item">Item to remove</param>
+        public void RemoveItemFromInventory(Clients.Item item)
+        {
+            // Get the inventory slot that holds the item
+            var invSlot = GetInventoryItem(item.Guid);
+            RemoveInventoryItemSlot(invSlot);
         }
 
         #endregion

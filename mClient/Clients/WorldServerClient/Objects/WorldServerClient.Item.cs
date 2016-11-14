@@ -68,6 +68,26 @@ namespace mClient.Clients
         }
 
         /// <summary>
+        /// Gets the max durability of the item
+        /// </summary>
+        public uint MaxDurability
+        {
+            get { return GetFieldValue((int)ItemFields.ITEM_FIELD_MAXDURABILITY); }
+        }
+
+        /// <summary>
+        /// Gets the percentage of durability remaining for this item
+        /// </summary>
+        public float DurabilityPercentage
+        {
+            get
+            {
+                return Durability / MaxDurability;
+            }
+        }
+
+
+        /// <summary>
         /// Gets whether or not the item is bound to us
         /// </summary>
         public bool IsBound

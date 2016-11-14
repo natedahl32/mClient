@@ -50,7 +50,11 @@ namespace mClient.World.AI.Activity.Loot
         public override void Process()
         {
             // If we are done looting complete this activity
-            if (mDoneLooting) PlayerAI.CompleteActivity();
+            if (mDoneLooting)
+            {
+                PlayerAI.CompleteActivity();
+                return;
+            }
         }
 
         public override void HandleMessage(ActivityMessage message)
