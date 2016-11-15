@@ -140,6 +140,8 @@
     <Compile Include="Crypt\WoWCrypt.cs" />
     <Compile Include="DBC\DBCReader.cs" />
     <Compile Include="DBC\MapTable.cs" />
+    <Compile Include="DBC\SkillLineAbilityEntry.cs" />
+    <Compile Include="DBC\SkillLineAbilityTable.cs" />
     <Compile Include="DBC\SpellEntry.cs" />
     <Compile Include="DBC\SpellTable.cs" />
     <Compile Include="mCore.cs" />

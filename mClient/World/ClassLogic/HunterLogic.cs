@@ -16,6 +16,15 @@ namespace mClient.World.ClassLogic
 
         #endregion
 
+        #region Public Methods
+
+        public override void InitializeSpells()
+        {
+
+        }
+
+        #endregion
+
         #region Hunter Constants
 
         public static class Spells

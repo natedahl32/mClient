@@ -188,6 +188,11 @@ namespace mClient.World
         public PlayerAI PlayerAI { get { return mPlayerAI; } }
 
         /// <summary>
+        /// Gets the class logic for this player
+        /// </summary>
+        public PlayerClassLogic ClassLogic { get { return mClassLogic; } }
+
+        /// <summary>
         /// Gets the players corpse
         /// </summary>
         public Corpse PlayerCorpse { get { return mPlayerCorpse; } }
@@ -339,7 +344,9 @@ namespace mClient.World
         public void AddSpell(UInt16 spellId)
         {
             if (!mSpellList.Contains(spellId))
+            {
                 mSpellList.Add(spellId);
+            }
         }
 
         /// <summary>

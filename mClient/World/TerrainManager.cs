@@ -133,7 +133,7 @@ namespace mClient.Terrain
         private MapTile loadTile(int x, int z)
         {
             //String mapname = BoogieCore.mapTable.getMapName(BoogieCore.world.getMapID());
-            MapTable map = new MapTable();
+            MapTable map = MapTable.Instance;
 
             string mapname = map.getMapName(MapId);
             MapTile tile = new MapTile(mapname, x, z);

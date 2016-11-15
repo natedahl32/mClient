@@ -7,10 +7,18 @@ namespace mClient.DBC
     {
         private Dictionary<uint, SpellEntry> mSpellEntries = new Dictionary<uint, SpellEntry>();
 
-        public SpellTable()
-            : base(@"Spell.dbc")
-        {
-        }
+        #region Singleton
+
+        static readonly SpellTable instance = new SpellTable();
+
+        static SpellTable() { }
+
+        SpellTable() : base(@"Spell.dbc")
+        { }
+
+        public static SpellTable Instance { get { return instance; } }
+
+        #endregion
 
         protected override void dataLoaded()
         {

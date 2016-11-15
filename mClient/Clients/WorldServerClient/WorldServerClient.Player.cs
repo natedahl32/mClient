@@ -54,8 +54,6 @@ namespace mClient.Clients
             var dummy = inpacket.ReadByte();
             var spellCount = inpacket.ReadUInt16();
 
-            SpellTable spells = new SpellTable();
-
             for (int i = 0; i < spellCount; i++)
             {
                 var spell = inpacket.ReadUInt16();
@@ -75,6 +73,10 @@ namespace mClient.Clients
                 var cooldown = inpacket.ReadUInt32();
                 var cooldownCategory = inpacket.ReadUInt32();
             }
+
+            // Initialize bot spells now that we've got our initial spells
+            if (player.ClassLogic != null)
+                player.ClassLogic.InitializeSpells();
         }
 
         /// <summary>

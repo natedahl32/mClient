@@ -5,12 +5,20 @@ using System.Text;
 
 namespace mClient.Shared
 {
-    class MapTable : DBCFile
+    public class MapTable : DBCFile
     {
-        public MapTable()
-            : base(@"Map.dbc")
-        {
-        }
+        #region Singleton
+
+        static readonly MapTable instance = new MapTable();
+
+        static MapTable() { }
+
+        MapTable() : base(@"Map.dbc")
+        { }
+
+        public static MapTable Instance { get { return instance; } }
+
+        #endregion
 
         public string getMapName(uint mapId)
         {
