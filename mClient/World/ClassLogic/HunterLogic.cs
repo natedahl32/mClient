@@ -8,6 +8,52 @@ namespace mClient.World.ClassLogic
 {
     public class HunterLogic : PlayerClassLogic
     {
+        #region Declarations
+
+        protected uint PET_SUMMON,
+           PET_DISMISS,
+           PET_REVIVE,
+           PET_MEND,
+           PET_FEED,
+           BESTIAL_WRATH,
+           BAD_ATTITUDE,
+           SONIC_BLAST,
+           DEMORALIZING_SCREECH,
+           INTIMIDATION;
+
+        protected uint AUTO_SHOT,
+               HUNTERS_MARK,
+               ARCANE_SHOT,
+               CONCUSSIVE_SHOT,
+               DISTRACTING_SHOT,
+               MULTI_SHOT,
+               EXPLOSIVE_SHOT,
+               SERPENT_STING,
+               SCORPID_STING,
+               VIPER_STING,
+               WYVERN_STING,
+               AIMED_SHOT,
+               VOLLEY,
+               BLACK_ARROW;
+
+        protected uint RAPTOR_STRIKE,
+               WING_CLIP,
+               MONGOOSE_BITE,
+               DISENGAGE,
+               DETERRENCE;
+
+        protected uint FREEZING_TRAP,
+               IMMOLATION_TRAP,
+               FROST_TRAP,
+               EXPLOSIVE_TRAP;
+
+        protected uint ASPECT_OF_THE_HAWK,
+               ASPECT_OF_THE_MONKEY,
+               RAPID_FIRE,
+               TRUESHOT_AURA;
+
+        #endregion
+
         #region Constructors
 
         public HunterLogic(Player player) : base(player)
@@ -20,7 +66,10 @@ namespace mClient.World.ClassLogic
 
         public override void InitializeSpells()
         {
+            base.InitializeSpells();
 
+            // Spells
+            ARCANE_SHOT = InitSpell(Spells.ARCANE_SHOT_1);
         }
 
         #endregion

@@ -8,6 +8,72 @@ namespace mClient.World.ClassLogic
 {
     public class PaladinLogic : PlayerClassLogic
     {
+        #region Declarations
+
+        // Retribution
+        protected uint RETRIBUTION_AURA,
+               SEAL_OF_COMMAND,
+               GREATER_BLESSING_OF_WISDOM,
+               GREATER_BLESSING_OF_MIGHT,
+               BLESSING_OF_WISDOM,
+               BLESSING_OF_MIGHT,
+               HAMMER_OF_JUSTICE,
+               RIGHTEOUS_FURY,
+               JUDGEMENT;
+
+        // Holy
+        protected uint FLASH_OF_LIGHT,
+               HOLY_LIGHT,
+               DIVINE_SHIELD,
+               HAMMER_OF_WRATH,
+               CONSECRATION,
+               CONCENTRATION_AURA,
+               DIVINE_FAVOR,
+               HOLY_SHOCK,
+               HOLY_WRATH,
+               LAY_ON_HANDS,
+               EXORCISM,
+               REDEMPTION,
+               SEAL_OF_JUSTICE,
+               SEAL_OF_LIGHT,
+               SEAL_OF_RIGHTEOUSNESS,
+               SEAL_OF_WISDOM,
+               SEAL_OF_THE_CRUSADER,
+               PURIFY,
+               CLEANSE;
+
+        // Protection
+        protected uint GREATER_BLESSING_OF_KINGS,
+               BLESSING_OF_KINGS,
+               BLESSING_OF_PROTECTION,
+               SHADOW_RESISTANCE_AURA,
+               DEVOTION_AURA,
+               FIRE_RESISTANCE_AURA,
+               FROST_RESISTANCE_AURA,
+               DEFENSIVE_STANCE,
+               BERSERKER_STANCE,
+               BATTLE_STANCE,
+               DIVINE_SACRIFICE,
+               DIVINE_PROTECTION,
+               DIVINE_INTERVENTION,
+               HOLY_SHIELD,
+               AVENGERS_SHIELD,
+               RIGHTEOUS_DEFENSE,
+               BLESSING_OF_SANCTUARY,
+               GREATER_BLESSING_OF_SANCTUARY,
+               BLESSING_OF_SACRIFICE,
+               SHIELD_OF_RIGHTEOUSNESS,
+               HAND_OF_RECKONING,
+               HAMMER_OF_THE_RIGHTEOUS;
+
+        // cannot be protected
+        protected uint FORBEARANCE;
+
+        //Non-Stacking buffs
+        protected uint PRAYER_OF_SHADOW_PROTECTION;
+
+        #endregion
+
         #region Constructors
 
         public PaladinLogic(Player player) : base(player)
@@ -20,7 +86,10 @@ namespace mClient.World.ClassLogic
 
         public override void InitializeSpells()
         {
+            base.InitializeSpells();
 
+            // Spells
+            BLESSING_OF_KINGS = InitSpell(Spells.BLESSING_OF_KINGS_1);
         }
 
         #endregion

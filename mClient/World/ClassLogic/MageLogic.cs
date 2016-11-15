@@ -8,6 +8,54 @@ namespace mClient.World.ClassLogic
 {
     public class MageLogic : PlayerClassLogic
     {
+        #region Declarations
+
+        // ARCANE
+        protected uint ARCANE_MISSILES,
+               ARCANE_EXPLOSION,
+               COUNTERSPELL,
+               SLOW,
+               POLYMORPH,
+               ARCANE_POWER;
+
+        // RANGED
+        protected uint SHOOT;
+
+        // FIRE
+        protected uint FIREBALL,
+               FIRE_BLAST,
+               FLAMESTRIKE,
+               SCORCH,
+               PYROBLAST,
+               BLAST_WAVE,
+               COMBUSTION,
+               FIRE_WARD;
+
+        // FROST
+        protected uint FROSTBOLT,
+               FROST_NOVA,
+               BLIZZARD,
+               CONE_OF_COLD,
+               ICE_BARRIER,
+               FROST_WARD,
+               ICE_BLOCK,
+               COLD_SNAP;
+
+        // buffs
+        protected uint FROST_ARMOR,
+               ICE_ARMOR,
+               MAGE_ARMOR,
+               ARCANE_INTELLECT,
+               ARCANE_BRILLIANCE,
+               MANA_SHIELD,
+               DAMPEN_MAGIC,
+               AMPLIFY_MAGIC;
+
+        protected uint CONJURE_WATER,
+               CONJURE_FOOD;
+
+        #endregion
+
         #region Constructors
 
         public MageLogic(Player player) : base(player)
@@ -20,7 +68,10 @@ namespace mClient.World.ClassLogic
 
         public override void InitializeSpells()
         {
+            base.InitializeSpells();
 
+            // Spells
+            AMPLIFY_MAGIC = InitSpell(Spells.AMPLIFY_MAGIC_1);
         }
 
         #endregion

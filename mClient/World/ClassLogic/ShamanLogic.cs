@@ -8,6 +8,77 @@ namespace mClient.World.ClassLogic
 {
     public class ShamanLogic : PlayerClassLogic
     {
+        #region Declarations
+
+        // ENHANCEMENT
+        protected uint ROCKBITER_WEAPON,
+               STONESKIN_TOTEM,
+               LIGHTNING_SHIELD,
+               FLAMETONGUE_WEAPON,
+               STRENGTH_OF_EARTH_TOTEM,
+               FOCUSED,
+               FROSTBRAND_WEAPON,
+               FROST_RESISTANCE_TOTEM,
+               FLAMETONGUE_TOTEM,
+               FIRE_RESISTANCE_TOTEM,
+               WINDFURY_WEAPON,
+               GROUNDING_TOTEM,
+               NATURE_RESISTANCE_TOTEM,
+               WIND_FURY_TOTEM,
+               STORMSTRIKE,
+               WRATH_OF_AIR_TOTEM,
+               EARTH_ELEMENTAL_TOTEM,
+               BLOODLUST;
+
+        // RESTORATION
+        protected uint HEALING_WAVE,
+               LESSER_HEALING_WAVE,
+               ANCESTRAL_SPIRIT,
+               TREMOR_TOTEM,
+               HEALING_STREAM_TOTEM,
+               MANA_SPRING_TOTEM,
+               CHAIN_HEAL,
+               MANA_TIDE_TOTEM,
+               EARTH_SHIELD,
+               CURE_DISEASE_SHAMAN,
+               CURE_POISON_SHAMAN,
+               NATURES_SWIFTNESS_SHAMAN;
+
+        // ELEMENTAL
+        protected uint LIGHTNING_BOLT,
+               EARTH_SHOCK,
+               STONECLAW_TOTEM,
+               FLAME_SHOCK,
+               SEARING_TOTEM,
+               PURGE,
+               FIRE_NOVA_TOTEM,
+               FROST_SHOCK,
+               MAGMA_TOTEM,
+               CHAIN_LIGHTNING,
+               FIRE_ELEMENTAL_TOTEM,
+               EARTHBIND_TOTEM,
+               ELEMENTAL_MASTERY;
+
+        // totem buffs
+        protected uint STRENGTH_OF_EARTH_EFFECT,
+               FLAMETONGUE_EFFECT,
+               MAGMA_TOTEM_EFFECT,
+               STONECLAW_EFFECT,
+               FIRE_RESISTANCE_EFFECT,
+               FROST_RESISTANCE_EFFECT,
+               GROUDNING_EFFECT,
+               NATURE_RESISTANCE_EFFECT,
+               STONESKIN_EFFECT,
+               WINDFURY_EFFECT,
+               WRATH_OF_AIR_EFFECT,
+               CLEANSING_TOTEM_EFFECT,
+               HEALING_STREAM_EFFECT,
+               MANA_SPRING_EFFECT,
+               TREMOR_TOTEM_EFFECT,
+               EARTHBIND_EFFECT;
+
+        #endregion
+
         #region Constructors
 
         public ShamanLogic(Player player) : base(player)
@@ -20,7 +91,10 @@ namespace mClient.World.ClassLogic
 
         public override void InitializeSpells()
         {
+            base.InitializeSpells();
 
+            // Spells
+            ANCESTRAL_SPIRIT = InitSpell(Spells.ANCESTRAL_SPIRIT_1);
         }
 
         #endregion

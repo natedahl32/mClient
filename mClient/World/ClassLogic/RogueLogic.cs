@@ -8,6 +8,45 @@ namespace mClient.World.ClassLogic
 {
     public class RogueLogic : PlayerClassLogic
     {
+        #region Declarations
+
+        // COMBAT
+        protected uint ADRENALINE_RUSH,
+               SINISTER_STRIKE,
+               BACKSTAB,
+               GOUGE,
+               EVASION,
+               SPRINT,
+               KICK,
+               FEINT;
+
+        // SUBTLETY
+        protected uint STEALTH,
+               VANISH,
+               HEMORRHAGE,
+               BLIND,
+               PICK_POCKET,
+               CRIPPLING_POISON,
+               DEADLY_POISON,
+               MIND_NUMBING_POISON,
+               GHOSTLY_STRIKE,
+               DISTRACT,
+               PREPARATION,
+               PREMEDITATION;
+
+        // ASSASSINATION
+        protected uint COLD_BLOOD,
+               EVISCERATE,
+               SLICE_DICE,
+               GARROTE,
+               EXPOSE_ARMOR,
+               AMBUSH,
+               RUPTURE,
+               CHEAP_SHOT,
+               KIDNEY_SHOT;
+
+        #endregion
+
         #region Constructors
 
         public RogueLogic(Player player) : base(player)
@@ -20,7 +59,10 @@ namespace mClient.World.ClassLogic
 
         public override void InitializeSpells()
         {
+            base.InitializeSpells();
 
+            // Spells
+            ADRENALINE_RUSH = InitSpell(Spells.ADRENALINE_RUSH_1);
         }
 
         #endregion

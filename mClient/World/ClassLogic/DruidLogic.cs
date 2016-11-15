@@ -8,6 +8,69 @@ namespace mClient.World.ClassLogic
 {
     public class DruidLogic : PlayerClassLogic
     {
+        #region Declarations
+
+        // druid cat/bear/dire bear/moonkin/tree of life forms
+        protected uint CAT_FORM,
+               BEAR_FORM,
+               DIRE_BEAR_FORM,
+               MOONKIN_FORM,
+               TRAVEL_FORM;
+
+        // druid cat attacks
+        protected uint CLAW,
+               COWER,
+               TIGERS_FURY,
+               RAKE,
+               RIP,
+               SHRED,
+               FEROCIOUS_BITE;
+
+        // druid bear/dire bear attacks & buffs
+        protected uint BASH,
+               MAUL,
+               SWIPE,
+               DEMORALIZING_ROAR,
+               CHALLENGING_ROAR,
+               GROWL,
+               ENRAGE,
+               FAERIE_FIRE_FERAL;
+
+        // druid caster DPS attacks & debuffs
+        protected uint MOONFIRE,
+               ROOTS,
+               WRATH,
+               OMEN_OF_CLARITY,
+               STARFIRE,
+               INSECT_SWARM,
+               FAERIE_FIRE,
+               HIBERNATE;
+
+        // druid buffs
+        protected uint MARK_OF_THE_WILD,
+               GIFT_OF_THE_WILD,
+               THORNS,
+               INNERVATE,
+               NATURES_SWIFTNESS,
+               BARKSKIN;
+
+        // druid heals
+        protected uint REJUVENATION,
+               REGROWTH,
+               HEALING_TOUCH,
+               SWIFTMEND,
+               TRANQUILITY,
+               REBIRTH,
+               REMOVE_CURSE,
+               ABOLISH_POISON;
+
+        // procs
+        protected uint ECLIPSE,
+            ECLIPSE_SOLAR,
+            ECLIPSE_LUNAR;
+
+        #endregion
+
         #region Constructors
 
         public DruidLogic(Player player) : base(player)
@@ -20,7 +83,10 @@ namespace mClient.World.ClassLogic
 
         public override void InitializeSpells()
         {
+            base.InitializeSpells();
 
+            // Spells
+            ABOLISH_POISON = InitSpell(Spells.ABOLISH_POISON_1);
         }
 
         #endregion

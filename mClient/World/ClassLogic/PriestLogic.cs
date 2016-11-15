@@ -8,6 +8,56 @@ namespace mClient.World.ClassLogic
 {
     public class PriestLogic : PlayerClassLogic
     {
+        #region Declarations
+
+        // holy
+        protected uint CLEARCASTING,
+               DESPERATE_PRAYER,
+               FLASH_HEAL,
+               GREATER_HEAL,
+               HEAL,
+               HOLY_FIRE,
+               HOLY_NOVA,
+               LESSER_HEAL,
+               MANA_BURN,
+               PRAYER_OF_HEALING,
+               RENEW,
+               RESURRECTION,
+               SHACKLE_UNDEAD,
+               SMITE,
+               CURE_DISEASE,
+               ABOLISH_DISEASE,
+               PRIEST_DISPEL_MAGIC;
+
+        // ranged
+        protected uint SHOOT;
+
+        // shadowmagic
+        protected uint FADE,
+               SHADOW_WORD_PAIN,
+               MIND_BLAST,
+               SCREAM,
+               MIND_FLAY,
+               DEVOURING_PLAGUE,
+               SHADOW_PROTECTION,
+               PRAYER_OF_SHADOW_PROTECTION,
+               SHADOWFORM,
+               VAMPIRIC_EMBRACE;
+
+        // discipline
+        protected uint POWER_WORD_SHIELD,
+               INNER_FIRE,
+               POWER_WORD_FORTITUDE,
+               PRAYER_OF_FORTITUDE,
+               FEAR_WARD,
+               POWER_INFUSION,
+               MASS_DISPEL,
+               DIVINE_SPIRIT,
+               PRAYER_OF_SPIRIT,
+               INNER_FOCUS;
+
+        #endregion
+
         #region Constructors
 
         public PriestLogic(Player player) : base(player)
@@ -20,7 +70,10 @@ namespace mClient.World.ClassLogic
 
         public override void InitializeSpells()
         {
+            base.InitializeSpells();
 
+            // Spells
+            ABOLISH_DISEASE = InitSpell(Spells.ABOLISH_DISEASE_1);
         }
 
         #endregion

@@ -8,6 +8,82 @@ namespace mClient.World.ClassLogic
 {
     public class WarlockLogic : PlayerClassLogic
     {
+        #region Declarations
+
+        // CURSES
+        protected uint CURSE_OF_WEAKNESS,
+               CURSE_OF_AGONY,
+               CURSE_OF_EXHAUSTION,
+               CURSE_OF_RECKLESSNESS,
+               CURSE_OF_SHADOW,
+               CURSE_OF_TONGUES,
+               CURSE_OF_THE_ELEMENTS,
+               CURSE_OF_DOOM;
+
+        // RANGED
+        protected uint SHOOT;
+
+        // AFFLICTION
+        protected uint AMPLIFY_CURSE,
+               CORRUPTION,
+               DRAIN_SOUL,
+               DRAIN_LIFE,
+               DRAIN_MANA,
+               LIFE_TAP,
+               DARK_PACT,
+               HOWL_OF_TERROR,
+               FEAR,
+               SIPHON_LIFE;
+
+        // DESTRUCTION
+        protected uint SHADOW_BOLT,
+               IMMOLATE,
+               SEARING_PAIN,
+               CONFLAGRATE,
+               SOUL_FIRE,
+               HELLFIRE,
+               RAIN_OF_FIRE,
+               SHADOWBURN;
+
+        // DEMONOLOGY
+        protected uint BANISH,
+               DEMON_SKIN,
+               DEMON_ARMOR,
+               SHADOW_WARD,
+               ENSLAVE_DEMON,
+               SOUL_LINK,
+               SOUL_LINK_AURA,
+               HEALTH_FUNNEL,
+               DETECT_INVISIBILITY,
+               CREATE_FIRESTONE,
+               CREATE_SOULSTONE,
+               CREATE_HEALTHSTONE,
+               CREATE_SPELLSTONE;
+
+        // DEMON SUMMON
+        protected uint SUMMON_IMP,
+               SUMMON_VOIDWALKER,
+               SUMMON_SUCCUBUS,
+               SUMMON_FELHUNTER;
+
+        // DEMON SKILLS
+        protected uint BLOOD_PACT,
+               FIREBOLT,
+               FIRE_SHIELD,
+               ANGUISH,
+               INTERCEPT,
+               DEVOUR_MAGIC,
+               SPELL_LOCK,
+               LASH_OF_PAIN,
+               SEDUCTION,
+               SOOTHING_KISS,
+               CONSUME_SHADOWS,
+               SACRIFICE,
+               SUFFERING,
+               TORMENT;
+
+        #endregion
+
         #region Constructors
 
         public WarlockLogic(Player player) : base(player)
@@ -20,7 +96,10 @@ namespace mClient.World.ClassLogic
 
         public override void InitializeSpells()
         {
+            base.InitializeSpells();
 
+            // Spells
+            AMPLIFY_CURSE = InitSpell(Spells.AMPLIFY_CURSE_1);
         }
 
         #endregion
