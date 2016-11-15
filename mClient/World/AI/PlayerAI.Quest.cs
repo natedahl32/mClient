@@ -132,8 +132,6 @@ namespace mClient.World.AI
             if (mHasAvailableQuestsGivers.Count > 0)
                 return BehaviourTreeStatus.Success;
 
-            // The above does not take into account Game Objects that offer quests. Search for those as well
-            var gameObjects = Client.objectMgr.getObjectArray().Where(o => (o as Clients.GameObject) != null).Cast<Clients.GameObject>();
             //if (gameObjects.Any(go => go.))
             return BehaviourTreeStatus.Failure;
         }

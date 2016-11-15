@@ -46,7 +46,7 @@ namespace mClient.World.AI
         private BehaviourTreeStatus LootableChests()
         {
             // Are there any game objects near us that we can loot?
-            var gameObjects = Client.objectMgr.getObjectArray().Where(o => o != null && o.Type == Constants.ObjectType.GameObject).Cast<Clients.GameObject>().ToList();
+            var gameObjects = Client.objectMgr.GetAllGameObjects();
             if (gameObjects.Any(o => o.BaseInfo.GameObjectType == Constants.GameObjectType.Chest && !o.HasBeenLooted && o.CanInteract))
                 return BehaviourTreeStatus.Success;
 
@@ -60,7 +60,7 @@ namespace mClient.World.AI
         private BehaviourTreeStatus LootCloseChest()
         {
             // Get game objects
-            var gameObjects = Client.objectMgr.getObjectArray().Where(o => o != null && o.Type == Constants.ObjectType.GameObject).Cast<Clients.GameObject>().ToList();
+            var gameObjects = Client.objectMgr.GetAllGameObjects();
             // Check for chests that we haven't looted yet and can interact with
             foreach (var chest in gameObjects.Where(o => o.BaseInfo.GameObjectType == Constants.GameObjectType.Chest && !o.HasBeenLooted && o.CanInteract))
             {

@@ -83,6 +83,11 @@ namespace mClient.Shared
             return str.ToString();
         }
 
+        /// <summary>
+        /// Called when the data has been loaded from the file
+        /// </summary>
+        protected virtual void dataLoaded() { }
+
         private void loadFile(String name)
         {
             // Get lock
@@ -146,6 +151,7 @@ namespace mClient.Shared
                 finally
                 {
                     fileLock.ReleaseReaderLock();
+                    dataLoaded();
                 }
             }
             catch (Exception e)

@@ -26,9 +26,10 @@ namespace mClient.World
         private Group mGroup = null;
         private GroupMemberData mGroupData = null;
 
-        // Player AI
+        // Player AI and Logic
         private PlayerAI mPlayerAI = null;
         private PlayerChatHandler mPlayerChatHandler = null;
+        private PlayerClassLogic mClassLogic = null;
 
         // Enemy
         private List<WoWGuid> mEnemyList = new List<WoWGuid>();
@@ -83,6 +84,7 @@ namespace mClient.World
             this(playerObject)
         {
             this.mPlayerAI = new PlayerAI(this, client);
+            this.mClassLogic = PlayerClassLogic.CreateClassLogic((Classname)pClass, this);
 
             this.Race = race;
             this.Class = pClass;

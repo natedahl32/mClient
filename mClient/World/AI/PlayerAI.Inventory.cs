@@ -126,7 +126,7 @@ namespace mClient.World.AI
         private BehaviourTreeStatus NearVendor()
         {
             // Check for vendors within distance of us
-            foreach (var unit in Client.objectMgr.getObjectArray().Where(o => (o as Unit) != null).Cast<Clients.Unit>())
+            foreach (var unit in Client.objectMgr.GetAllUnits())
                 if (unit.IsVendor && TerrainMgr.CalculateDistance(Player.Position, unit.Position) <= MAX_VENDOR_DISTANCE)
                     return BehaviourTreeStatus.Success;
 
@@ -139,7 +139,7 @@ namespace mClient.World.AI
         /// <returns></returns>
         private BehaviourTreeStatus SellToVendor()
         {
-            foreach (var unit in Client.objectMgr.getObjectArray().Where(o => (o as Unit) != null).Cast<Clients.Unit>())
+            foreach (var unit in Client.objectMgr.GetAllUnits())
             {
                 if (unit.IsVendor && TerrainMgr.CalculateDistance(Player.Position, unit.Position) <= MAX_VENDOR_DISTANCE)
                 {

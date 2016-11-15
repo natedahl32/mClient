@@ -140,6 +140,7 @@
     <Compile Include="Crypt\WoWCrypt.cs" />
     <Compile Include="DBC\DBCReader.cs" />
     <Compile Include="DBC\MapTable.cs" />
+    <Compile Include="DBC\SpellEntry.cs" />
     <Compile Include="DBC\SpellTable.cs" />
     <Compile Include="mCore.cs" />
     <Compile Include="Network\PacketHandling\PacketHandler.cs" />
@@ -197,6 +198,15 @@
     <Compile Include="World\AI\PlayerAI.Inventory.cs" />
     <Compile Include="World\AI\PlayerAI.Loot.cs" />
     <Compile Include="World\AI\PlayerAI.Quest.cs" />
+    <Compile Include="World\ClassLogic\DruidLogic.cs" />
+    <Compile Include="World\ClassLogic\HunterLogic.cs" />
+    <Compile Include="World\ClassLogic\MageLogic.cs" />
+    <Compile Include="World\ClassLogic\PaladinLogic.cs" />
+    <Compile Include="World\ClassLogic\PriestLogic.cs" />
+    <Compile Include="World\ClassLogic\RogueLogic.cs" />
+    <Compile Include="World\ClassLogic\ShamanLogic.cs" />
+    <Compile Include="World\ClassLogic\WarlockLogic.cs" />
+    <Compile Include="World\ClassLogic\WarriorLogic.cs" />
     <Compile Include="World\Creature\CreatureInfo.cs" />
     <Compile Include="World\Creature\CreatureManager.cs" />
     <Compile Include="World\GameObject\AreaDamage.cs" />
@@ -243,6 +253,7 @@
     <Compile Include="World\ObjectMgr.cs" />
     <Compile Include="World\Player.cs" />
     <Compile Include="World\Player.Proficiency.cs" />
+    <Compile Include="World\PlayerClassLogic.cs" />
     <Compile Include="World\Quest\QuestGiver.cs" />
     <Compile Include="World\Quest\QuestInfo.cs" />
     <Compile Include="World\Quest\QuestLogItem.cs" />
