@@ -1,4 +1,5 @@
 ﻿using mClient.Constants;
+using mClient.DBC;
 using mClient.Shared;
 using mClient.World;
 using mClient.World.Creature;
@@ -130,6 +131,86 @@ namespace mClient.Clients
         }
 
         /// <summary>
+        /// Gets the current mana value for this unit
+        /// </summary>
+        public uint CurrentMana
+        {
+            get { return GetFieldValue((int)UnitFields.UNIT_FIELD_POWER1); }
+        }
+
+        /// <summary>
+        /// Gets the maximum mana value for this unit
+        /// </summary>
+        public uint MaximumMana
+        {
+            get { return GetFieldValue((int)UnitFields.UNIT_FIELD_MAXPOWER1); }
+        }
+
+        /// <summary>
+        /// Gets the current rage value for this unit
+        /// </summary>
+        public uint CurrentRage
+        {
+            get { return GetFieldValue((int)UnitFields.UNIT_FIELD_POWER1 + (int)Powers.POWER_RAGE); }
+        }
+
+        /// <summary>
+        /// Gets the maximum rage value for this unit
+        /// </summary>
+        public uint MaximumRage
+        {
+            get { return GetFieldValue((int)UnitFields.UNIT_FIELD_MAXPOWER1 + (int)Powers.POWER_RAGE); }
+        }
+
+        /// <summary>
+        /// Gets the current focus value for this unit
+        /// </summary>
+        public uint CurrentFocus
+        {
+            get { return GetFieldValue((int)UnitFields.UNIT_FIELD_POWER1 + (int)Powers.POWER_FOCUS); }
+        }
+
+        /// <summary>
+        /// Gets the maximum focus value for this unit
+        /// </summary>
+        public uint MaximumFocus
+        {
+            get { return GetFieldValue((int)UnitFields.UNIT_FIELD_MAXPOWER1 + (int)Powers.POWER_FOCUS); }
+        }
+
+        /// <summary>
+        /// Gets the current energy value for this unit
+        /// </summary>
+        public uint CurrentEnergy
+        {
+            get { return GetFieldValue((int)UnitFields.UNIT_FIELD_POWER1 + (int)Powers.POWER_ENERGY); }
+        }
+
+        /// <summary>
+        /// Gets the maximum energy value for this unit
+        /// </summary>
+        public uint MaximumEnergy
+        {
+            get { return GetFieldValue((int)UnitFields.UNIT_FIELD_MAXPOWER1 + (int)Powers.POWER_ENERGY); }
+        }
+
+        /// <summary>
+        /// Gets the current happiness value for this unit
+        /// </summary>
+        public uint CurrentHappiness
+        {
+            get { return GetFieldValue((int)UnitFields.UNIT_FIELD_POWER1 + (int)Powers.POWER_HAPPINESS); }
+        }
+
+        /// <summary>
+        /// Gets the maximum happiness value for this unit
+        /// </summary>
+        public uint MaximumHappiness
+        {
+            get { return GetFieldValue((int)UnitFields.UNIT_FIELD_MAXPOWER1 + (int)Powers.POWER_HAPPINESS); }
+        }
+
+        /// <summary>
         /// Gets the current level of this unit
         /// </summary>
         public UInt32 Level
@@ -141,14 +222,14 @@ namespace mClient.Clients
         /// <summary>
         /// Returns spell ids of the auras currently on a player
         /// </summary>
-        public IEnumerable<UInt32> Auras
+        public IEnumerable<SpellEntry> Auras
         {
             get
             {
-                var auras = new List<UInt32>();
+                var auras = new List<SpellEntry>();
                 for (int i = (int)UnitFields.UNIT_FIELD_AURA; i <= (int)UnitFields.UNIT_FIELD_AURA_LAST; i++)
                     if (GetFieldValue(i) > 0)
-                        auras.Add(GetFieldValue(i));
+                        auras.Add(SpellTable.Instance.getSpell(GetFieldValue(i)));
                 return auras;
             }
         }
@@ -164,7 +245,7 @@ namespace mClient.Clients
                 // If we have no health left but we do have some max health (avoids death triggered when we login right away and haven't gotten data yet)
                 if (CurrentHealth <= 0 && MaxHealth > 0)
                     return true;
-                if (Auras.Any(a => a == SpellAuras.GHOST_1 || a == SpellAuras.GHOST_2 || a == SpellAuras.GHOST_WISP))
+                if (Auras.Any(a => a.SpellId == SpellAuras.GHOST_1 || a.SpellId == SpellAuras.GHOST_2 || a.SpellId == SpellAuras.GHOST_WISP))
                     return true;
                 return false;
             }

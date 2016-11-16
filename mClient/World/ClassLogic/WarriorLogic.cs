@@ -1,4 +1,5 @@
 ﻿using mClient.Constants;
+using mClient.DBC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,6 +74,52 @@ namespace mClient.World.ClassLogic
         public WarriorLogic(Player player) : base(player)
         {
            
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets whether or not the player has any buffs to give out (including self buffs)
+        /// </summary>
+        public override bool HasOOCBuffs
+        {
+            get
+            {
+                // Stances
+                if (BATTLE_STANCE > 0 || DEFENSIVE_STANCE > 0 || BERSERKER_STANCE > 0)
+                    return true;
+                // No buffs yet
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets all group members that need a buff
+        /// </summary>
+        public override Dictionary<SpellEntry, Player> GroupMembersNeedingOOCBuffs
+        {
+            get
+            {
+                var needBuffs = new Dictionary<SpellEntry, Player>();
+                // TODO: Need to check for other stances in certain cases
+                if (BATTLE_STANCE > 0 && !Player.HasAura(BATTLE_STANCE))
+                    needBuffs.Add(SpellTable.Instance.getSpell(BATTLE_STANCE), Player);
+
+                return needBuffs;
+            }
+        }
+
+        /// <summary>
+        /// Gets whether or not this player is a melee combatant
+        /// </summary>
+        public override bool IsMelee
+        {
+            get
+            {
+                return true;
+            }
         }
 
         #endregion

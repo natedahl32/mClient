@@ -1,9 +1,4 @@
 ﻿using FluentBehaviourTree;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace mClient.World.AI
 {
@@ -21,11 +16,33 @@ namespace mClient.World.AI
                             return BehaviourTreeStatus.Success;
                         return BehaviourTreeStatus.Failure;
                     })
+                    .Do("Buff Group", t => BuffUp())
                     .Do("Should I stay?", t => Stay())
                     .Do("Should I follow?", t => Follow())
                     .Do("Do I have a move command?", t => NoMoveCommand())
                  .End()
                  .Build();
+        }
+
+        /// <summary>
+        /// Buffs either self or group
+        /// </summary>
+        /// <returns></returns>
+        private BehaviourTreeStatus BuffUp()
+        {
+            // If we don't even have any buffs than nothing to worry about!
+            if (!Player.ClassLogic.HasOOCBuffs)
+                return BehaviourTreeStatus.Failure;
+
+            // Get any members of the party that need buffs
+            var playersNeedingBuffs = Player.ClassLogic.GroupMembersNeedingOOCBuffs;
+            if (playersNeedingBuffs.Count == 0)
+                return BehaviourTreeStatus.Failure;
+
+            // TODO: Push the first buff in the list to an activity that will perform the buff
+
+            // We have some buffs to give out
+            return BehaviourTreeStatus.Success;
         }
 
         private BehaviourTreeStatus Stay()

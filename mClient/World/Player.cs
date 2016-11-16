@@ -198,30 +198,6 @@ namespace mClient.World
         public Corpse PlayerCorpse { get { return mPlayerCorpse; } }
 
         /// <summary>
-        /// Gets whether or not this is a melee character
-        /// </summary>
-        public bool IsMelee
-        {
-            get
-            {
-                // Pure melee
-                if (Class == (byte)Classname.Warrior ||
-                    Class == (byte)Classname.Rogue)
-                    return true;
-
-                // TODO: Depends on spec, will report them as melee for now
-                if (Class == (byte)Classname.Paladin ||
-                    Class == (byte)Classname.Druid ||
-                    Class == (byte)Classname.Shaman)
-                    return true;
-
-                // Anything else is never melee
-                return false;
-
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the current move command for the player
         /// </summary>
         public MoveCommands MoveCommand
@@ -668,6 +644,16 @@ namespace mClient.World
 
             // By default return false.
             return false;
+        }
+
+        /// <summary>
+        /// Checks if the player has an aura defined by spell id
+        /// </summary>
+        /// <param name="spellId"></param>
+        /// <returns></returns>
+        public bool HasAura(uint spellId)
+        {
+            return PlayerObject.Auras.Any(a => a.SpellId == spellId);
         }
 
         #endregion

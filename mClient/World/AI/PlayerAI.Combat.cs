@@ -50,7 +50,7 @@ namespace mClient.World.AI
         private BehaviourTreeStatus MoveToMelee()
         {
             // If the player is not a melee player return success
-            if (!Player.IsMelee)
+            if (!Player.ClassLogic.IsMelee)
                 return BehaviourTreeStatus.Success;
 
             // We are melee, if we are not in melee range then we need to set our follow target

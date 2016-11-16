@@ -20,13 +20,13 @@ namespace mClient.Constants
         public const uint WILL_OF_THE_FORSAKEN_ALL = 7744;
     }
 
-    public enum PowerType : UInt32
+    public enum Powers : UInt32
     {
-        Mana = 0,
-        Rage = 1,
-        Focus = 2,
-        Energy = 3,
-        Happiness = 4,
-        Health = 0xFFFFFFFE
+        POWER_MANA = 0,
+        POWER_RAGE = 1,
+        POWER_FOCUS = 2,
+        POWER_ENERGY = 3,
+        POWER_HAPPINESS = 4,
+        POWER_HEALTH = 0xFFFFFFFE
     }
 }

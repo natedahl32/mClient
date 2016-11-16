@@ -1,4 +1,5 @@
-﻿using System;
+﻿using mClient.DBC;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -96,6 +97,43 @@ namespace mClient.World.ClassLogic
 
         public WarlockLogic(Player player) : base(player)
         {
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets whether or not the player has any buffs to give out (including self buffs)
+        /// </summary>
+        public override bool HasOOCBuffs
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets all group members that need a buff
+        /// </summary>
+        public override Dictionary<SpellEntry, Player> GroupMembersNeedingOOCBuffs
+        {
+            get
+            {
+                return new Dictionary<SpellEntry, Player>();
+            }
+        }
+
+        /// <summary>
+        /// Gets whether or not this player is a melee combatant
+        /// </summary>
+        public override bool IsMelee
+        {
+            get
+            {
+                return false;
+            }
         }
 
         #endregion

@@ -46,6 +46,21 @@ namespace mClient.World
         /// </summary>
         public Player Player { get { return mPlayer; } }
 
+        /// <summary>
+        /// Gets whether or not the player has any out of combat buffs to give out (including self).
+        /// </summary>
+        public abstract bool HasOOCBuffs { get; }
+
+        /// <summary>
+        /// Gets all group members that need a buff
+        /// </summary>
+        public abstract Dictionary<SpellEntry, Player> GroupMembersNeedingOOCBuffs { get; }
+
+        /// <summary>
+        /// Gets whether or not this player is a melee combatant
+        /// </summary>
+        public abstract bool IsMelee { get; }
+
         #endregion
 
         #region Public Methods
