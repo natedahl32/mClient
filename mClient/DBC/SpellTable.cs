@@ -1,4 +1,5 @@
-﻿using mClient.Shared;
+﻿using mClient.Constants;
+using mClient.Shared;
 using System.Collections.Generic;
 
 namespace mClient.DBC
@@ -30,11 +31,11 @@ namespace mClient.DBC
                 entry.Category = getFieldAsUint32(i, 2);
                 entry.Dispel = getFieldAsUint32(i, 4);
                 entry.Mechanic = getFieldAsUint32(i, 5);
-                entry.Attributes = getFieldAsUint32(i, 6);
-                entry.AttributesEx = getFieldAsUint32(i, 7);
-                entry.AttributesEx2 = getFieldAsUint32(i, 8);
-                entry.AttributesEx3 = getFieldAsUint32(i, 9);
-                entry.AttributesEx4 = getFieldAsUint32(i, 10);
+                entry.Attributes = (SpellAttributes)getFieldAsUint32(i, 6);
+                entry.AttributesEx = (SpellAttributesEx)getFieldAsUint32(i, 7);
+                entry.AttributesEx2 = (SpellAttributesEx2)getFieldAsUint32(i, 8);
+                entry.AttributesEx3 = (SpellAttributesEx3)getFieldAsUint32(i, 9);
+                entry.AttributesEx4 = (SpellAttributesEx4)getFieldAsUint32(i, 10);
                 entry.Stances = getFieldAsUint32(i, 11);
                 entry.StancesNot = getFieldAsUint32(i, 12);
                 entry.Targets = getFieldAsUint32(i, 13);
@@ -55,7 +56,7 @@ namespace mClient.DBC
                 entry.BaseLevel = getFieldAsUint32(i, 28);
                 entry.SpellLevel = getFieldAsUint32(i, 29);
                 entry.DurationIndex = getFieldAsUint32(i, 30);
-                entry.PowerType = getFieldAsUint32(i, 31);
+                entry.PowerType = (Powers)getFieldAsUint32(i, 31);
                 entry.ManaCost = getFieldAsUint32(i, 32);
                 entry.ManaCostPerLevel = getFieldAsUint32(i, 33);
                 entry.ManaPerSecond = getFieldAsUint32(i, 34);

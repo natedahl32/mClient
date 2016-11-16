@@ -135,7 +135,7 @@ namespace mClient.Clients
         /// </summary>
         public uint CurrentMana
         {
-            get { return GetFieldValue((int)UnitFields.UNIT_FIELD_POWER1); }
+            get { return GetCurrentPower(Powers.POWER_MANA); }
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace mClient.Clients
         /// </summary>
         public uint MaximumMana
         {
-            get { return GetFieldValue((int)UnitFields.UNIT_FIELD_MAXPOWER1); }
+            get { return GetMaximumPower(Powers.POWER_MANA); }
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace mClient.Clients
         /// </summary>
         public uint CurrentRage
         {
-            get { return GetFieldValue((int)UnitFields.UNIT_FIELD_POWER1 + (int)Powers.POWER_RAGE); }
+            get { return GetCurrentPower(Powers.POWER_RAGE); }
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace mClient.Clients
         /// </summary>
         public uint MaximumRage
         {
-            get { return GetFieldValue((int)UnitFields.UNIT_FIELD_MAXPOWER1 + (int)Powers.POWER_RAGE); }
+            get { return GetMaximumPower(Powers.POWER_RAGE); }
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace mClient.Clients
         /// </summary>
         public uint CurrentFocus
         {
-            get { return GetFieldValue((int)UnitFields.UNIT_FIELD_POWER1 + (int)Powers.POWER_FOCUS); }
+            get { return GetCurrentPower(Powers.POWER_FOCUS); }
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace mClient.Clients
         /// </summary>
         public uint MaximumFocus
         {
-            get { return GetFieldValue((int)UnitFields.UNIT_FIELD_MAXPOWER1 + (int)Powers.POWER_FOCUS); }
+            get { return GetMaximumPower(Powers.POWER_FOCUS); }
         }
 
         /// <summary>
@@ -183,7 +183,7 @@ namespace mClient.Clients
         /// </summary>
         public uint CurrentEnergy
         {
-            get { return GetFieldValue((int)UnitFields.UNIT_FIELD_POWER1 + (int)Powers.POWER_ENERGY); }
+            get { return GetCurrentPower(Powers.POWER_ENERGY); }
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace mClient.Clients
         /// </summary>
         public uint MaximumEnergy
         {
-            get { return GetFieldValue((int)UnitFields.UNIT_FIELD_MAXPOWER1 + (int)Powers.POWER_ENERGY); }
+            get { return GetMaximumPower(Powers.POWER_ENERGY); }
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace mClient.Clients
         /// </summary>
         public uint CurrentHappiness
         {
-            get { return GetFieldValue((int)UnitFields.UNIT_FIELD_POWER1 + (int)Powers.POWER_HAPPINESS); }
+            get { return GetCurrentPower(Powers.POWER_HAPPINESS); }
         }
 
         /// <summary>
@@ -207,7 +207,7 @@ namespace mClient.Clients
         /// </summary>
         public uint MaximumHappiness
         {
-            get { return GetFieldValue((int)UnitFields.UNIT_FIELD_MAXPOWER1 + (int)Powers.POWER_HAPPINESS); }
+            get { return GetMaximumPower(Powers.POWER_HAPPINESS); }
         }
 
         /// <summary>
@@ -304,6 +304,121 @@ namespace mClient.Clients
             this.MaxHealth = maxHealth;
             this.Level = level;
             // TODO: Do we even need power?
+        }
+
+        /// <summary>
+        /// Gets the current power type value
+        /// </summary>
+        /// <param name="power"></param>
+        /// <returns></returns>
+        public uint GetCurrentPower(Powers power)
+        {
+            return GetFieldValue((int)UnitFields.UNIT_FIELD_POWER1 + (int)power);
+        }
+
+        /// <summary>
+        /// Gets the maximum power type value
+        /// </summary>
+        /// <param name="power"></param>
+        /// <returns></returns>
+        public uint GetMaximumPower(Powers power)
+        {
+            return GetFieldValue((int)UnitFields.UNIT_FIELD_MAXPOWER1 + (int)power);
+        }
+
+        /// <summary>
+        /// Gets whether or not this unit can cast the given spell based on their power amount
+        /// </summary>
+        /// <param name="spell"></param>
+        /// <returns></returns>
+        public bool CanCastSpell(SpellEntry spell)
+        {
+            var cost = CalculateSpellPowerCost(spell);
+            return GetCurrentPower(spell.PowerType) >= cost;
+        }
+
+        /// <summary>
+        /// Called when a spell is cast by a unit. Updates the power of the unit depending on the spell
+        /// </summary>
+        /// <param name="spell"></param>
+        public void SpellCast(SpellEntry spell)
+        {
+            // decrease power used for spell
+            DecreasePower(spell.PowerType, CalculateSpellPowerCost(spell));
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Decreases the power type by an amount
+        /// </summary>
+        /// <param name="power"></param>
+        /// <param name="value"></param>
+        private void DecreasePower(Powers power, uint value)
+        {
+            var current = GetCurrentPower(power);
+            var updated = current - value;
+            if (updated < 0)
+                updated = 0;
+            SetField((int)UnitFields.UNIT_FIELD_POWER1 + (int)power, updated);
+        }
+
+        /// <summary>
+        /// Calculates the cost of a spell in power for this unit
+        /// </summary>
+        /// <param name="spell">Spell entry that we are calculating for</param>
+        /// <returns></returns>
+        private uint CalculateSpellPowerCost(SpellEntry spell)
+        {
+            // Spell drain all existing power on cast (Paladin LoH for example)
+            if (spell.HasAttribute(SpellAttributesEx.SPELL_ATTR_EX_DRAIN_ALL_POWER))
+            {
+                if (spell.PowerType == Powers.POWER_HEALTH)
+                    return CurrentHealth;
+                if ((int)spell.PowerType < PlayerConstants.MAX_POWERS)
+                    return GetCurrentPower(spell.PowerType);
+                return 0;
+            }
+
+            // Get base power cost
+            int powerCost = (int)spell.ManaCost;
+            if (spell.ManaCostPercentage > 0)
+            {
+                switch (spell.PowerType)
+                {
+                    case Powers.POWER_HEALTH:
+                        powerCost += (int)(spell.ManaCostPercentage * GetFieldValue((int)UnitFields.UNIT_FIELD_BASE_HEALTH) / 100);
+                        break;
+                    case Powers.POWER_MANA:
+                        powerCost += (int)(spell.ManaCostPercentage * GetFieldValue((int)UnitFields.UNIT_FIELD_BASE_MANA) / 100);
+                        break;
+                    case Powers.POWER_RAGE:
+                    case Powers.POWER_FOCUS:
+                    case Powers.POWER_ENERGY:
+                    case Powers.POWER_HAPPINESS:
+                        powerCost += (int)(spell.ManaCostPercentage * GetMaximumPower(spell.PowerType) / 100);
+                        break;
+                    default:
+                        return 0;
+                }
+            }
+
+            SpellSchoolMask schoolMask = (SpellSchoolMask)(1 << (int)spell.School);
+            SpellSchools school = SpellEntry.GetFirstSchoolInMask(schoolMask);
+            // Flat mod from caster auras by spell school
+            powerCost += (int)(GetFieldValue((int)UnitFields.UNIT_FIELD_POWER_COST_MODIFIER + (int)school));
+            // TODO: Apply cost mod by spell (Spell.cpp - Line #5367)
+
+            if (spell.HasAttribute(SpellAttributes.SPELL_ATTR_LEVEL_DAMAGE_CALCULATION))
+                powerCost = Convert.ToInt32((powerCost / (1.117f * spell.SpellLevel / Level - 0.1327f)));
+
+            // PCT mod from user auras by school
+            powerCost = (int)(powerCost * (1.0f + GetFieldValueAsFloat((int)UnitFields.UNIT_FIELD_POWER_COST_MULTIPLIER + (int)school)));
+            if (powerCost < 0)
+                powerCost = 0;
+            return (uint)powerCost;
         }
 
         #endregion

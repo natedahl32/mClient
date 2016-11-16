@@ -7,11 +7,98 @@ using mClient.Shared;
 using mClient.Network;
 using mClient.Crypt;
 using mClient.Constants;
+using mClient.World.AI.Activity.Messages;
 
 namespace mClient.Clients
 {
     public partial class WorldServerClient
     {
+        #region Handlers
+
+        /// <summary>
+        /// Handles an update that a cast of ours failed
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_CAST_FAILED)]
+        public void HandleCastFailed(PacketIn packet)
+        {
+            var spellId = packet.ReadUInt32();
+            var status = packet.ReadByte();
+
+            if (status == 2)
+            {
+                var result = (SpellCastResult)packet.ReadByte();
+                switch (result)
+                {
+                    case SpellCastResult.SPELL_FAILED_REQUIRES_SPELL_FOCUS:
+                        var requiredSpellFocus = packet.ReadUInt32();
+                        break;
+                    case SpellCastResult.SPELL_FAILED_REQUIRES_AREA:
+                        break;
+                    case SpellCastResult.SPELL_FAILED_EQUIPPED_ITEM_CLASS:
+                        var equippedItemClass = packet.ReadUInt32();
+                        var equippedItemSubClassMask = packet.ReadUInt32();
+                        var equippedItemInventoryMask = packet.ReadUInt32();
+                        break;
+                }
+
+                var message = new SpellCastFailedMessage()
+                {
+                    SpellId = spellId,
+                    Result = result
+                };
+                player.PlayerAI.SendMessageToAllActivities(message);
+            }
+
+            // Otherwise cast status was OK (doesn't get sent as far as I know)
+        }
+
+        /// <summary>
+        /// Handles an update that a spell was interrupted
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_SPELL_FAILURE)]
+        public void HandleSpellFailure(PacketIn packet)
+        {
+            var casterGuid = packet.ReadPackedGuidToWoWGuid();
+            var spellId = packet.ReadUInt32();
+
+            // Means a spell was interrupted, send a message
+            var message = new SpellCastInterruptedMessage() 
+            {
+                CasterGuid = casterGuid,
+                SpellId = spellId
+            };
+            player.PlayerAI.SendMessageToAllActivities(message);
+        }
+
+        /// <summary>
+        /// Handles an update that a spell cast was completed
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_SPELL_GO)]
+        public void HandleSpellGo(PacketIn packet)
+        {
+            var casterGuid = packet.ReadPackedGuidToWoWGuid();
+            var casterGuid2 = packet.ReadPackedGuidToWoWGuid(); // always same as the first guid?
+
+            var spellId = packet.ReadUInt32();
+            var castFlags = packet.ReadUInt16();
+
+            // TODO: Get other information from this packet if needed
+
+            // Send spell go message
+            var message = new SpellCastGoMessage()
+            {
+                CasterGuid = casterGuid,
+                SpellId = spellId,
+                CastFlags = castFlags
+            };
+            player.PlayerAI.SendMessageToAllActivities(message);
+        }
+
+        #endregion
+
         #region Actions
 
         public void CastSpell(Object target, UInt32 SpellId)

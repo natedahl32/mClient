@@ -321,7 +321,7 @@ namespace mClient.Constants
         CMSG_NEW_SPELL_SLOT = 301,  //(0x12D)
         CMSG_CAST_SPELL = 302,  //(0x12E)
         CMSG_CANCEL_CAST = 303,  //(0x12F)
-        SMSG_CAST_RESULT = 304,  //(0x130)
+        SMSG_CAST_FAILED = 304,  //(0x130)
         SMSG_SPELL_START = 305,  //(0x131)
         SMSG_SPELL_GO = 306,  //(0x132)
         SMSG_SPELL_FAILURE = 307,  //(0x133)

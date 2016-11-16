@@ -92,17 +92,6 @@ namespace mClient.Clients
         }
 
         /// <summary>
-        /// Handles spell cast complete
-        /// </summary>
-        /// <param name="packet"></param>
-        [PacketHandlerAtribute(WorldServerOpCode.SMSG_SPELL_GO)]
-        public void HandleSpellGo(PacketIn packet)
-        {
-            // TODO: Basically same packet structure as SPELL_START, I believe this one means it has completed though.
-            // Not sure if we actually need this or not (probably for a healing manager)
-        }
-
-        /// <summary>
         /// Handles spell cast non melee damage log
         /// </summary>
         /// <param name="packet"></param>

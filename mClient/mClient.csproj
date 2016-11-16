@@ -182,6 +182,9 @@
     <Compile Include="World\AI\Activity\Messages\QuestGiverRequestItemsMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\QuestListMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\QuestOfferRewards.cs" />
+    <Compile Include="World\AI\Activity\Messages\SpellCastFailedMessage.cs" />
+    <Compile Include="World\AI\Activity\Messages\SpellCastGoMessage.cs" />
+    <Compile Include="World\AI\Activity\Messages\SpellCastInterruptedMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\TradeStatusMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\VendorInventoryListMessage.cs" />
     <Compile Include="World\AI\Activity\Movement\TeleportToCoordinate.cs" />

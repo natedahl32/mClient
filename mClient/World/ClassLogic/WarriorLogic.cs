@@ -129,6 +129,13 @@ namespace mClient.World.ClassLogic
         {
             get
             {
+                if (HEROIC_STRIKE > 0)
+                {
+                    var spell = SpellTable.Instance.getSpell(HEROIC_STRIKE);
+                    if (Player.PlayerObject.CanCastSpell(spell))
+                        return spell;
+                }
+                    
                 return null;
             }
         }

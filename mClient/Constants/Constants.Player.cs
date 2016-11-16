@@ -6,6 +6,8 @@ namespace mClient.Constants
     {
         public const int PLAYER_MAX_SKILLS = 127;
         public const int PLAYER_EXPLORED_ZONES_SIZE = 64;
+
+        public const int MAX_POWERS = 5;
     }
 
     public static class RacialTraits

@@ -72,6 +72,13 @@ namespace mClient.Clients
             return mFields[field];
         }
 
+        protected float GetFieldValueAsFloat(int field)
+        {
+            if (mFields == null)
+                return 0f;
+            return (float)mFields[field];
+        }
+
         #endregion
 
         public string Name = null;

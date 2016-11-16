@@ -1,4 +1,5 @@
-﻿using System;
+﻿using mClient.Constants;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,11 +16,11 @@ namespace mClient.DBC
         public uint Category { get; set; }
         public uint Dispel { get; set; }
         public uint Mechanic { get; set; }
-        public uint Attributes { get; set; }
-        public uint AttributesEx { get; set; }
-        public uint AttributesEx2 { get; set; }
-        public uint AttributesEx3 { get; set; }
-        public uint AttributesEx4 { get; set; }
+        public SpellAttributes Attributes { get; set; }
+        public SpellAttributesEx AttributesEx { get; set; }
+        public SpellAttributesEx2 AttributesEx2 { get; set; }
+        public SpellAttributesEx3 AttributesEx3 { get; set; }
+        public SpellAttributesEx4 AttributesEx4 { get; set; }
         public uint Stances { get; set; }
         public uint StancesNot { get; set; }
         public uint Targets { get; set; }
@@ -40,7 +41,7 @@ namespace mClient.DBC
         public uint BaseLevel { get; set; }
         public uint SpellLevel { get; set; }
         public uint DurationIndex { get; set; }
-        public uint PowerType { get; set; }
+        public Powers PowerType { get; set; }
         public uint ManaCost { get; set; }
         public uint ManaCostPerLevel { get; set; }
         public uint ManaPerSecond { get; set; }
@@ -89,6 +90,47 @@ namespace mClient.DBC
         public uint DamageClass { get; set; }
         public uint PreventionType { get; set; }
         public float[] DamageMultiplier { get; set; }
+
+        #endregion
+
+        #region Public Methods
+
+        public bool HasAttribute(SpellAttributes attribute)
+        {
+            return Attributes.HasFlag(attribute);
+        }
+
+        public bool HasAttribute(SpellAttributesEx attribute)
+        {
+            return AttributesEx.HasFlag(attribute);
+        }
+
+        public bool HasAttribute(SpellAttributesEx2 attribute)
+        {
+            return AttributesEx2.HasFlag(attribute);
+        }
+
+        public bool HasAttribute(SpellAttributesEx3 attribute)
+        {
+            return AttributesEx3.HasFlag(attribute);
+        }
+
+        public bool HasAttribute(SpellAttributesEx4 attribute)
+        {
+            return AttributesEx4.HasFlag(attribute);
+        }
+
+        #endregion
+
+        #region Static Methods
+
+        public static SpellSchools GetFirstSchoolInMask(SpellSchoolMask mask)
+        {
+            for (int i = 0; i < SpellConstants.MAX_SPELL_SCHOOL; i++)
+                if (mask.HasFlag((SpellSchoolMask)(1 << i)))
+                    return (SpellSchools)i;
+            return SpellSchools.SPELL_SCHOOL_NORMAL;
+        }
 
         #endregion
     }

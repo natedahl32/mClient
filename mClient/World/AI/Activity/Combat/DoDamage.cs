@@ -46,10 +46,13 @@ namespace mClient.World.AI.Activity.Combat
                 return;
             }
 
-            // TOOD: Determine what abilities/spells to use here for damage purposes. Basically our rotation.
+            // Determine what abilities/spells to use here for damage purposes. Basically our rotation.
             var spell = PlayerAI.Player.ClassLogic.NextSpellInRotation;
             if (spell != null)
-
+            {
+                PlayerAI.StartActivity(new CastSingleTargetSpell(spell, PlayerAI));
+                return;
+            }
         }
 
         #endregion
