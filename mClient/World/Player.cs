@@ -8,6 +8,7 @@ using System.Text;
 using mClient.Clients;
 using mClient.World.AI;
 using mClient.World.Quest;
+using mClient.DBC;
 
 namespace mClient.World
 {
@@ -36,6 +37,7 @@ namespace mClient.World
 
         // Spells
         private List<UInt16> mSpellList = new List<UInt16>();
+        private List<SpellEntry> mAvailableSpells = new List<SpellEntry>(); // spells that are available, but we do not have yet
 
         // Movement commands
         private MoveCommands mMoveCommand = MoveCommands.None;
@@ -323,6 +325,23 @@ namespace mClient.World
             {
                 mSpellList.Add(spellId);
             }
+
+            // Remove the spell from available spells
+            mAvailableSpells.RemoveAll(s => s.SpellId == spellId);
+        }
+
+        /// <summary>
+        /// Updates all available spells that we can get but do not have yet. Called when logging in and when
+        /// the player levels up.
+        /// </summary>
+        public void UpdateAvailableSpells()
+        {
+            mAvailableSpells = SkillLineAbilityTable.Instance.getAvailableSpellsForPlayer(this).ToList();
+            // Remove all spells that we have
+            mAvailableSpells.RemoveAll(s => mSpellList.Contains((ushort)s.SpellId));
+            // Remove all spells that class logic says we should ignore for learning
+            if (ClassLogic != null)
+                mAvailableSpells.RemoveAll(s => ClassLogic.IgnoreLearningSpells.Contains(s.SpellId));
         }
 
         /// <summary>
@@ -654,6 +673,65 @@ namespace mClient.World
         public bool HasAura(uint spellId)
         {
             return PlayerObject.Auras.Any(a => a.SpellId == spellId);
+        }
+
+        /// <summary>
+        /// Called when the player levels up
+        /// </summary>
+        public void LevelUp(uint level)
+        {
+            // Need to find whether or not we have spells/skills that need to be updated
+            // via a trainer. If there are we need to talk to a trainer to learn them.
+            UpdateAvailableSpells();
+
+            // TODO: Need to handle unspent talent points. They should be spent based on the spec assigned to the bot
+        }
+
+        /// <summary>
+        /// Check spell availability for training base at SkillLineAbility/SkillRaceClassInfo data.
+        /// Checked allowed race/class and dependent from race/class allowed min level
+        /// </summary>
+        /// <param name="spellId"></param>
+        /// <returns></returns>
+        public bool IsSpellFitByClassAndRace(uint spellId)
+        {
+            uint racemask = (uint)(1 << (Race - 1));
+            uint classmask = (uint)(1 << (Class - 1));
+
+            // Get skill line abilities for this spell
+            var skillLineAbilities = SkillLineAbilityTable.Instance.getForSpell(spellId);
+            if (skillLineAbilities.Count() == 0)
+                return false;
+            if (skillLineAbilities.Count() == 1)
+                return true;
+
+            foreach (var sla in skillLineAbilities)
+            {
+                // Skip wrong race skills
+                if (sla.CharacterRacesFlag > 0 && (sla.CharacterRacesFlag & racemask) == 0)
+                    continue;
+
+                // Skip wrong class skills
+                if (sla.CharacterClassesFlag > 0 && (sla.CharacterClassesFlag & classmask) == 0)
+                    continue;
+
+                var skillRaceClassInfo = SkillRaceClassInfoTable.Instance.getBySkillID(sla.SkillLineId);
+                foreach (var srci in skillRaceClassInfo)
+                {
+                    if ((srci.RaceMask & racemask) > 0 && (srci.ClassMask & classmask) > 0)
+                    {
+                        if ((srci.Flags & (uint)AbilitySkillFlags.ABILITY_SKILL_NONTRAINABLE) > 0)
+                            return false;
+
+                        if (srci.RequiredLevel > 0 && Level < srci.RequiredLevel)
+                            return false;
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
         }
 
         #endregion

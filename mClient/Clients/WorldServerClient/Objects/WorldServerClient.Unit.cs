@@ -370,6 +370,7 @@ namespace mClient.Clients
         /// </summary>
         /// <param name="spell">Spell entry that we are calculating for</param>
         /// <returns></returns>
+        /// <remarks>We use this to determine whether or not we can cast a spell</remarks>
         private uint CalculateSpellPowerCost(SpellEntry spell)
         {
             // Spell drain all existing power on cast (Paladin LoH for example)

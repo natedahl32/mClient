@@ -1,4 +1,6 @@
-﻿using mClient.Shared;
+﻿using mClient.Constants;
+using mClient.Shared;
+using mClient.World;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -48,6 +50,109 @@ namespace mClient.DBC
                 if (skillLineAbility.ParentSpellId > 0)
                     return skillLineAbility.ParentSpellId;
             return 0;
+        }
+
+        /// <summary>
+        /// Gets all skill line ability entries for a spell id
+        /// </summary>
+        /// <param name="spellId"></param>
+        /// <returns></returns>
+        public IEnumerable<SkillLineAbilityEntry> getForSpell(uint spellId)
+        {
+            var entries = new List<SkillLineAbilityEntry>();
+            foreach (var skillLineAbility in mSkillLineAbilityEntries.Values.Where(s => s.SpellId == spellId))
+                entries.Add(skillLineAbility);
+            return entries;
+        }
+
+        /// <summary>
+        /// Gets all skill line ability entries for a spell id
+        /// </summary>
+        /// <param name="spellId"></param>
+        /// <returns></returns>
+        public IEnumerable<SkillLineAbilityEntry> getForParentSpell(uint spellId)
+        {
+            var entries = new List<SkillLineAbilityEntry>();
+            foreach (var skillLineAbility in mSkillLineAbilityEntries.Values.Where(s => s.ParentSpellId == spellId))
+                entries.Add(skillLineAbility);
+            return entries;
+        }
+
+        /// <summary>
+        /// Gets the first spell in a spell chain given a spell id
+        /// </summary>
+        /// <param name="spellId"></param>
+        /// <returns></returns>
+        public SkillLineAbilityEntry getFirstSpellInChain(uint spellId)
+        {
+            // If the spell given is not a parent, then it is the first spell in the chain
+            var skillLineAbilities = getForSpell(spellId).ToList();
+            foreach (var sla in skillLineAbilities)
+            {
+                // check if this spell is a parent of another spell
+                var parents = getForParentSpell(sla.SpellId).ToList();
+                if (parents.Count > 0)
+                    return getFirstSpellInChain(parents[0].SpellId);
+            }
+
+            if (skillLineAbilities.Count > 0)
+                return skillLineAbilities[0];
+            return null;
+        }
+
+        /// <summary>
+        /// Gets all available spells for a player at a given level, taking into account their class and race
+        /// </summary>
+        /// <param name="level"></param>
+        /// <param name="class"></param>
+        /// <param name="race"></param>
+        /// <returns></returns>
+        public IEnumerable<SpellEntry> getAvailableSpellsForPlayer(Player player)
+        {
+            var spellsAvailable = new List<SpellEntry>();
+
+            ChrClassEntry clsEntry = ChrClassesTable.Instance.getByClassId((uint)player.Class);
+            if (clsEntry == null)
+                return new List<SpellEntry>();
+            uint family = clsEntry.SpellFamily;
+
+            foreach (var skillLineAbility in mSkillLineAbilityEntries.Values)
+            {
+                // Get spell info
+                var spellInfo = SpellTable.Instance.getSpell(skillLineAbility.SpellId);
+                if (spellInfo == null)
+                    continue;
+
+                // Skip server-side/triggered spells
+                if (spellInfo.SpellLevel == 0 || spellInfo.BaseLevel == 0)
+                    continue;
+
+                // Skip wrong class/race skills
+                if (!player.IsSpellFitByClassAndRace(spellInfo.SpellId))
+                    continue;
+
+                // Skip other spell families
+                if (spellInfo.SpellFamilyName != family)
+                    continue;
+
+                // skip spells with first rank learned as talent (and all talents then also)
+                var firstSkill = getFirstSpellInChain(spellInfo.SpellId);
+                if (firstSkill != null)
+                {
+                    uint first_rank = firstSkill.SpellId;
+                    if (SpellTable.Instance.GetTalentSpellCost(first_rank) > 0)
+                        continue;
+                }
+
+                // If the spell requires a max level higher than the player
+                if (spellInfo.SpellLevel > player.Level)
+                    continue;
+
+                // Add the spell to the available list
+                spellsAvailable.Add(spellInfo);
+            }
+
+            return spellsAvailable;
         }
     }
 }

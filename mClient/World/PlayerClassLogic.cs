@@ -66,6 +66,11 @@ namespace mClient.World
         /// </summary>
         public abstract SpellEntry NextSpellInRotation { get; }
 
+        /// <summary>
+        /// Ignores spells that we think we should learn. These are generally broken spells in the DBC files that we can't weed out using normal methods
+        /// </summary>
+        public abstract IEnumerable<uint> IgnoreLearningSpells { get; }
+
         #endregion
 
         #region Public Methods

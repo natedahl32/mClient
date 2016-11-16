@@ -16,12 +16,26 @@ namespace mClient.World.AI
                             return BehaviourTreeStatus.Success;
                         return BehaviourTreeStatus.Failure;
                     })
+                    .Sequence("Train New Skills")
+                        .Do("Has Skills to Train", t => HasSkillsToTrain())
+                    .End()
                     .Do("Buff Group", t => BuffUp())
                     .Do("Should I stay?", t => Stay())
                     .Do("Should I follow?", t => Follow())
                     .Do("Do I have a move command?", t => NoMoveCommand())
                  .End()
                  .Build();
+        }
+
+        /// <summary>
+        /// Determines if we have have skills we need to train
+        /// </summary>
+        /// <returns></returns>
+        private BehaviourTreeStatus HasSkillsToTrain()
+        {
+            // TODO: Check player for skills we need to train
+
+            return BehaviourTreeStatus.Failure;
         }
 
         /// <summary>

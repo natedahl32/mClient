@@ -56,7 +56,7 @@ namespace mClient.DBC
         public int EquippedItemClass { get; set; }
         public int EquippedItemSubClassMask { get; set; }
         public int EquippedItemInventoryTypeMask { get; set; }
-        public uint[] Effect { get; set; }        
+        public SpellEffects[] Effect { get; set; }        
         public int[] EffectDieSides { get; set; }
         public uint[] EffectBaseDice { get; set; }
         public float[] EffectDicePerLevel { get; set; }

@@ -77,6 +77,8 @@ namespace mClient.Clients
             // Initialize bot spells now that we've got our initial spells
             if (player.ClassLogic != null)
                 player.ClassLogic.InitializeSpells();
+            // Get available spells we do not have yet
+            player.UpdateAvailableSpells();
         }
 
         /// <summary>
@@ -100,10 +102,8 @@ namespace mClient.Clients
                 var stat = packet.ReadUInt32();
             }
 
-            // TODO: Need to find whether or not we have spells/skills that need to be updated
-            // via a trainer. If there are we need to talk to a trainer to learn them.
-
-            // TODO: Need to handle unspent talent points. They should be spent based on the spec assigned to the bot
+            // Call player level up method to tell them they leveled
+            player.LevelUp(level);
         }
 
         #endregion

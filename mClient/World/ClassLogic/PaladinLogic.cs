@@ -134,6 +134,17 @@ namespace mClient.World.ClassLogic
             }
         }
 
+        /// <summary>
+        /// Ignores spells that we think we should learn. These are generally broken spells in the DBC files that we can't weed out using normal methods
+        /// </summary>
+        public override IEnumerable<uint> IgnoreLearningSpells
+        {
+            get
+            {
+                return new List<uint>();
+            }
+        }
+
         #endregion
 
         #region Public Methods

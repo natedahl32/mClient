@@ -1,6 +1,9 @@
 ﻿using mClient.Constants;
 using mClient.Shared;
+using mClient.World;
+using mClient.World.Items;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace mClient.DBC
 {
@@ -89,10 +92,10 @@ namespace mClient.DBC
                 entry.EquippedItemClass = getFieldAsInt32(i, 58);
                 entry.EquippedItemSubClassMask = getFieldAsInt32(i, 59);
                 entry.EquippedItemInventoryTypeMask = getFieldAsInt32(i, 60);
-                entry.Effect = new uint[3];
-                entry.Effect[0] = getFieldAsUint32(i, 61);
-                entry.Effect[1] = getFieldAsUint32(i, 62);
-                entry.Effect[2] = getFieldAsUint32(i, 63);
+                entry.Effect = new SpellEffects[3];
+                entry.Effect[0] = (SpellEffects)getFieldAsUint32(i, 61);
+                entry.Effect[1] = (SpellEffects)getFieldAsUint32(i, 62);
+                entry.Effect[2] = (SpellEffects)getFieldAsUint32(i, 63);
                 entry.EffectDieSides = new int[3];
                 entry.EffectDieSides[0] = getFieldAsInt32(i, 64);
                 entry.EffectDieSides[1] = getFieldAsInt32(i, 65);
@@ -193,6 +196,23 @@ namespace mClient.DBC
         public string getSpellName(uint spellId)
         {
             return mSpellEntries[spellId].SpellName;
+        }
+
+        public uint GetTalentSpellCost(uint spellId)
+        {
+            return GetTalentSpellCost(GetTalentSpellPos(spellId));
+        }
+
+        public uint GetTalentSpellCost(TalentTable.TalentSpellPos talentSpellPos)
+        {
+            if (talentSpellPos != null)
+                return talentSpellPos.Rank;
+            return 0;
+        }
+
+        public TalentTable.TalentSpellPos GetTalentSpellPos(uint spellId)
+        {
+            return TalentTable.Instance.getTalentSpellPosBySpell(spellId);
         }
     }
 }
