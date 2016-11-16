@@ -98,14 +98,29 @@ namespace mClient.World.ClassLogic
         /// <summary>
         /// Gets all group members that need a buff
         /// </summary>
-        public override Dictionary<SpellEntry, Player> GroupMembersNeedingOOCBuffs
+        public override Dictionary<SpellEntry, IList<Player>> GroupMembersNeedingOOCBuffs
         {
             get
             {
-                var needBuffs = new Dictionary<SpellEntry, Player>();
+                var needBuffs = new Dictionary<SpellEntry, IList<Player>>();
                 // TODO: Need to check for other stances in certain cases
                 if (BATTLE_STANCE > 0 && !Player.HasAura(BATTLE_STANCE))
-                    needBuffs.Add(SpellTable.Instance.getSpell(BATTLE_STANCE), Player);
+                    needBuffs.Add(Spell(BATTLE_STANCE), new List<Player>() { Player });
+
+                // Check each player in the group for buffs
+                foreach (var groupMember in Player.CurrentGroup.PlayersInGroup)
+                {
+                    // Battle Shout buff
+                    if (BATTLE_SHOUT > 0)
+                    {
+                        var battleShoutSpell = Spell(BATTLE_SHOUT);
+                        if (!groupMember.HasAura(BATTLE_SHOUT))
+                            if (needBuffs.ContainsKey(battleShoutSpell))
+                                needBuffs[battleShoutSpell].Add(groupMember);
+                            else
+                                needBuffs.Add(battleShoutSpell, new List<Player>() { groupMember });
+                    }
+                }
 
                 return needBuffs;
             }
@@ -129,12 +144,11 @@ namespace mClient.World.ClassLogic
         {
             get
             {
-                if (HEROIC_STRIKE > 0)
-                {
-                    var spell = SpellTable.Instance.getSpell(HEROIC_STRIKE);
-                    if (Player.PlayerObject.CanCastSpell(spell))
-                        return spell;
-                }
+                // Buffs we should have before going into combat but maybe we don't because we didn't have enough rage
+                if (HasSpellAndCanCast(BATTLE_SHOUT) && !Player.HasAura(BATTLE_SHOUT)) return Spell(BATTLE_SHOUT);
+
+                // DPS abilities
+                if (HasSpellAndCanCast(HEROIC_STRIKE)) return Spell(HEROIC_STRIKE);
                     
                 return null;
             }

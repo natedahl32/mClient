@@ -109,11 +109,11 @@ namespace mClient.World.ClassLogic
         /// <summary>
         /// Gets all group members that need a buff
         /// </summary>
-        public override Dictionary<SpellEntry, Player> GroupMembersNeedingOOCBuffs
+        public override Dictionary<SpellEntry, IList<Player>> GroupMembersNeedingOOCBuffs
         {
             get
             {
-                return new Dictionary<SpellEntry, Player>();
+                return new Dictionary<SpellEntry, IList<Player>>();
             }
         }
 

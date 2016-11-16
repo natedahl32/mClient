@@ -54,7 +54,7 @@ namespace mClient.World
         /// <summary>
         /// Gets all group members that need a buff
         /// </summary>
-        public abstract Dictionary<SpellEntry, Player> GroupMembersNeedingOOCBuffs { get; }
+        public abstract Dictionary<SpellEntry, IList<Player>> GroupMembersNeedingOOCBuffs { get; }
 
         /// <summary>
         /// Gets whether or not this player is a melee combatant
@@ -120,6 +120,38 @@ namespace mClient.World
                 }
             } while (nextSpell != 0);
             return spell;
+        }
+
+        /// <summary>
+        /// Checks if the player owns the spell and can cast it
+        /// </summary>
+        /// <param name="spellId"></param>
+        /// <returns></returns>
+        protected bool HasSpellAndCanCast(uint spellId)
+        {
+            // No spell? Can't cast it
+            if (spellId == 0) return false;
+
+            var spell = Spell(spellId);
+            if (spell == null)
+                return false;
+
+            // Have enough power to cast it?
+            if (!Player.PlayerObject.CanCastSpell(spell)) return false;
+
+            // TODO: More checks needed. Have reagents? for example
+
+            return true;
+        }
+
+        /// <summary>
+        /// Convenience method to get spell from DBC
+        /// </summary>
+        /// <param name="spellId"></param>
+        /// <returns></returns>
+        protected SpellEntry Spell(uint spellId)
+        {
+            return SpellTable.Instance.getSpell(spellId);
         }
 
         #endregion
