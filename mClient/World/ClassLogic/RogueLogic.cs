@@ -96,6 +96,17 @@ namespace mClient.World.ClassLogic
             }
         }
 
+        /// <summary>
+        /// Gets the next spell to cast in a DPS rotation for the class
+        /// </summary>
+        public override SpellEntry NextSpellInRotation
+        {
+            get
+            {
+                return null;
+            }
+        }
+
         #endregion
 
         #region Public Methods

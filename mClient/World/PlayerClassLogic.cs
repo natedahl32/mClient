@@ -61,6 +61,11 @@ namespace mClient.World
         /// </summary>
         public abstract bool IsMelee { get; }
 
+        /// <summary>
+        /// Gets the next spell to cast in a DPS rotation for the class
+        /// </summary>
+        public abstract SpellEntry NextSpellInRotation { get; }
+
         #endregion
 
         #region Public Methods
