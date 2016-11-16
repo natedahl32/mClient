@@ -43,7 +43,12 @@ namespace mClient.World.ClassLogic
                AMBUSH,
                RUPTURE,
                CHEAP_SHOT,
-               KIDNEY_SHOT;
+               KIDNEY_SHOT,
+               BLADE_FURRY,
+               DISARM_TRAP,
+               PICK_LOCK,
+               RIPOSTE,
+               SAP;
 
         #endregion
 
@@ -63,6 +68,36 @@ namespace mClient.World.ClassLogic
 
             // Spells
             ADRENALINE_RUSH = InitSpell(Spells.ADRENALINE_RUSH_1);
+            AMBUSH = InitSpell(Spells.AMBUSH_1);
+            BACKSTAB = InitSpell(Spells.BACKSTAB_1);
+            BLADE_FURRY = InitSpell(Spells.BLADE_FLURRY_1);
+            BLIND = InitSpell(Spells.BLIND_1);
+            CHEAP_SHOT = InitSpell(Spells.CHEAP_SHOT_1);
+            COLD_BLOOD = InitSpell(Spells.COLD_BLOOD_1);
+            DISARM_TRAP = InitSpell(Spells.DISARM_TRAP_1);
+            DISTRACT = InitSpell(Spells.DISTRACT_1);
+            EVASION = InitSpell(Spells.EVASION_1);
+            EVISCERATE = InitSpell(Spells.EVISCERATE_1);
+            EXPOSE_ARMOR = InitSpell(Spells.EXPOSE_ARMOR_1);
+            FEINT = InitSpell(Spells.FEINT_1);
+            GARROTE = InitSpell(Spells.GARROTE_1);
+            GHOSTLY_STRIKE = InitSpell(Spells.GHOSTLY_STRIKE_1);
+            GOUGE = InitSpell(Spells.GOUGE_1);
+            HEMORRHAGE = InitSpell(Spells.HEMORRHAGE_1);
+            KICK = InitSpell(Spells.KICK_1);
+            KIDNEY_SHOT = InitSpell(Spells.KIDNEY_SHOT_1);
+            PICK_LOCK = InitSpell(Spells.PICK_LOCK_1);
+            PICK_POCKET = InitSpell(Spells.PICK_POCKET_1);
+            PREMEDITATION = InitSpell(Spells.PREMEDITATION_1);
+            PREPARATION = InitSpell(Spells.PREPARATION_1);
+            RIPOSTE = InitSpell(Spells.RIPOSTE_1);
+            RUPTURE = InitSpell(Spells.RUPTURE_1);
+            SAP = InitSpell(Spells.SAP_1);
+            SINISTER_STRIKE = InitSpell(Spells.SINISTER_STRIKE_1);
+            SLICE_DICE = InitSpell(Spells.SLICE_AND_DICE_1);
+            SPRINT = InitSpell(Spells.SPRINT_1);
+            STEALTH = InitSpell(Spells.STEALTH_1);
+            VANISH = InitSpell(Spells.VANISH_1);
         }
 
         #endregion

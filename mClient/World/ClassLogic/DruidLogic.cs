@@ -15,7 +15,9 @@ namespace mClient.World.ClassLogic
                BEAR_FORM,
                DIRE_BEAR_FORM,
                MOONKIN_FORM,
-               TRAVEL_FORM;
+               TRAVEL_FORM,
+               AQUATIC_FORM,
+               TREE_FORM;
 
         // druid cat attacks
         protected uint CLAW,
@@ -34,7 +36,11 @@ namespace mClient.World.ClassLogic
                CHALLENGING_ROAR,
                GROWL,
                ENRAGE,
-               FAERIE_FIRE_FERAL;
+               FAERIE_FIRE_FERAL,
+               FERAL_CHARGE_BEAR,
+               POUNCE,
+               PROWL,
+               RAVAGE;
 
         // druid caster DPS attacks & debuffs
         protected uint MOONFIRE,
@@ -44,7 +50,11 @@ namespace mClient.World.ClassLogic
                STARFIRE,
                INSECT_SWARM,
                FAERIE_FIRE,
-               HIBERNATE;
+               HIBERNATE,
+               ENTANGLING_ROOTS,
+               HURRICANE,
+               NATURES_GRASP,
+               SOOTHE_ANIMAL;
 
         // druid buffs
         protected uint MARK_OF_THE_WILD,
@@ -52,7 +62,9 @@ namespace mClient.World.ClassLogic
                THORNS,
                INNERVATE,
                NATURES_SWIFTNESS,
-               BARKSKIN;
+               BARKSKIN,
+               DASH,
+               FRENZIED_GENERATION;
 
         // druid heals
         protected uint REJUVENATION,
@@ -62,7 +74,8 @@ namespace mClient.World.ClassLogic
                TRANQUILITY,
                REBIRTH,
                REMOVE_CURSE,
-               ABOLISH_POISON;
+               ABOLISH_POISON,
+               CURE_POISON;
 
         // procs
         protected uint ECLIPSE,
@@ -87,6 +100,64 @@ namespace mClient.World.ClassLogic
 
             // Spells
             ABOLISH_POISON = InitSpell(Spells.ABOLISH_POISON_1);
+            AQUATIC_FORM = InitSpell(Spells.AQUATIC_FORM_1);
+            BARKSKIN = InitSpell(Spells.BARKSKIN_1);
+            BASH = InitSpell(Spells.BASH_1);
+            BEAR_FORM = InitSpell(Spells.BEAR_FORM_1);
+            CAT_FORM = InitSpell(Spells.CAT_FORM_1);
+            CHALLENGING_ROAR = InitSpell(Spells.CHALLENGING_ROAR_1);
+            CLAW = InitSpell(Spells.CLAW_1);
+            COWER = InitSpell(Spells.COWER_1);
+            CURE_POISON = InitSpell(Spells.CURE_POISON_1);
+            DASH = InitSpell(Spells.DASH_1);
+            DEMORALIZING_ROAR = InitSpell(Spells.DEMORALIZING_ROAR_1);
+            DIRE_BEAR_FORM = InitSpell(Spells.DIRE_BEAR_FORM_1);
+            ENRAGE = InitSpell(Spells.ENRAGE_1);
+            ENTANGLING_ROOTS = InitSpell(Spells.ENTANGLING_ROOTS_1);
+            FAERIE_FIRE = InitSpell(Spells.FAERIE_FIRE_1);
+            FAERIE_FIRE_FERAL = InitSpell(Spells.FAERIE_FIRE_FERAL_1);
+            FERAL_CHARGE_BEAR = InitSpell(Spells.FERAL_CHARGE_BEAR_1);
+            FEROCIOUS_BITE = InitSpell(Spells.FEROCIOUS_BITE_1);
+            FRENZIED_GENERATION = InitSpell(Spells.FRENZIED_REGENERATION_1);
+            GIFT_OF_THE_WILD = InitSpell(Spells.GIFT_OF_THE_WILD_1);
+            GROWL = InitSpell(Spells.GROWL_1);
+            HEALING_TOUCH = InitSpell(Spells.HEALING_TOUCH_1);
+            HIBERNATE = InitSpell(Spells.HIBERNATE_1);
+            HURRICANE = InitSpell(Spells.HURRICANE_1);
+            INNERVATE = InitSpell(Spells.INNERVATE_1);
+            INSECT_SWARM = InitSpell(Spells.INSECT_SWARM_1);
+            MARK_OF_THE_WILD = InitSpell(Spells.MARK_OF_THE_WILD_1);
+            MAUL = InitSpell(Spells.MAUL_1);
+            MOONFIRE = InitSpell(Spells.MOONFIRE_1);
+            MOONKIN_FORM = InitSpell(Spells.MOONKIN_FORM_1);
+            NATURES_GRASP = InitSpell(Spells.NATURES_GRASP_1);
+            NATURES_SWIFTNESS = InitSpell(Spells.NATURES_SWIFTNESS_DRUID_1);
+            OMEN_OF_CLARITY = InitSpell(Spells.OMEN_OF_CLARITY_1);
+            POUNCE = InitSpell(Spells.POUNCE_1);
+            PROWL = InitSpell(Spells.PROWL_1);
+            RAKE = InitSpell(Spells.RAKE_1);
+            RAVAGE = InitSpell(Spells.RAVAGE_1);
+            REBIRTH = InitSpell(Spells.REBIRTH_1);
+            REGROWTH = InitSpell(Spells.REGROWTH_1);
+            REJUVENATION = InitSpell(Spells.REJUVENATION_1);
+            REMOVE_CURSE = InitSpell(Spells.REMOVE_CURSE_DRUID_1);
+            RIP = InitSpell(Spells.RIP_1);
+            SHRED = InitSpell(Spells.SHRED_1);
+            SOOTHE_ANIMAL = InitSpell(Spells.SOOTHE_ANIMAL_1);
+            STARFIRE = InitSpell(Spells.STARFIRE_1);
+            SWIFTMEND = InitSpell(Spells.SWIFTMEND_1);
+            SWIPE = InitSpell(Spells.SWIPE_BEAR_1);
+            THORNS = InitSpell(Spells.THORNS_1);
+            TIGERS_FURY = InitSpell(Spells.TIGERS_FURY_1);
+            TRANQUILITY = InitSpell(Spells.TRANQUILITY_1);
+            TRAVEL_FORM = InitSpell(Spells.TRAVEL_FORM_1);
+            WRATH = InitSpell(Spells.WRATH_1);
+            ECLIPSE = InitSpell(Spells.ECLIPSE_1);
+
+            // Procs
+            ECLIPSE_LUNAR = InitSpell(Procs.ECLIPSE_LUNAR_1);
+            ECLIPSE_SOLAR = InitSpell(Procs.ECLIPSE_SOLAR_1);
+
         }
 
         #endregion

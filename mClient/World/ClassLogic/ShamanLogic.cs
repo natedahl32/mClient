@@ -57,7 +57,12 @@ namespace mClient.World.ClassLogic
                CHAIN_LIGHTNING,
                FIRE_ELEMENTAL_TOTEM,
                EARTHBIND_TOTEM,
-               ELEMENTAL_MASTERY;
+               ELEMENTAL_MASTERY,
+               ASTRAL_RECALL,
+               CLEANSING_TOTEM,
+               GHOST_WOLF,
+               SENTRY_TOTEM,
+               WATER_BREATHING;
 
         // totem buffs
         protected uint STRENGTH_OF_EARTH_EFFECT,
@@ -95,6 +100,69 @@ namespace mClient.World.ClassLogic
 
             // Spells
             ANCESTRAL_SPIRIT = InitSpell(Spells.ANCESTRAL_SPIRIT_1);
+            ASTRAL_RECALL = InitSpell(Spells.ASTRAL_RECALL_1);
+            BLOODLUST = InitSpell(Spells.BLOODLUST_1);
+            CHAIN_HEAL = InitSpell(Spells.CHAIN_HEAL_1);
+            CHAIN_LIGHTNING = InitSpell(Spells.CHAIN_LIGHTNING_1);
+            CLEANSING_TOTEM = InitSpell(Spells.CLEANSING_TOTEM_1);
+            CURE_DISEASE_SHAMAN = InitSpell(Spells.CURE_DISEASE_SHAMAN_1);
+            CURE_POISON_SHAMAN = InitSpell(Spells.CURE_POISON_SHAMAN_1);
+            EARTH_ELEMENTAL_TOTEM = InitSpell(Spells.EARTH_ELEMENTAL_TOTEM_1);
+            EARTH_SHIELD = InitSpell(Spells.EARTH_SHIELD_1);
+            EARTH_SHOCK = InitSpell(Spells.EARTH_SHOCK_1);
+            EARTHBIND_TOTEM = InitSpell(Spells.EARTHBIND_TOTEM_1);
+            ELEMENTAL_MASTERY = InitSpell(Spells.ELEMENTAL_MASTERY_1);
+            FIRE_ELEMENTAL_TOTEM = InitSpell(Spells.FIRE_ELEMENTAL_TOTEM_1);
+            FIRE_NOVA_TOTEM = InitSpell(Spells.FIRE_NOVA_1);
+            FIRE_RESISTANCE_TOTEM = InitSpell(Spells.FIRE_RESISTANCE_TOTEM_1);
+            FLAME_SHOCK = InitSpell(Spells.FLAME_SHOCK_1);
+            FLAMETONGUE_TOTEM = InitSpell(Spells.FLAMETONGUE_TOTEM_1);
+            FLAMETONGUE_WEAPON = InitSpell(Spells.FLAMETONGUE_WEAPON_1);
+            FROST_RESISTANCE_TOTEM = InitSpell(Spells.FROST_RESISTANCE_TOTEM_1);
+            FROST_SHOCK = InitSpell(Spells.FROST_SHOCK_1);
+            FROSTBRAND_WEAPON = InitSpell(Spells.FROSTBRAND_WEAPON_1);
+            GHOST_WOLF = InitSpell(Spells.GHOST_WOLF_1);
+            GROUNDING_TOTEM = InitSpell(Spells.GROUNDING_TOTEM_1);
+            HEALING_STREAM_TOTEM = InitSpell(Spells.HEALING_STREAM_TOTEM_1);
+            HEALING_WAVE = InitSpell(Spells.HEALING_WAVE_1);
+            LESSER_HEALING_WAVE = InitSpell(Spells.LESSER_HEALING_WAVE_1);
+            LIGHTNING_BOLT = InitSpell(Spells.LIGHTNING_BOLT_1);
+            LIGHTNING_SHIELD = InitSpell(Spells.LIGHTNING_SHIELD_1);
+            MAGMA_TOTEM = InitSpell(Spells.MAGMA_TOTEM_1);
+            MANA_SPRING_TOTEM = InitSpell(Spells.MANA_SPRING_TOTEM_1);
+            MANA_TIDE_TOTEM = InitSpell(Spells.MANA_TIDE_TOTEM_1);
+            NATURE_RESISTANCE_TOTEM = InitSpell(Spells.NATURE_RESISTANCE_TOTEM_1);
+            NATURES_SWIFTNESS_SHAMAN = InitSpell(Spells.NATURES_SWIFTNESS_SHAMAN_1);
+            PURGE = InitSpell(Spells.PURGE_1);
+            ROCKBITER_WEAPON = InitSpell(Spells.ROCKBITER_WEAPON_1);
+            SEARING_TOTEM = InitSpell(Spells.SEARING_TOTEM_1);
+            SENTRY_TOTEM = InitSpell(Spells.SENTRY_TOTEM_1);
+            STONECLAW_TOTEM = InitSpell(Spells.STONECLAW_TOTEM_1);
+            STONESKIN_TOTEM = InitSpell(Spells.STONESKIN_TOTEM_1);
+            STORMSTRIKE = InitSpell(Spells.STORMSTRIKE_1);
+            STRENGTH_OF_EARTH_TOTEM = InitSpell(Spells.STRENGTH_OF_EARTH_TOTEM_1);
+            TREMOR_TOTEM = InitSpell(Spells.TREMOR_TOTEM_1);
+            WATER_BREATHING = InitSpell(Spells.WATER_BREATHING_1);
+            WIND_FURY_TOTEM = InitSpell(Spells.WINDFURY_TOTEM_1);
+            WINDFURY_WEAPON = InitSpell(Spells.WINDFURY_WEAPON_1);
+            WRATH_OF_AIR_TOTEM = InitSpell(Spells.WRATH_OF_AIR_TOTEM_1);
+
+            // Totem effects
+            STRENGTH_OF_EARTH_EFFECT = InitSpell(Spells.STRENGTH_OF_EARTH_EFFECT_1);
+            FLAMETONGUE_EFFECT = InitSpell(Spells.FLAMETONGUE_EFFECT_1);
+            MAGMA_TOTEM_EFFECT = InitSpell(Spells.MAGMA_TOTEM_EFFECT_1);
+            STONECLAW_EFFECT = InitSpell(Spells.STONECLAW_EFFECT_1);
+            FIRE_RESISTANCE_EFFECT = InitSpell(Spells.FIRE_RESISTANCE_EFFECT_1);
+            FROST_RESISTANCE_EFFECT = InitSpell(Spells.FROST_RESISTANCE_EFFECT_1);
+            GROUDNING_EFFECT = InitSpell(Spells.GROUDNING_EFFECT_1);
+            NATURE_RESISTANCE_EFFECT = InitSpell(Spells.NATURE_RESISTANCE_EFFECT_1);
+            STONESKIN_EFFECT = InitSpell(Spells.STONESKIN_EFFECT_1);
+            WINDFURY_EFFECT = InitSpell(Spells.WINDFURY_EFFECT_1);
+            WRATH_OF_AIR_EFFECT = InitSpell(Spells.WRATH_OF_AIR_EFFECT_1);
+            CLEANSING_TOTEM_EFFECT = InitSpell(Spells.CLEANSING_TOTEM_EFFECT_1);
+            MANA_SPRING_EFFECT = InitSpell(Spells.MANA_SPRING_EFFECT_1);
+            TREMOR_TOTEM_EFFECT = InitSpell(Spells.TREMOR_TOTEM_EFFECT_1);
+            EARTHBIND_EFFECT = InitSpell(Spells.EARTHBIND_EFFECT_1);
         }
 
         #endregion

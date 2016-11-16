@@ -52,7 +52,14 @@ namespace mClient.World.ClassLogic
                AMPLIFY_MAGIC;
 
         protected uint CONJURE_WATER,
-               CONJURE_FOOD;
+               CONJURE_FOOD,
+               CONJURE_MANA_GEM,
+               BLINK,
+               EVOCATION,
+               INVISIBILITY,
+               PRESENCE_OF_MIND,
+               REMOVE_CURSE,
+               SLOW_FALL;
 
         #endregion
 
@@ -72,6 +79,45 @@ namespace mClient.World.ClassLogic
 
             // Spells
             AMPLIFY_MAGIC = InitSpell(Spells.AMPLIFY_MAGIC_1);
+            ARCANE_BRILLIANCE = InitSpell(Spells.ARCANE_BRILLIANCE_1);
+            ARCANE_EXPLOSION = InitSpell(Spells.ARCANE_EXPLOSION_1);
+            ARCANE_INTELLECT = InitSpell(Spells.ARCANE_INTELLECT_1);
+            ARCANE_MISSILES = InitSpell(Spells.ARCANE_MISSILES_1);
+            ARCANE_POWER = InitSpell(Spells.ARCANE_POWER_1);
+            BLAST_WAVE = InitSpell(Spells.BLAST_WAVE_1);
+            BLINK = InitSpell(Spells.BLINK_1);
+            BLIZZARD = InitSpell(Spells.BLIZZARD_1);
+            COLD_SNAP = InitSpell(Spells.COLD_SNAP_1);
+            COMBUSTION = InitSpell(Spells.COMBUSTION_1);
+            CONE_OF_COLD = InitSpell(Spells.CONE_OF_COLD_1);
+            CONJURE_FOOD = InitSpell(Spells.CONJURE_FOOD_1);
+            CONJURE_WATER = InitSpell(Spells.CONJURE_WATER_1);
+            CONJURE_MANA_GEM = InitSpell(Spells.CONJURE_MANA_GEM_1);
+            COUNTERSPELL = InitSpell(Spells.COUNTERSPELL_1);
+            DAMPEN_MAGIC = InitSpell(Spells.DAMPEN_MAGIC_1);
+            EVOCATION = InitSpell(Spells.EVOCATION_1);
+            FIRE_BLAST = InitSpell(Spells.FIRE_BLAST_1);
+            FIRE_WARD = InitSpell(Spells.FIRE_WARD_1);
+            FIREBALL = InitSpell(Spells.FIREBALL_1);
+            FLAMESTRIKE = InitSpell(Spells.FLAMESTRIKE_1);
+            FROST_ARMOR = InitSpell(Spells.FROST_ARMOR_1);
+            FROST_NOVA = InitSpell(Spells.FROST_NOVA_1);
+            FROST_WARD = InitSpell(Spells.FROST_WARD_1);
+            FROSTBOLT = InitSpell(Spells.FROSTBOLT_1);
+            ICE_ARMOR = InitSpell(Spells.ICE_ARMOR_1);
+            ICE_BARRIER = InitSpell(Spells.ICE_BARRIER_1);
+            ICE_BLOCK = InitSpell(Spells.ICE_BLOCK_1);
+            INVISIBILITY = InitSpell(Spells.INVISIBILITY_1);
+            MAGE_ARMOR = InitSpell(Spells.MAGE_ARMOR_1);
+            MANA_SHIELD = InitSpell(Spells.MANA_SHIELD_1);
+            POLYMORPH = InitSpell(Spells.POLYMORPH_1);
+            PRESENCE_OF_MIND = InitSpell(Spells.PRESENCE_OF_MIND_1);
+            PYROBLAST = InitSpell(Spells.PYROBLAST_1);
+            REMOVE_CURSE = InitSpell(Spells.REMOVE_CURSE_MAGE_1);
+            SCORCH = InitSpell(Spells.SCORCH_1);
+            SHOOT = InitSpell(Spells.SHOOT_2);
+            SLOW_FALL = InitSpell(Spells.SLOW_FALL_1);
+            SLOW = InitSpell(Spells.SLOW_1);
         }
 
         #endregion
@@ -119,6 +165,7 @@ namespace mClient.World.ClassLogic
             public const uint SCORCH_1 = 2948;
             public const uint SHOOT_2 = 5019;
             public const uint SLOW_FALL_1 = 130;
+            public const uint SLOW_1 = 246;
         }
 
         #endregion

@@ -33,7 +33,14 @@ namespace mClient.World.ClassLogic
                DARK_PACT,
                HOWL_OF_TERROR,
                FEAR,
-               SIPHON_LIFE;
+               SIPHON_LIFE,
+               DEATH_COIL,
+               EYE_OF_KILROG,
+               INFERNO,
+               RITUAL_OF_DOOM,
+               RITUAL_OF_SUMMONING,
+               SENSE_DEMONS,
+               UNENDING_BREATH;
 
         // DESTRUCTION
         protected uint SHADOW_BOLT,
@@ -80,7 +87,8 @@ namespace mClient.World.ClassLogic
                CONSUME_SHADOWS,
                SACRIFICE,
                SUFFERING,
-               TORMENT;
+               TORMENT,
+               FEL_DOMINATION;
 
         #endregion
 
@@ -100,6 +108,56 @@ namespace mClient.World.ClassLogic
 
             // Spells
             AMPLIFY_CURSE = InitSpell(Spells.AMPLIFY_CURSE_1);
+            BANISH = InitSpell(Spells.BANISH_1);
+            CONFLAGRATE = InitSpell(Spells.CONFLAGRATE_1);
+            CORRUPTION = InitSpell(Spells.CORRUPTION_1);
+            CREATE_FIRESTONE = InitSpell(Spells.CREATE_FIRESTONE_1);
+            CREATE_HEALTHSTONE = InitSpell(Spells.CREATE_HEALTHSTONE_1);
+            CREATE_SOULSTONE = InitSpell(Spells.CREATE_SOULSTONE_1);
+            CREATE_SPELLSTONE = InitSpell(Spells.CREATE_SPELLSTONE_1);
+            CURSE_OF_AGONY = InitSpell(Spells.CURSE_OF_AGONY_1);
+            CURSE_OF_DOOM = InitSpell(Spells.CURSE_OF_DOOM_1);
+            CURSE_OF_EXHAUSTION = InitSpell(Spells.CURSE_OF_EXHAUSTION_1);
+            CURSE_OF_RECKLESSNESS = InitSpell(Spells.CURSE_OF_RECKLESSNESS_1);
+            CURSE_OF_SHADOW = InitSpell(Spells.CURSE_OF_SHADOW_1);
+            CURSE_OF_THE_ELEMENTS = InitSpell(Spells.CURSE_OF_THE_ELEMENTS_1);
+            CURSE_OF_TONGUES = InitSpell(Spells.CURSE_OF_TONGUES_1);
+            CURSE_OF_WEAKNESS = InitSpell(Spells.CURSE_OF_WEAKNESS_1);
+            DARK_PACT = InitSpell(Spells.DARK_PACT_1);
+            DEATH_COIL = InitSpell(Spells.DEATH_COIL_WARLOCK_1);
+            DEMON_ARMOR = InitSpell(Spells.DEMON_ARMOR_1);
+            DEMON_SKIN = InitSpell(Spells.DEMON_SKIN_1);
+            DETECT_INVISIBILITY = InitSpell(Spells.DETECT_INVISIBILITY_1);
+            DRAIN_LIFE = InitSpell(Spells.DRAIN_LIFE_1);
+            DRAIN_MANA = InitSpell(Spells.DRAIN_MANA_1);
+            DRAIN_SOUL = InitSpell(Spells.DRAIN_SOUL_1);
+            ENSLAVE_DEMON = InitSpell(Spells.ENSLAVE_DEMON_1);
+            EYE_OF_KILROG = InitSpell(Spells.EYE_OF_KILROGG_1);
+            FEAR = InitSpell(Spells.FEAR_1);
+            FEL_DOMINATION = InitSpell(Spells.FEL_DOMINATION_1);
+            HEALTH_FUNNEL = InitSpell(Spells.HEALTH_FUNNEL_1);
+            HELLFIRE = InitSpell(Spells.HELLFIRE_1);
+            HOWL_OF_TERROR = InitSpell(Spells.HOWL_OF_TERROR_1);
+            IMMOLATE = InitSpell(Spells.IMMOLATE_1);
+            INFERNO = InitSpell(Spells.INFERNO_1);
+            LIFE_TAP = InitSpell(Spells.LIFE_TAP_1);
+            RAIN_OF_FIRE = InitSpell(Spells.RAIN_OF_FIRE_1);
+            RITUAL_OF_DOOM = InitSpell(Spells.RITUAL_OF_DOOM_1);
+            RITUAL_OF_SUMMONING = InitSpell(Spells.RITUAL_OF_SUMMONING_1);
+            SEARING_PAIN = InitSpell(Spells.SEARING_PAIN_1);
+            SENSE_DEMONS = InitSpell(Spells.SENSE_DEMONS_1);
+            SHADOW_BOLT = InitSpell(Spells.SHADOW_BOLT_1);
+            SHADOW_WARD = InitSpell(Spells.SHADOW_WARD_1);
+            SHADOWBURN = InitSpell(Spells.SHADOWBURN_1);
+            SHOOT = InitSpell(Spells.SHOOT_3);
+            SIPHON_LIFE = InitSpell(Spells.SIPHON_LIFE_1);
+            SOUL_FIRE = InitSpell(Spells.SOUL_FIRE_1);
+            SOUL_LINK = InitSpell(Spells.SOUL_LINK_1);
+            SUMMON_FELHUNTER = InitSpell(Spells.SUMMON_FELHUNTER_1);
+            SUMMON_IMP = InitSpell(Spells.SUMMON_IMP_1);
+            SUMMON_SUCCUBUS = InitSpell(Spells.SUMMON_SUCCUBUS_1);
+            SUMMON_VOIDWALKER = InitSpell(Spells.SUMMON_VOIDWALKER_1);
+            UNENDING_BREATH = InitSpell(Spells.UNENDING_BREATH_1);
         }
 
         #endregion

@@ -54,7 +54,15 @@ namespace mClient.World.ClassLogic
                MASS_DISPEL,
                DIVINE_SPIRIT,
                PRAYER_OF_SPIRIT,
-               INNER_FOCUS;
+               INNER_FOCUS,
+               ELUNES_GRACE,
+               LEVITATE,
+               LIGHTWELL,
+               MIND_CONTROL,
+               MIND_SOOTHE,
+               MIND_VISION,
+               PSYCHIC_SCREAM,
+               SILENCE;
 
         #endregion
 
@@ -74,6 +82,48 @@ namespace mClient.World.ClassLogic
 
             // Spells
             ABOLISH_DISEASE = InitSpell(Spells.ABOLISH_DISEASE_1);
+            CURE_DISEASE = InitSpell(Spells.CURE_DISEASE_1);
+            DESPERATE_PRAYER = InitSpell(Spells.DESPERATE_PRAYER_1);
+            DEVOURING_PLAGUE = InitSpell(Spells.DEVOURING_PLAGUE_1);
+            PRIEST_DISPEL_MAGIC = InitSpell(Spells.DISPEL_MAGIC_1);
+            DIVINE_SPIRIT = InitSpell(Spells.DIVINE_SPIRIT_1);
+            ELUNES_GRACE = InitSpell(Spells.ELUNES_GRACE_1);
+            FADE = InitSpell(Spells.FADE_1);
+            FEAR_WARD = InitSpell(Spells.FEAR_WARD_1);
+            FLASH_HEAL = InitSpell(Spells.FLASH_HEAL_1);
+            GREATER_HEAL = InitSpell(Spells.GREATER_HEAL_1);
+            HEAL = InitSpell(Spells.HEAL_1);
+            HOLY_FIRE = InitSpell(Spells.HOLY_FIRE_1);
+            HOLY_NOVA = InitSpell(Spells.HOLY_NOVA_1);
+            INNER_FIRE = InitSpell(Spells.INNER_FIRE_1);
+            INNER_FOCUS = InitSpell(Spells.INNER_FOCUS_1);
+            LESSER_HEAL = InitSpell(Spells.LESSER_HEAL_1);
+            LEVITATE = InitSpell(Spells.LEVITATE_1);
+            LIGHTWELL = InitSpell(Spells.LIGHTWELL_1);
+            MANA_BURN = InitSpell(Spells.MANA_BURN_1);
+            MIND_BLAST = InitSpell(Spells.MIND_BLAST_1);
+            MIND_CONTROL = InitSpell(Spells.MIND_CONTROL_1);
+            MIND_FLAY = InitSpell(Spells.MIND_FLAY_1);
+            MIND_SOOTHE = InitSpell(Spells.MIND_SOOTHE_1);
+            MIND_VISION = InitSpell(Spells.MIND_VISION_1);
+            POWER_INFUSION = InitSpell(Spells.POWER_INFUSION_1);
+            POWER_WORD_FORTITUDE = InitSpell(Spells.POWER_WORD_FORTITUDE_1);
+            POWER_WORD_SHIELD = InitSpell(Spells.POWER_WORD_SHIELD_1);
+            PRAYER_OF_FORTITUDE = InitSpell(Spells.PRAYER_OF_FORTITUDE_1);
+            PRAYER_OF_HEALING = InitSpell(Spells.PRAYER_OF_HEALING_1);
+            PRAYER_OF_SHADOW_PROTECTION = InitSpell(Spells.PRAYER_OF_SHADOW_PROTECTION_1);
+            PRAYER_OF_SPIRIT = InitSpell(Spells.PRAYER_OF_SPIRIT_1);
+            PSYCHIC_SCREAM = InitSpell(Spells.PSYCHIC_SCREAM_1);
+            RENEW = InitSpell(Spells.RENEW_1);
+            RESURRECTION = InitSpell(Spells.RESURRECTION_1);
+            SHACKLE_UNDEAD = InitSpell(Spells.SHACKLE_UNDEAD_1);
+            SHADOW_PROTECTION = InitSpell(Spells.SHADOW_PROTECTION_1);
+            SHADOW_WORD_PAIN = InitSpell(Spells.SHADOW_WORD_PAIN_1);
+            SHADOWFORM = InitSpell(Spells.SHADOWFORM_1);
+            SHOOT = InitSpell(Spells.SHOOT_1);
+            SMITE = InitSpell(Spells.SMITE_1);
+            SILENCE = InitSpell(Spells.SILENCE_1);
+            VAMPIRIC_EMBRACE = InitSpell(Spells.VAMPIRIC_EMBRACE_1);
         }
 
         #endregion

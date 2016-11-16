@@ -34,7 +34,9 @@ namespace mClient.World.ClassLogic
                WYVERN_STING,
                AIMED_SHOT,
                VOLLEY,
-               BLACK_ARROW;
+               BLACK_ARROW,
+               TRANQ_SHOT,
+               SCATTER_SHOT;
 
         protected uint RAPTOR_STRIKE,
                WING_CLIP,
@@ -49,8 +51,29 @@ namespace mClient.World.ClassLogic
 
         protected uint ASPECT_OF_THE_HAWK,
                ASPECT_OF_THE_MONKEY,
+               ASPECT_OF_THE_BEAST,
+               ASPECT_OF_THE_CHEETAH,
+               ASPECT_OF_THE_PACK,
+               ASPECT_OF_THE_WILD,
                RAPID_FIRE,
-               TRUESHOT_AURA;
+               TRUESHOT_AURA,
+               BEAST_LORE,
+               EAGLE_EYE,
+               EYES_OF_THE_BEAST,
+               FEIGN_DEATH,
+               FLARE,
+               SCARE_BEAST,
+               TAME_BEAST,
+               TRACK_BEASTS,
+               TRACK_DEMONS,
+               TRACK_DRAGONKIN,
+               TRACK_ELEMENTALS,
+               TRACK_GIANTS,
+               TRACK_HIDDEN,
+               TRACK_HUMANOIDS,
+               TRACK_UNDEAD,
+               COUNTERATTACK,
+               READINESS;
 
         #endregion
 
@@ -70,6 +93,61 @@ namespace mClient.World.ClassLogic
 
             // Spells
             ARCANE_SHOT = InitSpell(Spells.ARCANE_SHOT_1);
+            ASPECT_OF_THE_BEAST = InitSpell(Spells.ASPECT_OF_THE_BEAST_1);
+            ASPECT_OF_THE_CHEETAH = InitSpell(Spells.ASPECT_OF_THE_CHEETAH_1);
+            ASPECT_OF_THE_HAWK = InitSpell(Spells.ASPECT_OF_THE_HAWK_1);
+            ASPECT_OF_THE_MONKEY = InitSpell(Spells.ASPECT_OF_THE_MONKEY_1);
+            ASPECT_OF_THE_PACK = InitSpell(Spells.ASPECT_OF_THE_PACK_1);
+            ASPECT_OF_THE_WILD = InitSpell(Spells.ASPECT_OF_THE_WILD_1);
+            AUTO_SHOT = InitSpell(Spells.AUTO_SHOT_1);
+            BEAST_LORE = InitSpell(Spells.BEAST_LORE_1);
+            PET_SUMMON = InitSpell(Spells.CALL_PET_1);
+            CONCUSSIVE_SHOT = InitSpell(Spells.CONCUSSIVE_SHOT_1);
+            DETERRENCE = InitSpell(Spells.DETERRENCE_1);
+            DISENGAGE = InitSpell(Spells.DISENGAGE_1);
+            PET_DISMISS = InitSpell(Spells.DISMISS_PET_1);
+            DISTRACTING_SHOT = InitSpell(Spells.DISTRACTING_SHOT_1);
+            EAGLE_EYE = InitSpell(Spells.EAGLE_EYE_1);
+            EXPLOSIVE_TRAP = InitSpell(Spells.EXPLOSIVE_TRAP_1);
+            EYES_OF_THE_BEAST = InitSpell(Spells.EYES_OF_THE_BEAST_1);
+            PET_FEED = InitSpell(Spells.FEED_PET_1);
+            FEIGN_DEATH = InitSpell(Spells.FEIGN_DEATH_1);
+            FLARE = InitSpell(Spells.FLARE_1);
+            FREEZING_TRAP = InitSpell(Spells.FREEZING_TRAP_1);
+            FROST_TRAP = InitSpell(Spells.FROST_TRAP_1);
+            HUNTERS_MARK = InitSpell(Spells.HUNTERS_MARK_1);
+            IMMOLATION_TRAP = InitSpell(Spells.IMMOLATION_TRAP_1);
+            PET_MEND = InitSpell(Spells.MEND_PET_1);
+            MONGOOSE_BITE = InitSpell(Spells.MONGOOSE_BITE_1);
+            MULTI_SHOT = InitSpell(Spells.MULTISHOT_1);
+            RAPID_FIRE = InitSpell(Spells.RAPID_FIRE_1);
+            RAPTOR_STRIKE = InitSpell(Spells.RAPTOR_STRIKE_1);
+            PET_REVIVE = InitSpell(Spells.REVIVE_PET_1);
+            SCARE_BEAST = InitSpell(Spells.SCARE_BEAST_1);
+            SCORPID_STING = InitSpell(Spells.SCORPID_STING_1);
+            SERPENT_STING = InitSpell(Spells.SERPENT_STING_1);
+            TAME_BEAST = InitSpell(Spells.TAME_BEAST_1);
+            TRACK_BEASTS = InitSpell(Spells.TRACK_BEASTS_1);
+            TRACK_DEMONS = InitSpell(Spells.TRACK_DEMONS_1);
+            TRACK_DRAGONKIN = InitSpell(Spells.TRACK_DRAGONKIN_1);
+            TRACK_ELEMENTALS = InitSpell(Spells.TRACK_ELEMENTALS_1);
+            TRACK_GIANTS = InitSpell(Spells.TRACK_GIANTS_1);
+            TRACK_HIDDEN = InitSpell(Spells.TRACK_HIDDEN_1);
+            TRACK_HUMANOIDS = InitSpell(Spells.TRACK_HUMANOIDS_1);
+            TRACK_UNDEAD = InitSpell(Spells.TRACK_UNDEAD_1);
+            TRANQ_SHOT = InitSpell(Spells.TRANQUILIZING_SHOT_1);
+            VIPER_STING = InitSpell(Spells.VIPER_STING_1);
+            VOLLEY = InitSpell(Spells.VOLLEY_1);
+            WING_CLIP = InitSpell(Spells.WING_CLIP_1);
+            AIMED_SHOT = InitSpell(Spells.AIMED_SHOT_1);
+            BESTIAL_WRATH = InitSpell(Spells.BESTIAL_WRATH_1);
+            BLACK_ARROW = InitSpell(Spells.BLACK_ARROW_1);
+            COUNTERATTACK = InitSpell(Spells.COUNTERATTACK_1);
+            INTIMIDATION = InitSpell(Spells.INTIMIDATION_1);
+            READINESS = InitSpell(Spells.READINESS_1);
+            SCATTER_SHOT = InitSpell(Spells.SCATTER_SHOT_1);
+            TRUESHOT_AURA = InitSpell(Spells.TRUESHOT_AURA_1);
+            WYVERN_STING = InitSpell(Spells.WYVERN_STING_1);
         }
 
         #endregion

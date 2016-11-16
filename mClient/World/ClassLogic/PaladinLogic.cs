@@ -64,7 +64,11 @@ namespace mClient.World.ClassLogic
                BLESSING_OF_SACRIFICE,
                SHIELD_OF_RIGHTEOUSNESS,
                HAND_OF_RECKONING,
-               HAMMER_OF_THE_RIGHTEOUS;
+               HAMMER_OF_THE_RIGHTEOUS,
+               HAND_OF_FREEDOM,
+               HAND_OF_SALVATION,
+               REPENTANCE,
+               SENSE_UNDEAD;
 
         // cannot be protected
         protected uint FORBEARANCE;
@@ -90,6 +94,50 @@ namespace mClient.World.ClassLogic
 
             // Spells
             BLESSING_OF_KINGS = InitSpell(Spells.BLESSING_OF_KINGS_1);
+            BLESSING_OF_MIGHT = InitSpell(Spells.BLESSING_OF_MIGHT_1);
+            BLESSING_OF_SANCTUARY = InitSpell(Spells.BLESSING_OF_SANCTUARY_1);
+            BLESSING_OF_WISDOM = InitSpell(Spells.BLESSING_OF_WISDOM_1);
+            CLEANSE = InitSpell(Spells.CLEANSE_1);
+            CONCENTRATION_AURA = InitSpell(Spells.CONCENTRATION_AURA_1);
+            CONSECRATION = InitSpell(Spells.CONSECRATION_1);
+            DEVOTION_AURA = InitSpell(Spells.DEVOTION_AURA_1);
+            DIVINE_FAVOR = InitSpell(Spells.DIVINE_FAVOR_1);
+            DIVINE_INTERVENTION = InitSpell(Spells.DIVINE_INTERVENTION_1);
+            DIVINE_PROTECTION = InitSpell(Spells.DIVINE_PROTECTION_1);
+            DIVINE_SHIELD = InitSpell(Spells.DIVINE_SHIELD_1);
+            EXORCISM = InitSpell(Spells.EXORCISM_1);
+            FIRE_RESISTANCE_AURA = InitSpell(Spells.FIRE_RESISTANCE_AURA_1);
+            FLASH_OF_LIGHT = InitSpell(Spells.FLASH_OF_LIGHT_1);
+            FROST_RESISTANCE_AURA = InitSpell(Spells.FROST_RESISTANCE_AURA_1);
+            GREATER_BLESSING_OF_KINGS = InitSpell(Spells.GREATER_BLESSING_OF_KINGS_1);
+            GREATER_BLESSING_OF_MIGHT = InitSpell(Spells.GREATER_BLESSING_OF_MIGHT_1);
+            GREATER_BLESSING_OF_SANCTUARY = InitSpell(Spells.GREATER_BLESSING_OF_SANCTUARY_1);
+            GREATER_BLESSING_OF_WISDOM = InitSpell(Spells.GREATER_BLESSING_OF_WISDOM_1);
+            HAMMER_OF_JUSTICE = InitSpell(Spells.HAMMER_OF_JUSTICE_1);
+            HAMMER_OF_WRATH = InitSpell(Spells.HAMMER_OF_WRATH_1);
+            HAND_OF_FREEDOM = InitSpell(Spells.HAND_OF_FREEDOM_1);
+            BLESSING_OF_PROTECTION = InitSpell(Spells.BLESSING_OF_PROTECTION_1);
+            BLESSING_OF_SACRIFICE = InitSpell(Spells.BLESSING_OF_SACRIFICE_1);
+            HAND_OF_SALVATION = InitSpell(Spells.HAND_OF_SALVATION_1);
+            HOLY_LIGHT = InitSpell(Spells.HOLY_LIGHT_1);
+            HOLY_SHIELD = InitSpell(Spells.HOLY_SHIELD_1);
+            HOLY_SHOCK = InitSpell(Spells.HOLY_SHOCK_1);
+            HOLY_WRATH = InitSpell(Spells.HOLY_WRATH_1);
+            JUDGEMENT = InitSpell(Spells.JUDGEMENT_1);
+            LAY_ON_HANDS = InitSpell(Spells.LAY_ON_HANDS_1);
+            PURIFY = InitSpell(Spells.PURIFY_1);
+            REDEMPTION = InitSpell(Spells.REDEMPTION_1);
+            REPENTANCE = InitSpell(Spells.REPENTANCE_1);
+            RETRIBUTION_AURA = InitSpell(Spells.RETRIBUTION_AURA_1);
+            RIGHTEOUS_FURY = InitSpell(Spells.RIGHTEOUS_FURY_1);
+            SEAL_OF_COMMAND = InitSpell(Spells.SEAL_OF_COMMAND_1);
+            SEAL_OF_JUSTICE = InitSpell(Spells.SEAL_OF_JUSTICE_1);
+            SEAL_OF_LIGHT = InitSpell(Spells.SEAL_OF_LIGHT_1);
+            SEAL_OF_RIGHTEOUSNESS = InitSpell(Spells.SEAL_OF_RIGHTEOUSNESS_1);
+            SEAL_OF_WISDOM = InitSpell(Spells.SEAL_OF_WISDOM_1);
+            SEAL_OF_THE_CRUSADER = InitSpell(Spells.SEAL_OF_THE_CRUSADER_1);
+            SENSE_UNDEAD = InitSpell(Spells.SENSE_UNDEAD_1);
+            SHADOW_RESISTANCE_AURA = InitSpell(Spells.SHADOW_RESISTANCE_AURA_1);
         }
 
         #endregion
