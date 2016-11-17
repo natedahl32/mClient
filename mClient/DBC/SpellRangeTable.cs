@@ -36,5 +36,12 @@ namespace mClient.DBC
                 mSpellRangeEntries.Add(entry.ID, entry);
             }
         }
+
+        public SpellRangeEntry getByID(uint Id)
+        {
+            if (mSpellRangeEntries.ContainsKey(Id))
+                return mSpellRangeEntries[Id];
+            return null;
+        }
     }
 }

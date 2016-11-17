@@ -1,5 +1,6 @@
 ﻿using mClient.Constants;
 using mClient.DBC;
+using mClient.Terrain;
 using mClient.World.ClassLogic;
 using System;
 using System.Collections.Generic;
@@ -143,6 +144,18 @@ namespace mClient.World
 
             // Have enough power to cast it?
             if (!Player.PlayerObject.CanCastSpell(spell)) return false;
+
+            // Are we in range to cast it?
+            if (spell.RangeIndex > 0 && Player.PlayerAI.TargetSelection != null)
+            {
+                var rangeEntry = SpellRangeTable.Instance.getByID(spell.RangeIndex);
+                if (rangeEntry != null)
+                {
+                    var distance = TerrainMgr.CalculateDistance(Player.Position, Player.PlayerAI.TargetSelection.Position);
+                    if (distance < rangeEntry.MinimumRange || distance > rangeEntry.MaximumRange)
+                        return false;
+                }
+            }
 
             // TODO: More checks needed. Have reagents? for example
 
