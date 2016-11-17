@@ -90,6 +90,10 @@ namespace mClient.World.ClassLogic
                 // Stances
                 if (BATTLE_STANCE > 0 || DEFENSIVE_STANCE > 0 || BERSERKER_STANCE > 0)
                     return true;
+                // Battle Shout
+                if (BATTLE_SHOUT > 0)
+                    return true;
+
                 // No buffs yet
                 return false;
             }
@@ -114,6 +118,8 @@ namespace mClient.World.ClassLogic
                     if (BATTLE_SHOUT > 0)
                     {
                         var battleShoutSpell = Spell(BATTLE_SHOUT);
+                        // TODO: Make sure group member is in range of spell as well
+                        // TODO: Make sure group member does not have BETTER buff than the one we are casting
                         if (!groupMember.HasAura(BATTLE_SHOUT))
                             if (needBuffs.ContainsKey(battleShoutSpell))
                                 needBuffs[battleShoutSpell].Add(groupMember);

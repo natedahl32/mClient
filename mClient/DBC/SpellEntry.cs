@@ -91,6 +91,34 @@ namespace mClient.DBC
         public uint PreventionType { get; set; }
         public float[] DamageMultiplier { get; set; }
 
+        /// <summary>
+        /// Gets whether or not the spell affects all members of a group or not
+        /// </summary>
+        public bool IsGroupSpell
+        {
+            get
+            {
+                for (int i = 0; i < SpellConstants.MAX_EFFECT_INDEX; i++)
+                {
+                    // Check implicit target A
+                    if (EffectImplicitTargetA[i] == (uint)Constants.Targets.TARGET_ALL_PARTY ||
+                        EffectImplicitTargetA[i] == (uint)Constants.Targets.TARGET_ALL_PARTY_AROUND_CASTER ||
+                        EffectImplicitTargetA[i] == (uint)Constants.Targets.TARGET_ALL_PARTY_AROUND_CASTER_2 ||
+                        EffectImplicitTargetA[i] == (uint)Constants.Targets.TARGET_AREAEFFECT_PARTY)
+                        return true;
+
+                    // Not sure if we need to check implicit target B also, but doesn't hurt to try right?
+                    if (EffectImplicitTargetB[i] == (uint)Constants.Targets.TARGET_ALL_PARTY ||
+                        EffectImplicitTargetB[i] == (uint)Constants.Targets.TARGET_ALL_PARTY_AROUND_CASTER ||
+                        EffectImplicitTargetB[i] == (uint)Constants.Targets.TARGET_ALL_PARTY_AROUND_CASTER_2 ||
+                        EffectImplicitTargetB[i] == (uint)Constants.Targets.TARGET_AREAEFFECT_PARTY)
+                        return true;
+                }
+
+                return false;
+            }
+        }
+
         #endregion
 
         #region Public Methods

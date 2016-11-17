@@ -177,6 +177,7 @@
     <Compile Include="World\AI\Activity\BuySell\SellItems.cs" />
     <Compile Include="World\AI\Activity\Combat\CastSingleTargetSpell.cs" />
     <Compile Include="World\AI\Activity\Combat\DoDamage.cs" />
+    <Compile Include="World\AI\Activity\Combat\OutOfCombatBuff.cs" />
     <Compile Include="World\AI\Activity\Death\FindCorpse.cs" />
     <Compile Include="World\AI\Activity\Death\ReleaseSpirit.cs" />
     <Compile Include="World\AI\Activity\Loot\LootGameObject.cs" />

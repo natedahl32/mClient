@@ -183,15 +183,11 @@ namespace mClient.World.AI
                     activity.HandleMessage(message);
         }
 
-        #endregion
-
-        #region Private Methods
-
         /// <summary>
-        /// Set the target selection for any combat related AI actions
+        /// Set the target selection
         /// </summary>
         /// <param name="target"></param>
-        private void SetTargetSelection(PObject target)
+        public void SetTargetSelection(PObject target)
         {
             // Either coming from a non existing target or going to a non existing target
             if (target == null || mTargetSelection == null)
@@ -200,8 +196,16 @@ namespace mClient.World.AI
             else if (target.Guid.GetOldGuid() != mTargetSelection.Guid.GetOldGuid())
                 mIsAttackingTarget = false;
 
+            var oldTarget = mTargetSelection;
             mTargetSelection = target;
+            // Send target to the client if it has changed
+            if (mTargetSelection != null && (oldTarget == null || mTargetSelection.Guid.GetOldGuid() != oldTarget.Guid.GetOldGuid()))
+                Client.SetTarget(mTargetSelection.Guid.GetOldGuid());
         }
+
+        #endregion
+
+        #region Private Methods
 
         /// <summary>
         /// Builds the behavior tree for this player

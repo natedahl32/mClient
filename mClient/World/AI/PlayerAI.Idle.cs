@@ -1,4 +1,6 @@
 ﻿using FluentBehaviourTree;
+using mClient.World.AI.Activity.Combat;
+using System.Linq;
 
 namespace mClient.World.AI
 {
@@ -53,7 +55,9 @@ namespace mClient.World.AI
             if (playersNeedingBuffs.Count == 0)
                 return BehaviourTreeStatus.Failure;
 
-            // TODO: Push the first buff in the list to an activity that will perform the buff
+            // Push the first buff in the list to an activity that will perform the buff
+            var entry = playersNeedingBuffs.First();
+            StartActivity(new OutOfCombatBuff(entry.Key, entry.Value, this));
 
             // We have some buffs to give out
             return BehaviourTreeStatus.Success;
