@@ -79,22 +79,69 @@ namespace mClient.Clients
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_SPELL_GO)]
         public void HandleSpellGo(PacketIn packet)
         {
-            var casterGuid = packet.ReadPackedGuidToWoWGuid();
-            var casterGuid2 = packet.ReadPackedGuidToWoWGuid(); // always same as the first guid?
+            var casterOrItemGuid = packet.ReadPackedGuidToWoWGuid(); // could be item if spell was cast from an item, otherwise caster
+            var casterGuid2 = packet.ReadPackedGuidToWoWGuid(); // always the caster (unit) that cast the spell, even if it was using an item
 
             var spellId = packet.ReadUInt32();
             var castFlags = packet.ReadUInt16();
 
-            // TODO: Get other information from this packet if needed
+            var targetCount = packet.ReadByte();
+            for (int i = 0; i < targetCount; i++)
+            {
+                var targetGuid = packet.ReadUInt64();
+            }
+            packet.ReadByte(); // unknown
+
+            // Spell cast targets
+            var targetsMask = (SpellTargetFlags)packet.ReadUInt16();
+
+            if (targetsMask.Has(SpellTargetFlags.TARGET_FLAG_UNIT) ||
+                targetsMask.Has(SpellTargetFlags.TARGET_FLAG_PVP_CORPSE) ||
+                targetsMask.Has(SpellTargetFlags.TARGET_FLAG_OBJECT) ||
+                targetsMask.Has(SpellTargetFlags.TARGET_FLAG_CORPSE) ||
+                targetsMask.Has(SpellTargetFlags.TARGET_FLAG_UNK2))
+            {
+                var targetGuid = packet.ReadPackedGuidToWoWGuid();
+            }
+
+            if (targetsMask.Has(SpellTargetFlags.TARGET_FLAG_ITEM) ||
+                targetsMask.Has(SpellTargetFlags.TARGET_FLAG_TRADE_ITEM))
+            {
+                var itemGuid = packet.ReadPackedGuidToWoWGuid();
+            }
+
+            if (targetsMask.Has(SpellTargetFlags.TARGET_FLAG_SOURCE_LOCATION))
+            {
+                var x = packet.ReadFloat();
+                var y = packet.ReadFloat();
+                var z = packet.ReadFloat();
+            }
+
+            if (targetsMask.Has(SpellTargetFlags.TARGET_FLAG_DEST_LOCATION))
+            {
+                var x = packet.ReadFloat();
+                var y = packet.ReadFloat();
+                var z = packet.ReadFloat();
+            }
+
+            if (targetsMask.Has(SpellTargetFlags.TARGET_FLAG_STRING))
+                packet.ReadString();
+
+            // TODO: Get ammo information if we need it, don't think we do though
 
             // Send spell go message
             var message = new SpellCastGoMessage()
             {
-                CasterGuid = casterGuid,
+                ItemOrCasterGuid = casterOrItemGuid,
+                CasterGuid = casterGuid2,
                 SpellId = spellId,
                 CastFlags = castFlags
             };
             player.PlayerAI.SendMessageToAllActivities(message);
+
+            // If we are the player who cast this spell then let the player handle it
+            if (casterGuid2.GetOldGuid() == player.Guid.GetOldGuid())
+                player.HandleSpellGo(message);
         }
 
         #endregion

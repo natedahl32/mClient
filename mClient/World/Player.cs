@@ -9,6 +9,7 @@ using mClient.Clients;
 using mClient.World.AI;
 using mClient.World.Quest;
 using mClient.DBC;
+using mClient.World.AI.Activity.Messages;
 
 namespace mClient.World
 {
@@ -742,6 +743,32 @@ namespace mClient.World
             return false;
         }
 
+        /// <summary>
+        /// Handles a SMSG_SPELL_GO message. We need to handle these because they can affect player movement and possibly
+        /// other things. 
+        /// </summary>
+        /// <param name="message"></param>
+        public void HandleSpellGo(SpellCastGoMessage message)
+        {
+            // Get the spell and look for effects we need to handle. Most of these will deal with movement.
+            var spell = SpellTable.Instance.getSpell(message.SpellId);
+            if (spell == null)
+                return;
+
+            // Handle each effect of the spell
+            for (int i = 0; i < SpellConstants.MAX_EFFECT_INDEX; i++)
+            {
+                switch (spell.Effect[i])
+                {
+                    case SpellEffects.SPELL_EFFECT_CHARGE:
+                        HandleChargeEffect(spell, message);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
         #endregion
 
         #region Private Methods
@@ -753,6 +780,20 @@ namespace mClient.World
         private void RemoveAvailableSpellToLearn(uint spellId)
         {
             mAvailableSpells.RemoveAll(s => s.SpellId == spellId);
+        }
+
+        #endregion
+
+        #region Spell Effect Handlers
+
+        /// <summary>
+        /// Handles the charge spell effect for our player
+        /// </summary>
+        /// <param name="spell"></param>
+        /// <param name="message"></param>
+        private void HandleChargeEffect(SpellEntry spell, SpellCastGoMessage message)
+        {
+
         }
 
         #endregion

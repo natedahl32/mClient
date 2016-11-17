@@ -24,6 +24,11 @@ namespace mClient.World.AI.Activity.Messages
         #region Properties
 
         /// <summary>
+        /// Gets the guid of the item if an item is responsible for casting the spell. Otherwise the caster guid
+        /// </summary>
+        public WoWGuid ItemOrCasterGuid { get; set; }
+
+        /// <summary>
         /// Gets or sets the guid of the caster
         /// </summary>
         public WoWGuid CasterGuid { get; set; }
