@@ -190,6 +190,8 @@ namespace mClient.DBC
 
         public SpellEntry getSpell(uint spellId)
         {
+            if (!mSpellEntries.ContainsKey(spellId))
+                return null;
             return mSpellEntries[spellId];
         }
 

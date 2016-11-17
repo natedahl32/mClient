@@ -236,6 +236,14 @@ namespace mClient.World
             get { return mLootable; }
         }
 
+        /// <summary>
+        /// Gets all spells that are available to learn for this player
+        /// </summary>
+        public IEnumerable<SpellEntry> AvailableSpellsToLearn
+        {
+            get { return mAvailableSpells; }
+        }
+
         #endregion
 
         #region Public Methods 
@@ -327,7 +335,7 @@ namespace mClient.World
             }
 
             // Remove the spell from available spells
-            mAvailableSpells.RemoveAll(s => s.SpellId == spellId);
+            RemoveAvailableSpellToLearn(spellId);
         }
 
         /// <summary>
@@ -732,6 +740,19 @@ namespace mClient.World
             }
 
             return false;
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Removes a spell that is available to learn from the list.
+        /// </summary>
+        /// <param name="spellId"></param>
+        private void RemoveAvailableSpellToLearn(uint spellId)
+        {
+            mAvailableSpells.RemoveAll(s => s.SpellId == spellId);
         }
 
         #endregion

@@ -47,6 +47,11 @@ namespace mClient.World
         public Player Player { get { return mPlayer; } }
 
         /// <summary>
+        /// Gets the name of this class
+        /// </summary>
+        public abstract string ClassName { get; }
+
+        /// <summary>
         /// Gets whether or not the player has any out of combat buffs to give out (including self).
         /// </summary>
         public abstract bool HasOOCBuffs { get; }

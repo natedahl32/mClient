@@ -2,6 +2,8 @@
 using mClient.DBC;
 using mClient.Network;
 using mClient.Shared;
+using mClient.World.AI.Activity.Messages;
+using mClient.World.Spells;
 
 namespace mClient.Clients
 {
@@ -106,6 +108,64 @@ namespace mClient.Clients
             player.LevelUp(level);
         }
 
+        /// <summary>
+        /// Handles a spell list from a trainer
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_TRAINER_LIST)]
+        public void HandleTrainerList(PacketIn packet)
+        {
+            var message = new TrainerSpellListMessage();
+
+            var trainerGuid = packet.ReadUInt64();
+            var trainerType = packet.ReadUInt32();
+            message.TrainerGuid = new WoWGuid(trainerGuid);
+
+            var spellCount = packet.ReadUInt32();
+            for (int i = 0; i < spellCount; i++)
+            {
+                var spellData = new TrainerSpellData();
+                spellData.SpellId = packet.ReadUInt32();
+                spellData.State = packet.ReadByte();
+                spellData.Cost = packet.ReadUInt32();
+                packet.ReadUInt32();  // something to do with primary profession first rank
+                packet.ReadUInt32();  // another primary profession field
+                spellData.RequiredLevel = packet.ReadByte();
+                spellData.RequiredSkill = packet.ReadUInt32();
+                spellData.RequiredSkillValue = packet.ReadUInt32();
+                spellData.SpellChainNode = packet.ReadUInt32();
+                spellData.SpellChainNode2 = packet.ReadUInt32();
+                packet.ReadUInt32();
+
+                if (spellData.State == 0)
+                    message.CanLearnSpells.Add(spellData);
+                else if (spellData.State == 1)
+                    message.CanNotLearnSpells.Add(spellData);
+                // I believe GRAY status means already purchased. We will ignore those spells.
+            }
+
+            var title = packet.ReadString();
+            player.PlayerAI.SendMessageToAllActivities(message);
+        }
+
+        /// <summary>
+        /// Handles successfully buying a spell from a trainer
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_TRAINER_BUY_SUCCEEDED)]
+        public void HandleTrainerBuySucceeded(PacketIn packet)
+        {
+            var trainerGuid = packet.ReadUInt64();
+            var spellId = packet.ReadUInt32();
+
+            var message = new TrainerBuySucceededMessage()
+            {
+                TrainerGuid = new WoWGuid(trainerGuid),
+                SpellId = spellId
+            };
+            player.PlayerAI.SendMessageToAllActivities(message);
+        }
+
         #endregion
 
         #region Actions
@@ -116,6 +176,30 @@ namespace mClient.Clients
         public void LogoutPlayer()
         {
             PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_LOGOUT_REQUEST);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Requests a list of spells from a trainer
+        /// </summary>
+        /// <param name="guid"></param>
+        public void RequestTrainerList(ulong guid)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_TRAINER_LIST);
+            packet.Write(guid);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Purchases a spell from a trainer
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <param name="spellId"></param>
+        public void BuySpellFromTrainer(ulong guid, uint spellId)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_TRAINER_BUY_SPELL);
+            packet.Write(guid);
+            packet.Write(spellId);
             Send(packet);
         }
 

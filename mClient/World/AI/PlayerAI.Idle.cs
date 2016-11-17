@@ -1,11 +1,14 @@
 ﻿using FluentBehaviourTree;
 using mClient.World.AI.Activity.Combat;
+using mClient.World.AI.Activity.Train;
 using System.Linq;
 
 namespace mClient.World.AI
 {
     public partial class PlayerAI
     {
+        private const float MAX_TRAINER_DISTANCE = 30.0f;
+
         public IBehaviourTreeNode CreateIdleAITree()
         {
             // TODO: Need to code in a wait for rez if we are in combat
@@ -20,6 +23,7 @@ namespace mClient.World.AI
                     })
                     .Sequence("Train New Skills")
                         .Do("Has Skills to Train", t => HasSkillsToTrain())
+                        .Do("Find Class Trainer", t => FindClassTrainer())
                     .End()
                     .Do("Buff Group", t => BuffUp())
                     .Do("Should I stay?", t => Stay())
@@ -35,8 +39,43 @@ namespace mClient.World.AI
         /// <returns></returns>
         private BehaviourTreeStatus HasSkillsToTrain()
         {
-            // TODO: Check player for skills we need to train
+            // Check for spells we need to train and also that we can afford
+            if (Player.AvailableSpellsToLearn.Count() > 0 && Player.AvailableSpellsToLearn.Any(s => s.MoneyCost == 0 || s.MoneyCost < Player.PlayerObject.Money))
+                return BehaviourTreeStatus.Success;
 
+            return BehaviourTreeStatus.Failure;
+        }
+
+        private BehaviourTreeStatus FindClassTrainer()
+        {
+            // Find a class trainer that is in range of us
+            var closestDistance = 1000000.0f;
+            mClient.Clients.Unit chosenUnit = null;
+            foreach (var u in Client.objectMgr.GetAllUnits())
+            {
+                // If the unit is not a trainer
+                if (!u.IsTrainer) continue;
+
+                // If the trainer is not a class trainer and for our class
+                var myTrainerSubName = Player.ClassLogic.ClassName + " Trainer";
+                if (u.BaseCreatureInfo.SubName != myTrainerSubName) continue;
+
+                // Right kind of class trainer, check the distance on them
+                var distance = Client.movementMgr.CalculateDistance(u.Position);
+                if (distance < closestDistance && distance < MAX_TRAINER_DISTANCE)
+                {
+                    closestDistance = distance;
+                    chosenUnit = u;
+                }
+            }
+
+            // If we found one return success
+            if (chosenUnit != null)
+            {
+                StartActivity(new TrainAvailableSpells(chosenUnit, this));
+                return BehaviourTreeStatus.Success;
+            }
+                
             return BehaviourTreeStatus.Failure;
         }
 

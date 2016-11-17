@@ -195,6 +195,8 @@
     <Compile Include="World\AI\Activity\Messages\SpellCastGoMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\SpellCastInterruptedMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\TradeStatusMessage.cs" />
+    <Compile Include="World\AI\Activity\Messages\TrainerBuySucceededMessage.cs" />
+    <Compile Include="World\AI\Activity\Messages\TrainerSpellListMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\VendorInventoryListMessage.cs" />
     <Compile Include="World\AI\Activity\Movement\TeleportToCoordinate.cs" />
     <Compile Include="World\AI\Activity\Quest\AcceptQuest.cs" />
@@ -202,6 +204,8 @@
     <Compile Include="World\AI\Activity\Quest\TurnInQuests.cs" />
     <Compile Include="World\AI\Activity\Trade\BeginTrade.cs" />
     <Compile Include="World\AI\Activity\Trade\TradeItems.cs" />
+    <Compile Include="World\AI\Activity\Train\LearnSpellFromTrainer.cs" />
+    <Compile Include="World\AI\Activity\Train\TrainAvailableSpells.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Combat.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Inventory.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Quest.cs" />
@@ -275,6 +279,7 @@
     <Compile Include="World\Quest\QuestManager.cs" />
     <Compile Include="World\Quest\QuestObjective.cs" />
     <Compile Include="World\Skill\SkillData.cs" />
+    <Compile Include="World\Spells\TrainerSpellData.cs" />
     <Compile Include="World\TerrainManager.cs" />
     <Compile Include="World\Terrain\ADTProcessor.cs" />
     <Compile Include="World\Terrain\BlizChunkHeader.cs" />

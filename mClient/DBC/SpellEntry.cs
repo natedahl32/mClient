@@ -119,6 +119,11 @@ namespace mClient.DBC
             }
         }
 
+        /// <summary>
+        /// Gets or sets the money cost of the spell as received from a trainer. Stored so we know how much spells cost.
+        /// </summary>
+        public uint MoneyCost { get; set; }
+
         #endregion
 
         #region Public Methods

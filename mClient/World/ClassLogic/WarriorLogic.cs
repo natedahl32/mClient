@@ -81,6 +81,14 @@ namespace mClient.World.ClassLogic
         #region Properties
 
         /// <summary>
+        /// Gets the name of this class
+        /// </summary>
+        public override string ClassName
+        {
+            get { return "Warrior"; }
+        }
+
+        /// <summary>
         /// Gets whether or not the player has any buffs to give out (including self buffs)
         /// </summary>
         public override bool HasOOCBuffs
@@ -108,14 +116,14 @@ namespace mClient.World.ClassLogic
             {
                 var needBuffs = new Dictionary<SpellEntry, IList<Player>>();
                 // TODO: Need to check for other stances in certain cases
-                if (BATTLE_STANCE > 0 && !Player.HasAura(BATTLE_STANCE))
+                if (HasSpellAndCanCast(BATTLE_STANCE) && !Player.HasAura(BATTLE_STANCE))
                     needBuffs.Add(Spell(BATTLE_STANCE), new List<Player>() { Player });
 
                 // Check each player in the group for buffs
                 foreach (var groupMember in Player.CurrentGroup.PlayersInGroup)
                 {
                     // Battle Shout buff
-                    if (BATTLE_SHOUT > 0)
+                    if (HasSpellAndCanCast(BATTLE_SHOUT))
                     {
                         var battleShoutSpell = Spell(BATTLE_SHOUT);
                         // TODO: Make sure group member is in range of spell as well
@@ -154,6 +162,7 @@ namespace mClient.World.ClassLogic
                 if (HasSpellAndCanCast(BATTLE_SHOUT) && !Player.HasAura(BATTLE_SHOUT)) return Spell(BATTLE_SHOUT);
 
                 // DPS abilities
+                if (HasSpellAndCanCast(CHARGE)) return Spell(CHARGE);
                 if (HasSpellAndCanCast(HEROIC_STRIKE)) return Spell(HEROIC_STRIKE);
                     
                 return null;

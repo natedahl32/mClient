@@ -89,6 +89,14 @@ namespace mClient.World.ClassLogic
         #region Properties
 
         /// <summary>
+        /// Gets the name of this class
+        /// </summary>
+        public override string ClassName
+        {
+            get { return "Hunter"; }
+        }
+
+        /// <summary>
         /// Gets whether or not the player has any buffs to give out (including self buffs)
         /// </summary>
         public override bool HasOOCBuffs
