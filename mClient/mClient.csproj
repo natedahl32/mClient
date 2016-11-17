@@ -147,6 +147,8 @@
     <Compile Include="DBC\SkillRaceClassInfoEntry.cs" />
     <Compile Include="DBC\SkillRaceClassInfoTable.cs" />
     <Compile Include="DBC\SpellEntry.cs" />
+    <Compile Include="DBC\SpellRangeEntry.cs" />
+    <Compile Include="DBC\SpellRangeTable.cs" />
     <Compile Include="DBC\SpellTable.cs" />
     <Compile Include="DBC\TalentEntry.cs" />
     <Compile Include="DBC\TalentTabEntry.cs" />
