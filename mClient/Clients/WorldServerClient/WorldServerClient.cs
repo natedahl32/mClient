@@ -108,17 +108,21 @@ namespace mClient.Clients
             IPAddress WSAddr = Dns.GetHostAddresses(address[0])[0];
             int WSPort = Int32.Parse(address[1]);
             IPEndPoint ep = new IPEndPoint(WSAddr, WSPort);
-            
+
+            // Initialize handlers before we start the packet loop
+            pHandler = new PacketHandler(this);
+            pHandler.Initialize();  
+
             try
             {
                 mSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
                 mSocket.Connect(ep);
-                Log.WriteLine(LogType.Success, "Successfully connected to WorldServer at: {0}!", realm.Address);
+                Log.WriteLine(Id, LogType.Success, "Successfully connected to WorldServer at: {0}!", realm.Address);
 
             }
             catch (SocketException ex)
             {
-                Log.WriteLine(LogType.Error, "Failed to connect to realm: {0}", ex.Message);
+                Log.WriteLine(Id, LogType.Error, "Failed to connect to realm: {0}", ex.Message);
                 Disconnect();
                 return;
             }
@@ -126,10 +130,11 @@ namespace mClient.Clients
             byte[] nullA = new byte[24];
             mCrypt = new PacketCrypt(nullA);
             Connected = true;
-            pHandler = new PacketHandler(this);
+            
+            // Start the loop
             pLoop = new PacketLoop(this, mSocket);
             pLoop.Start();
-            pHandler.Initialize();
+            
         }
 
         void CreatePlayer(PlayerObj playerObject, Character c)
@@ -192,9 +197,9 @@ namespace mClient.Clients
             }
             catch (Exception ex)
             {
-                Log.WriteLine(LogType.Error, "Exception Occured");
-                Log.WriteLine(LogType.Error, "Message: {0}", ex.Message);
-                Log.WriteLine(LogType.Error, "Stacktrace: {0}", ex.StackTrace);
+                Log.WriteLine(Id, LogType.Error, "Exception Occured");
+                Log.WriteLine(Id, LogType.Error, "Message: {0}", ex.Message);
+                Log.WriteLine(Id, LogType.Error, "Stacktrace: {0}", ex.StackTrace);
             }
             
         }

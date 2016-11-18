@@ -136,14 +136,14 @@ namespace mClient.Clients
             }
             catch (Exception ex)
             {
-                Log.WriteLine(LogType.Error, "Exception Occured");
-                Log.WriteLine(LogType.Error, "Message: {0}", ex.Message);
-                Log.WriteLine(LogType.Error, "Stacktrace: {0}", ex.StackTrace);
+                Log.WriteLine(Id, LogType.Error, "Exception Occured");
+                Log.WriteLine(Id, LogType.Error, "Message: {0}", ex.Message);
+                Log.WriteLine(Id, LogType.Error, "Stacktrace: {0}", ex.StackTrace);
                 Disconnect();
                 return;
             }
 
-            Log.WriteLine(LogType.Success, "Succesfully connected to Logon Server at {0}:{1}", host, port);
+            Log.WriteLine(Id, LogType.Success, "Succesfully connected to Logon Server at {0}:{1}", host, port);
 
             Connected = true;
             pHandler = new PacketHandler(this);
@@ -207,8 +207,8 @@ namespace mClient.Clients
         {
             if (Connected)
             {
-                Log.WriteLine(LogType.Network, "Sending packet {0}. Length: {1}", packet.packetId.ToString(), packet.Lenght());
-                Log.WriteLine(LogType.Packet, "{0}", packet.ToHex());
+                Log.WriteLine(Id, LogType.Network, "Sending packet {0}. Length: {1}", packet.packetId.ToString(), packet.Lenght());
+                Log.WriteLine(Id, LogType.Packet, "{0}", packet.ToHex());
                 Byte[] Data = packet.ToArray();
                 mSocket.Send(Data);
             }
@@ -226,7 +226,7 @@ namespace mClient.Clients
             byte error = packetIn.ReadByte();
             if (error != 0x00)
             {
-                Log.WriteLine(LogType.Error, "Authentication error: {0}", (AccountStatus)error);
+                Log.WriteLine(Id, LogType.Error, "Authentication error: {0}", (AccountStatus)error);
                 Disconnect();
                 return;
             }
@@ -289,15 +289,20 @@ namespace mClient.Clients
         [PacketHandlerAtribute(LogonServerOpCode.AUTH_LOGON_PROOF)]
         public void HandleLogonProof(PacketIn packetIn)
         {
-            if (packetIn.ReadByte() == 0x00)
+            var val = packetIn.ReadByte();
+            if (val == 0x00)
             {
-                Log.WriteLine(LogType.Success, "Authenitcation successed. Requesting RealmList");
+                Log.WriteLine(Id, LogType.Success, "Authentication succeeded. Requesting RealmList");
 
                 //Retail server sends a loooooot of informations there!
                 RequestRealmlist();
                 pLoop.Stop();
             }
-
+            else
+            {
+                Log.WriteLine(Id, LogType.Error, "Authentication was NOT successful. We need to disconnect from the Login server now.");
+                HardDisconnect();
+            }
         }
 
         [PacketHandlerAtribute(LogonServerOpCode.REALM_LIST)]
@@ -311,6 +316,13 @@ namespace mClient.Clients
             //Console.Write(packetIn.ToHex());
 
             Log.WriteLine(LogType.Success, "Got information about {0} realms.", realmscount);
+            if (realmscount == 0)
+            {
+                Log.WriteLine(Id, LogType.Error, "No realms were returned! Disconnecting from Login server.");
+                HardDisconnect();
+                return;
+            }
+
             Realm[] realms = new Realm[realmscount];
             try
             {
@@ -335,9 +347,9 @@ namespace mClient.Clients
             }
             catch (Exception ex)
             {
-                Log.WriteLine(LogType.Error, "Exception Occured");
-                Log.WriteLine(LogType.Error, "Message: {0}", ex.Message);
-                Log.WriteLine(LogType.Error, "Stacktrace: {0}", ex.StackTrace);
+                Log.WriteLine(Id, LogType.Error, "Exception Occured");
+                Log.WriteLine(Id, LogType.Error, "Message: {0}", ex.Message);
+                Log.WriteLine(Id, LogType.Error, "Stacktrace: {0}", ex.StackTrace);
                 Disconnect();
             }
         }
@@ -372,7 +384,7 @@ namespace mClient.Clients
             {
                 if (!File.Exists(@"crc\" + filename))
                 {
-                    Log.WriteLine(LogType.Error, "CRC File {0} doesn't exist!", filename);
+                    Log.WriteLine(Id, LogType.Error, "CRC File {0} doesn't exist!", filename);
                 }
 
                 FileStream fs = new FileStream(@"crc\" + filename, FileMode.Open, FileAccess.Read);

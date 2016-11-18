@@ -23,9 +23,9 @@ namespace mConsole
             }
             catch (Exception ex)
             {
-                Log.WriteLine(LogType.Error, "Exception Occured");
-                Log.WriteLine(LogType.Error, "Message: {0}", ex.Message);
-                Log.WriteLine(LogType.Error, "Stacktrace: {0}", ex.StackTrace);
+                Log.WriteLine(lclient.Id, LogType.Error, "Exception Occured");
+                Log.WriteLine(lclient.Id, LogType.Error, "Message: {0}", ex.Message);
+                Log.WriteLine(lclient.Id, LogType.Error, "Stacktrace: {0}", ex.StackTrace);
             }
         }
 
@@ -37,7 +37,7 @@ namespace mConsole
             {
                 if (lclient == null || lclient.Connected == false || lclient.Realmlist.Length < 1)
                 {
-                    Log.WriteLine(LogType.Error, "Please connect to the logon server first.");
+                    Log.WriteLine(lclient.Id, LogType.Error, "Please connect to the logon server first.");
                     return;
                 }
                 lclient.HardDisconnect();
@@ -46,9 +46,9 @@ namespace mConsole
             }
             catch (Exception ex)
             {
-                Log.WriteLine(LogType.Error, "Exception Occured");
-                Log.WriteLine(LogType.Error, "Message: {0}", ex.Message);
-                Log.WriteLine(LogType.Error, "Stacktrace: {0}", ex.StackTrace);
+                Log.WriteLine(wclient.Id, LogType.Error, "Exception Occured");
+                Log.WriteLine(wclient.Id, LogType.Error, "Message: {0}", ex.Message);
+                Log.WriteLine(wclient.Id, LogType.Error, "Stacktrace: {0}", ex.StackTrace);
             }
         }
 
@@ -62,9 +62,9 @@ namespace mConsole
             }
             catch (Exception ex)
             {
-                Log.WriteLine(LogType.Error, "Exception Occured");
-                Log.WriteLine(LogType.Error, "Message: {0}", ex.Message);
-                Log.WriteLine(LogType.Error, "Stacktrace: {0}", ex.StackTrace);
+                Log.WriteLine(wclient.Id, LogType.Error, "Exception Occured");
+                Log.WriteLine(wclient.Id, LogType.Error, "Message: {0}", ex.Message);
+                Log.WriteLine(wclient.Id, LogType.Error, "Stacktrace: {0}", ex.StackTrace);
             }
         }
 

@@ -39,7 +39,7 @@ namespace mClient.Clients
             }
             else
             {
-                Log.WriteLine(LogType.Error, "M values doesn't match, please try again.");
+                Log.WriteLine(Id, LogType.Error, "M values doesn't match, please try again.");
                 Disconnect();
             }
         }
@@ -48,6 +48,14 @@ namespace mClient.Clients
         public void HandleCharEnum(PacketIn packet)
         {
             byte count = packet.ReadByte();
+
+            // If no characters, then disconnect
+            if (count == 0)
+            {
+                Log.WriteLine(Id, LogType.Error, "No characters returned from the server! Disconnecting now...");
+                HardDisconnect();
+                return;
+            }
 
             Character[] characterList = new Character[count];
             for (int i = 0; i < count; i++)
@@ -87,7 +95,7 @@ namespace mClient.Clients
                 packet.ReadByte();
             }
 
-            Log.WriteLine(LogType.Success, "Received info about {0} characters", count);
+            Log.WriteLine(Id, LogType.Success, "Received info about {0} characters", count);
 
             Charlist = characterList;
             if (ReceivedCharacterList != null)
@@ -121,7 +129,7 @@ namespace mClient.Clients
             CreatePlayer((PlayerObj)objectMgr.getPlayerObject(), chr);
             if (LoggedIn != null)
                 LoggedIn(this, new LoginEventArgs() { Player = player });
-            Log.WriteLine(LogType.Success, "Logged into world as {0}.", chr.Name);
+            Log.WriteLine(Id, LogType.Success, "Logged into world as {0}.", chr.Name);
         }
 
 
@@ -177,14 +185,8 @@ namespace mClient.Clients
             }
             catch (Exception e)
             {
-                Log.WriteLine(LogType.Error, e.StackTrace);
+                Log.WriteLine(Id, LogType.Error, e.StackTrace);
             }
-
-            
-            
-
-            
-
         }
 
         byte[] account_data = {

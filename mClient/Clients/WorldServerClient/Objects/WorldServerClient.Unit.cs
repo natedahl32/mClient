@@ -11,9 +11,23 @@ namespace mClient.Clients
 {
     public class Unit : Object
     {
+        #region Declarations
+
+        // Default movement speed modifier
+        private const float DEFAULT_MOVEMENT_SPEED_MODIFIER = 1.0f;
+
+        private float mMovementSpeedModifier;
+
+        #endregion
+
+        #region Constructors
+
         public Unit(WoWGuid guid) : base(guid)
         {
+            mMovementSpeedModifier = DEFAULT_MOVEMENT_SPEED_MODIFIER;
         }
+
+        #endregion
 
         #region Properties
 
@@ -291,9 +305,39 @@ namespace mClient.Clients
             get { return GetFieldValueAsFloat((int)UnitFields.UNIT_MOD_CAST_SPEED); }
         }
 
+        /// <summary>
+        /// Gets the percent increase in speed the unit should move
+        /// </summary>
+        public float MovementSpeedModifier
+        {
+            get { return mMovementSpeedModifier; }
+        }
+
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// Adds a percentage to the movement speed modifier. 
+        /// </summary>
+        /// <param name="percentage">Percentage to add</param>
+        /// <remarks>100% is the default modifier so to make a 70% increase in movement speed the percentage needs to be 170. Or to make a 30% decrease the percentage
+        /// needs to be 70.</remarks>
+        public void AddMovementSpeedModifierPercentage(int percentage)
+        {
+            float modValue = percentage / 100;
+            mMovementSpeedModifier *= modValue;
+        }
+
+        /// <summary>
+        /// Removes a percentage from the movement speed modifier
+        /// </summary>
+        /// <param name="percentage">Percentage to remove</param>
+        public void RemoveMovementSpeedModifierPercentage(int percentage)
+        {
+            float modValue = percentage / 100;
+            mMovementSpeedModifier /= modValue;
+        }
 
         /// <summary>
         /// Removes any auras

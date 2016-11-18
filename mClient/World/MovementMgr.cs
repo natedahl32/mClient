@@ -187,25 +187,28 @@ namespace mClient.Clients
         {
             double h; double speed;
 
-            if (objectMgr.getPlayerObject() == null)
+            PlayerObj player = objectMgr.getPlayerObject() as PlayerObj;
+            if (player == null)
                 return;
 
             if (Flag.IsMoveFlagSet(MovementFlags.MOVEMENTFLAG_FORWARD))
             {
-                speed = 7.0;
-                
+                speed = 7.0; // default movement speed is 7 yards/sec.
+                             // water default speed is 67% of normal speed, will need to take this into account at some point
             }
             else
                 return;
+
+            // Add movement speed modifier
+            speed *= player.MovementSpeedModifier;
 
             float predictedDX = 0;
             float predictedDY = 0;
 
             if (oldLocation == null)
-                oldLocation = objectMgr.getPlayerObject().Position;
+                oldLocation = player.Position;
 
-
-            h = objectMgr.getPlayerObject().Position.O;
+            h = player.Position.O;
 
             float dt = (float)diff / 1000f;
             float dx = (float)Math.Cos(h) * (float)speed * dt;
@@ -214,7 +217,7 @@ namespace mClient.Clients
             predictedDX = dx;
             predictedDY = dy;
 
-            Coordinate loc = objectMgr.getPlayerObject().Position;
+            Coordinate loc = player.Position;
             float realDX = loc.X - oldLocation.X;
             float realDY = loc.Y - oldLocation.Y;
 
@@ -224,9 +227,9 @@ namespace mClient.Clients
             if (predictDist > 0.0)
             {
 
-                Coordinate expected = new Coordinate(loc.X + predictedDX, loc.Y + predictedDY, objectMgr.getPlayerObject().Position.Z, objectMgr.getPlayerObject().Position.O);
+                Coordinate expected = new Coordinate(loc.X + predictedDX, loc.Y + predictedDY, player.Position.Z, player.Position.O);
                 expected = terrainMgr.getZ(expected);
-                objectMgr.getPlayerObject().Position = expected;
+                player.Position = expected;
 
             }
 

@@ -16,9 +16,8 @@ namespace mClient.Shared
         static ReaderWriterLock errorLock = new ReaderWriterLock();
         static int writerTimeouts = 0;
 
-        public static void WriteLine(LogType type, string format, params object[] parameters)
-        {          
-
+        public static void WriteLine(Guid? clientId, LogType type, string format, params object[] parameters)
+        {
             format = string.Format("[{0}][{1}]{2}", Time.GetTime(), type, (string)format);
             string msg = format;
             if (parameters.Length > 0)
@@ -41,7 +40,7 @@ namespace mClient.Shared
                             packetLock.ReleaseWriterLock();
                         }
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         Interlocked.Increment(ref writerTimeouts);
                     }
@@ -130,10 +129,18 @@ namespace mClient.Shared
 
 
 
-            //if (((UInt32)type & Config.LogFilter) > 0)
-            //    return;
-            //else
-            //    mCore.SendEvent(new Event(EventType.EVENT_LOG, "0", new object[] { msg }));
+            if (((UInt32)type & Config.LogFilter) > 0)
+                return;
+            else
+            {
+                if (clientId.HasValue)
+                    mCore.SendEvent(new Event(clientId.Value, EventType.EVENT_LOG, "0", new object[] { msg }));
+            }
+        }
+
+        public static void WriteLine(LogType type, string format, params object[] parameters)
+        {
+            WriteLine(null, type, format, parameters);
         }
 
     }
