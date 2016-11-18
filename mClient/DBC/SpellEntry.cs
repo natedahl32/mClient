@@ -1,6 +1,7 @@
 ﻿using mClient.Constants;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -92,6 +93,19 @@ namespace mClient.DBC
         public float[] DamageMultiplier { get; set; }
 
         /// <summary>
+        /// Gets the cast time of this spell based on cast time index field
+        /// </summary>
+        public int CastTime
+        {
+            get
+            {
+                if (CastingTimeIndex > 0)
+                    return SpellCastTimeTable.Instance.getById(CastingTimeIndex).CastTime;
+                return 0;
+            }
+        }
+
+        /// <summary>
         /// Gets whether or not the spell affects all members of a group or not
         /// </summary>
         public bool IsGroupSpell
@@ -151,6 +165,63 @@ namespace mClient.DBC
         public bool HasAttribute(SpellAttributesEx4 attribute)
         {
             return AttributesEx4.HasFlag(attribute);
+        }
+
+        public string DumpInfo()
+        {
+            var dump = string.Empty;
+            foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(this))
+            {
+                if (descriptor.PropertyType != typeof(float[]) &&
+                    descriptor.PropertyType != typeof(int[]) &&
+                    descriptor.PropertyType != typeof(uint[]) &&
+                    descriptor.PropertyType != typeof(SpellEffects[]))
+                {
+                    string name = descriptor.Name;
+                    object value = descriptor.GetValue(this);
+                    dump += string.Format("{0}: {1} {2}", name, value, Environment.NewLine);
+                }
+            }
+
+            // Now dump all spell effects and other arrays
+            for (int i = 0; i < SpellConstants.MAX_EFFECT_INDEX; i++)
+            {
+                dump += string.Format("Spell Effect {0}: {1} {2}", i, Effect[i], Environment.NewLine);
+                dump += string.Format("  DieSides: {0} {1}", EffectDieSides[i], Environment.NewLine);
+                dump += string.Format("  BaseDice: {0} {1}", EffectBaseDice[i], Environment.NewLine);
+                dump += string.Format("  DicePerLevel: {0} {1}", EffectDicePerLevel[i], Environment.NewLine);
+                dump += string.Format("  RealPointsPerLevel: {0} {1}", EffectRealPointsPerLevel[i], Environment.NewLine);
+                dump += string.Format("  BasePoints: {0} {1}", EffectBasePoints[i], Environment.NewLine);
+                dump += string.Format("  Mechanic: {0} {1}", EffectMechanic[i], Environment.NewLine);
+                dump += string.Format("  ImplicitTargetA: {0} {1}", (Constants.Targets)EffectImplicitTargetA[i], Environment.NewLine);
+                dump += string.Format("  ImplicitTargetB: {0} {1}", (Constants.Targets)EffectImplicitTargetB[i], Environment.NewLine);
+                dump += string.Format("  RadiusIndex: {0} {1}", EffectRadiusIndex[i], Environment.NewLine);
+                dump += string.Format("  ApplyAuraName: {0} {1}", EffectApplyAuraName[i], Environment.NewLine);
+                dump += string.Format("  Amplitude: {0} {1}", EffectAmplitude[i], Environment.NewLine);
+                dump += string.Format("  MultipleValue: {0} {1}", EffectMultipleValue[i], Environment.NewLine);
+                dump += string.Format("  ChainTarget: {0} {1}", EffectChainTarget[i], Environment.NewLine);
+                dump += string.Format("  ItemType: {0} {1}", EffectItemType[i], Environment.NewLine);
+                dump += string.Format("  MiscValue: {0} {1}", EffectMiscValue[i], Environment.NewLine);
+                dump += string.Format("  TriggerSpell: {0} {1}", EffectTriggerSpell[i], Environment.NewLine);
+                dump += string.Format("  PointsPerComboPoint: {0} {1}", EffectPointsPerComboPoint[i], Environment.NewLine);
+            }
+
+            // Damage Multiplier
+            for (int i = 0; i < DamageMultiplier.GetUpperBound(0); i++)
+                dump += string.Format("Damage Multiplier {0}: {1} {2}", i, DamageMultiplier[i], Environment.NewLine);
+
+            // Totem
+            for (int i = 0; i < Totem.GetUpperBound(0); i++)
+                dump += string.Format("Totem {0}: {1} {2}", i, Totem[i], Environment.NewLine);
+
+            // Reagents
+            for (int i = 0; i < Reagents.GetUpperBound(0); i++)
+            {
+                dump += string.Format("Reagent {0}: {1} {2}", i, Reagents[i], Environment.NewLine);
+                dump += string.Format("Reagent Count {0}: {1} {2}", i, ReagentsCount[i], Environment.NewLine);
+            }
+
+            return dump;
         }
 
         #endregion

@@ -106,6 +106,7 @@ namespace mClient.World.AI
             // Nothing to do with an empty message
             if (string.IsNullOrEmpty(message)) return;
 
+            if (HandleDumpCommands(senderGuid, senderName, message)) return;
             if (HandleChatCommands(senderGuid, senderName, message)) return;
             if (HandleCombatCommands(senderGuid, senderName, message)) return;
             if (HandleQuestCommands(senderGuid, senderName, message)) return;

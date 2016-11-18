@@ -91,6 +91,19 @@ namespace mClient.World.AI
             get { return mActivityStack.Count > 0; }
         }
 
+        /// <summary>
+        /// Gets the current activity
+        /// </summary>
+        protected BaseActivity CurrentActivity
+        {
+            get
+            {
+                if (mActivityStack.Count > 0)
+                    return mActivityStack.Peek();
+                return null;
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -236,6 +249,9 @@ namespace mClient.World.AI
                 {
                     // Wait 2 seconds before we start AI to make sure we are logged in to the game
                     if ((MM_GetTime() - lastUpdateTime) < 2000) continue;
+
+                    // Update spell cooldowns
+                    mPlayer.SpellCooldowns.UpdateCooldowns();
 
                     // Update NPC movement
                     var npcUnits = Client.objectMgr.GetNpcUnits().ToList();

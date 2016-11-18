@@ -193,6 +193,7 @@ namespace mClient.Clients
             if (Flag.IsMoveFlagSet(MovementFlags.MOVEMENTFLAG_FORWARD))
             {
                 speed = 7.0;
+                
             }
             else
                 return;

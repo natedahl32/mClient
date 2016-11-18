@@ -142,6 +142,13 @@ namespace mClient.World
             if (spell == null)
                 return false;
 
+            // On the GCD? Can't cast it then
+            // TODO: Check if spell is affected by GCD
+            if (Player.GCD.HasGCD) return false;
+
+            // Is it on cooldown?
+            if (Player.SpellCooldowns.HasCooldown(spellId)) return false;
+
             // Have enough power to cast it?
             if (!Player.PlayerObject.CanCastSpell(spell)) return false;
 
@@ -152,7 +159,7 @@ namespace mClient.World
                 if (rangeEntry != null)
                 {
                     var distance = TerrainMgr.CalculateDistance(Player.Position, Player.PlayerAI.TargetSelection.Position);
-                    if (distance < rangeEntry.MinimumRange || distance > rangeEntry.MaximumRange)
+                    if (distance <= rangeEntry.MinimumRange || distance >= rangeEntry.MaximumRange)
                         return false;
                 }
             }

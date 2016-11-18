@@ -5,6 +5,13 @@ using System.Text;
 
 namespace mClient.Constants
 {
+    public enum WeaponAttackType                                       //< The different weapon attack-types
+    {
+        BASE_ATTACK = 0,                                      //< Main-hand weapon
+        OFF_ATTACK = 1,                                      //< Off-hand weapon
+        RANGED_ATTACK = 2                                       //< Ranged weapon, bow/wand etc.
+    }
+
     public enum SpellTargetFlags : uint
     {
         TARGET_FLAG_SELF = 0x00000000,

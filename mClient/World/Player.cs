@@ -10,6 +10,8 @@ using mClient.World.AI;
 using mClient.World.Quest;
 using mClient.DBC;
 using mClient.World.AI.Activity.Messages;
+using mClient.World.AI.Activity.Movement;
+using mClient.World.Spells;
 
 namespace mClient.World
 {
@@ -39,6 +41,8 @@ namespace mClient.World
         // Spells
         private List<UInt16> mSpellList = new List<UInt16>();
         private List<SpellEntry> mAvailableSpells = new List<SpellEntry>(); // spells that are available, but we do not have yet
+        private GlobalCooldown mGCD;
+        private SpellCooldownManager mSpellCooldownManager;
 
         // Movement commands
         private MoveCommands mMoveCommand = MoveCommands.None;
@@ -88,6 +92,8 @@ namespace mClient.World
         {
             this.mPlayerAI = new PlayerAI(this, client);
             this.mClassLogic = PlayerClassLogic.CreateClassLogic((Classname)pClass, this);
+            this.mGCD = new GlobalCooldown(this);
+            this.mSpellCooldownManager = new SpellCooldownManager(this);
 
             this.Race = race;
             this.Class = pClass;
@@ -243,6 +249,30 @@ namespace mClient.World
         public IEnumerable<SpellEntry> AvailableSpellsToLearn
         {
             get { return mAvailableSpells; }
+        }
+
+        /// <summary>
+        /// Gets the spell cooldown manager for this player
+        /// </summary>
+        public SpellCooldownManager SpellCooldowns
+        {
+            get { return mSpellCooldownManager; }
+        }
+
+        /// <summary>
+        /// Gets the global cooldown for the player
+        /// </summary>
+        public GlobalCooldown GCD
+        {
+            get { return mGCD; }
+        }
+
+        /// <summary>
+        /// Gets a list of all spell ids the player has
+        /// </summary>
+        public IEnumerable<ushort> Spells
+        {
+            get { return mSpellList; }
         }
 
         #endregion
@@ -755,6 +785,10 @@ namespace mClient.World
             if (spell == null)
                 return;
 
+            // Start a cooldown for spells that have a cast time, they haven't been started yet because they can be canceled
+            if (spell.CastTime > 0)
+                mSpellCooldownManager.StartCooldown(spell);
+
             // Handle each effect of the spell
             for (int i = 0; i < SpellConstants.MAX_EFFECT_INDEX; i++)
             {
@@ -767,6 +801,22 @@ namespace mClient.World
                         break;
                 }
             }
+        }
+
+        /// <summary>
+        /// Casts a spell at a target
+        /// </summary>
+        /// <param name="spell"></param>
+        /// <param name="target"></param>
+        public void CastSpell(SpellEntry spell, Clients.Object target)
+        {
+            // Cast the spell
+            PlayerAI.Client.CastSpell(target, spell.SpellId);
+            // Trigger the GCD for the spell
+            mGCD.TriggerGCD(spell);
+            // If the spell has no cast time, trigger the cooldown for the spell
+            if (spell.CastTime <= 0)
+                mSpellCooldownManager.StartCooldown(spell);
         }
 
         #endregion
@@ -793,7 +843,7 @@ namespace mClient.World
         /// <param name="message"></param>
         private void HandleChargeEffect(SpellEntry spell, SpellCastGoMessage message)
         {
-
+            // TODO: Need to fix the charge effect on bots. When on a client it looks like it starts briefly and then stops right away and the bot never charges all the way to the target.
         }
 
         #endregion

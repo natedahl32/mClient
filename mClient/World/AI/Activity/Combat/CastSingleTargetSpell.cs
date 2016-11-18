@@ -1,5 +1,6 @@
 ﻿using mClient.Constants;
 using mClient.DBC;
+using mClient.Shared;
 using mClient.World.AI.Activity.Messages;
 using System;
 using System.Collections.Generic;
@@ -45,7 +46,7 @@ namespace mClient.World.AI.Activity.Combat
         public override void Start()
         {
             base.Start();
-            PlayerAI.Client.CastSpell(PlayerAI.TargetSelection, mCastingSpell.SpellId);
+            PlayerAI.Player.CastSpell(mCastingSpell, PlayerAI.TargetSelection);
             PlayerAI.Client.SendChatMsg(ChatMsg.Party, Languages.Universal, $"I'm casting {mCastingSpell.SpellName} {mCastingSpell.Rank}.");
         }
 
@@ -71,6 +72,7 @@ namespace mClient.World.AI.Activity.Combat
                     if (castFailedMessage.SpellId == mCastingSpell.SpellId)
                     {
                         mDoneCasting = true;
+                        Log.WriteLine(LogType.Debug, $"Cast of spell {mCastingSpell.SpellName} failed because reason {castFailedMessage.Result}.");
                     }
                 }
             }

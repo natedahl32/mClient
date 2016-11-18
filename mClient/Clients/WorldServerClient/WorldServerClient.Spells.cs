@@ -95,13 +95,14 @@ namespace mClient.Clients
             // Spell cast targets
             var targetsMask = (SpellTargetFlags)packet.ReadUInt16();
 
+            WoWGuid unitTarget = null;
             if (targetsMask.Has(SpellTargetFlags.TARGET_FLAG_UNIT) ||
                 targetsMask.Has(SpellTargetFlags.TARGET_FLAG_PVP_CORPSE) ||
                 targetsMask.Has(SpellTargetFlags.TARGET_FLAG_OBJECT) ||
                 targetsMask.Has(SpellTargetFlags.TARGET_FLAG_CORPSE) ||
                 targetsMask.Has(SpellTargetFlags.TARGET_FLAG_UNK2))
             {
-                var targetGuid = packet.ReadPackedGuidToWoWGuid();
+                unitTarget = packet.ReadPackedGuidToWoWGuid();
             }
 
             if (targetsMask.Has(SpellTargetFlags.TARGET_FLAG_ITEM) ||
@@ -135,7 +136,8 @@ namespace mClient.Clients
                 ItemOrCasterGuid = casterOrItemGuid,
                 CasterGuid = casterGuid2,
                 SpellId = spellId,
-                CastFlags = castFlags
+                CastFlags = castFlags,
+                UnitTarget = (unitTarget != null ? objectMgr.getObject(unitTarget) : null)
             };
             player.PlayerAI.SendMessageToAllActivities(message);
 

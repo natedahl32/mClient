@@ -12,6 +12,12 @@ namespace mClient.World.AI
             var builder = new BehaviourTreeBuilder();
             return builder
                 .Sequence("combat-sequece")
+                    .Do("Activity That Halts Combat?", t =>
+                    {
+                        if (CurrentActivity != null && CurrentActivity.HaltsCombat)
+                            return BehaviourTreeStatus.Failure;
+                        return BehaviourTreeStatus.Success;
+                    })
                     .Do("Is In Combat?", t => IsInCombat())
                     .Do("Select Target", t => SelectTarget())
                     .Do("Is In Melee?", t => MoveToMelee())

@@ -48,6 +48,12 @@ namespace mClient.World.AI.Activity
         /// </summary>
         public bool ExpectationHasElapsed { get { return mExpecationIsElapsed; } }
 
+        /// <summary>
+        /// Gets whether or not this activity halts combat. If combat logic should not be evaluated when an activity is running then set this to true.
+        /// Used mostly for other combat activities where you don't want a target to change or you don't want to move while the activity is running.
+        /// </summary>
+        public virtual bool HaltsCombat { get { return false; } }
+
         #endregion
 
         #region Public Methods

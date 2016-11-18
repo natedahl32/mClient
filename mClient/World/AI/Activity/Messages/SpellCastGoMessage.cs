@@ -43,6 +43,11 @@ namespace mClient.World.AI.Activity.Messages
         /// </summary>
         public ushort CastFlags { get; set; }
 
+        /// <summary>
+        /// Gets or sets the unit target of the cast
+        /// </summary>
+        public Clients.Object UnitTarget { get; set; }
+
         #endregion
     }
 }

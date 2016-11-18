@@ -283,6 +283,14 @@ namespace mClient.Clients
             }
         }
 
+        /// <summary>
+        /// Gets the cast speed mod for this unit
+        /// </summary>
+        public float CastSpeedMod
+        {
+            get { return GetFieldValueAsFloat((int)UnitFields.UNIT_MOD_CAST_SPEED); }
+        }
+
         #endregion
 
         #region Public Methods
@@ -345,6 +353,16 @@ namespace mClient.Clients
         {
             // decrease power used for spell
             DecreasePower(spell.PowerType, CalculateSpellPowerCost(spell));
+        }
+
+        /// <summary>
+        /// Gets the attack time for a weapon
+        /// </summary>
+        /// <param name="att"></param>
+        /// <returns></returns>
+        public uint GetAttackTime(WeaponAttackType att)
+        {
+            return (uint)(GetFieldValueAsFloat((int)UnitFields.UNIT_FIELD_BASEATTACKTIME + (int)att) / 1.0f); // modAttackSpeedPct is same for all weapon attack types
         }
 
         #endregion

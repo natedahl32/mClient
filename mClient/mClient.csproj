@@ -146,6 +146,8 @@
     <Compile Include="DBC\SkillLineAbilityTable.cs" />
     <Compile Include="DBC\SkillRaceClassInfoEntry.cs" />
     <Compile Include="DBC\SkillRaceClassInfoTable.cs" />
+    <Compile Include="DBC\SpellCastTimeEntry.cs" />
+    <Compile Include="DBC\SpellCastTimeTable.cs" />
     <Compile Include="DBC\SpellEntry.cs" />
     <Compile Include="DBC\SpellRangeEntry.cs" />
     <Compile Include="DBC\SpellRangeTable.cs" />
@@ -209,6 +211,7 @@
     <Compile Include="World\AI\Activity\Train\LearnSpellFromTrainer.cs" />
     <Compile Include="World\AI\Activity\Train\TrainAvailableSpells.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Combat.cs" />
+    <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Dumps.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Inventory.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Quest.cs" />
     <Compile Include="World\AI\PlayerAI.Chat.cs" />
@@ -281,6 +284,9 @@
     <Compile Include="World\Quest\QuestManager.cs" />
     <Compile Include="World\Quest\QuestObjective.cs" />
     <Compile Include="World\Skill\SkillData.cs" />
+    <Compile Include="World\Spells\GlobalCooldown.cs" />
+    <Compile Include="World\Spells\SpellCooldown.cs" />
+    <Compile Include="World\Spells\SpellCooldownManager.cs" />
     <Compile Include="World\Spells\TrainerSpellData.cs" />
     <Compile Include="World\TerrainManager.cs" />
     <Compile Include="World\Terrain\ADTProcessor.cs" />
