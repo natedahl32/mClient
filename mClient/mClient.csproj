@@ -204,11 +204,13 @@
     <Compile Include="World\AI\Activity\Messages\TrainerBuySucceededMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\TrainerSpellListMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\VendorInventoryListMessage.cs" />
+    <Compile Include="World\AI\Activity\Movement\MoveTowardsObject.cs" />
     <Compile Include="World\AI\Activity\Movement\TeleportToCoordinate.cs" />
+    <Compile Include="World\AI\Activity\Movement\Wait.cs" />
     <Compile Include="World\AI\Activity\Quest\AcceptQuest.cs" />
     <Compile Include="World\AI\Activity\Quest\CompleteQuest.cs" />
-    <Compile Include="World\AI\Activity\Quest\CompleteQuestObjectiveForGO.cs" />
     <Compile Include="World\AI\Activity\Quest\TurnInQuests.cs" />
+    <Compile Include="World\AI\Activity\Quest\UseInventoryItemOnGO.cs" />
     <Compile Include="World\AI\Activity\Trade\BeginTrade.cs" />
     <Compile Include="World\AI\Activity\Trade\TradeItems.cs" />
     <Compile Include="World\AI\Activity\Train\LearnSpellFromTrainer.cs" />

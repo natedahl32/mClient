@@ -76,7 +76,7 @@ namespace mClient.Network
                          Log.WriteLine(LogType.Error, "Disconnected from Logon Server");
                          return;
                      }
-                     while  (tSocket.Available > 0)
+                     while  (tSocket.Connected && tSocket.Available > 0)
                      {
                          try
                          {

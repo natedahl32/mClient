@@ -1,4 +1,6 @@
-﻿using mClient.Shared;
+﻿using mClient.Clients;
+using mClient.Shared;
+using mClient.World.AI.Activity.Quest;
 using mClient.World.AI.Activity.Trade;
 using mClient.World.Items;
 using System;
@@ -14,8 +16,9 @@ namespace mClient.World.AI
         private const string INV_LIST_COMMAND = "list";
         private const string INV_DESTROY_COMMAND = "destroy";
         private const string INV_TRADE_COMMAND = "trade";
+        private const string INV_USE_ITEM_COMMAND = "useitem";
 
-        private List<string> mAllInvCommands = new List<string>() { INV_LIST_COMMAND, INV_DESTROY_COMMAND, INV_TRADE_COMMAND };
+        private List<string> mAllInvCommands = new List<string>() { INV_LIST_COMMAND, INV_DESTROY_COMMAND, INV_TRADE_COMMAND, INV_USE_ITEM_COMMAND };
 
         /// <summary>
         /// Handles all quest commands
@@ -43,14 +46,22 @@ namespace mClient.World.AI
                 return true;
             }
 
+            // Get the sender object. If they cannot be found ignore the command
+            var sender = Player.PlayerAI.Client.objectMgr.getObject(senderGuid) as Clients.Unit;
+            if (sender == null)
+                return false;
+
+            // Declare variables used in switch
+            uint itemId = 0;
+
             switch (split[1].ToLower())
             {
                 // inv list - lists all items in inventory (not equipped)
                 case INV_LIST_COMMAND:
                     Player.PlayerAI.Client.SendChatMsg(Constants.ChatMsg.Party, Constants.Languages.Universal, $"I have {Player.PlayerObject.MoneyDisplayString}and the following items in my bags.");
-                    foreach (var invSlot in Player.PlayerObject.InventoryItems)
+                    foreach (InventoryItemSlot slot in Player.PlayerObject.InventoryItems)
                     {
-                        var item_msg = invSlot.Item.ItemGameLink + " x" + invSlot.Item.StackCount.ToString();
+                        var item_msg = slot.Item.ItemGameLink + " x" + slot.Item.StackCount.ToString();
                         Player.PlayerAI.Client.SendChatMsg(Constants.ChatMsg.Party, Constants.Languages.Universal, item_msg);
                     }
 
@@ -59,7 +70,7 @@ namespace mClient.World.AI
                 // inv destroy [ITEM_LINK] - destroys one item linked
                 // inv destroy # [ITEM_LINK] - destroyes the specified number of items linked
                 case INV_DESTROY_COMMAND:
-                    var itemId = ItemInfo.ExtractItemId(message);
+                    itemId = ItemInfo.ExtractItemId(message);
                     var inventorySlot = Player.PlayerObject.GetInventoryItem(itemId);
                     var count = 1;
                     // If the count was passed in as a parameter use that
@@ -89,6 +100,21 @@ namespace mClient.World.AI
 
                     // Trading is a little involved, so we push an activity to handle the activity
                     Player.PlayerAI.StartActivity(new BeginTrade(senderGuid, itemIds, Player.PlayerAI));
+
+                    return true;
+
+                // inv useitem [ITEM_LINK]
+                case INV_USE_ITEM_COMMAND:
+                    // Get the item the sender wants us to use and find it in our inventory
+                    itemId = ItemInfo.ExtractItemId(message);
+
+                    // Get the target of the sender
+                    var sendersTarget = Player.PlayerAI.Client.objectMgr.getObject(sender.TargetGuid) as Clients.Unit;
+                    if (sendersTarget == null)
+                        return false;
+
+                    // Use the item on the senders target
+                    Player.PlayerAI.StartActivity(new UseInventoryItemOnGO(itemId, sendersTarget, Player.PlayerAI));
 
                     return true;
             }
