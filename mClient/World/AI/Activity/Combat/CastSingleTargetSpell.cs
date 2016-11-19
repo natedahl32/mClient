@@ -57,6 +57,13 @@ namespace mClient.World.AI.Activity.Combat
                 PlayerAI.CompleteActivity();
                 return;
             }
+
+            // If the current target selection is an NPC unit and dead we can safely complete this activity
+            if (PlayerAI.TargetSelection.IsNPC && PlayerAI.TargetSelection.IsDead)
+            {
+                PlayerAI.CompleteActivity();
+                return;
+            }
         }
 
         public override void HandleMessage(ActivityMessage message)

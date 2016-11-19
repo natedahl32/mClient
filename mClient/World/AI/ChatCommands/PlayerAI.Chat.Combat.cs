@@ -1,4 +1,5 @@
 ﻿using mClient.Shared;
+using mClient.World.AI.Activity.Combat;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,12 +54,11 @@ namespace mClient.World.AI
                     if (sendersTarget == null)
                         return false;
 
-                    // TODO: If we already have enemies in our list, we need a way to force the bot to start
-                    // attacking this target since they were commanded to do so. Thinking the best way is to issue
-                    // a change target activity that has the bot change targets.
-
                     // Add them to our enemy list, this have them start combat with the target
                     Player.AddEnemy(sender.TargetGuid);
+
+                    // Forces us to start attacking this target regardless of if we have a target already or not
+                    Player.PlayerAI.StartActivity(new ChangeTarget(sendersTarget, Player.PlayerAI));
 
                     return true;
             }

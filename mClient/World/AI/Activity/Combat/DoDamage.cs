@@ -53,6 +53,15 @@ namespace mClient.World.AI.Activity.Combat
                 PlayerAI.StartActivity(new CastSingleTargetSpell(spell, PlayerAI));
                 return;
             }
+
+            // If we are a melee class then set the target as our follow target
+            if (PlayerAI.Player.ClassLogic.IsMelee)
+            {
+                PlayerAI.SetFollowTarget(PlayerAI.TargetSelection);
+                if (!PlayerAI.IsAttackingTargetSelection)
+                    PlayerAI.Client.Attack(PlayerAI.TargetSelection);
+            }
+                
         }
 
         #endregion

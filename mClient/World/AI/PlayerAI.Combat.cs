@@ -45,7 +45,8 @@ namespace mClient.World.AI
         {
             // TODO: Select a target more intelligently
             // Set our target
-            SetTargetSelection(Client.objectMgr.getObject(Player.EnemyList.FirstOrDefault()));
+            if (TargetSelection == null)
+                SetTargetSelection(Client.objectMgr.getObject(Player.EnemyList.FirstOrDefault()));
             return BehaviourTreeStatus.Success;
         }
 

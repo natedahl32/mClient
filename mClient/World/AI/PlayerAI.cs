@@ -104,6 +104,14 @@ namespace mClient.World.AI
             }
         }
 
+        /// <summary>
+        /// Gets whether or not the player is attacking the current target selection with melee and/or shoot
+        /// </summary>
+        public bool IsAttackingTargetSelection
+        {
+            get { return mIsAttackingTarget; }
+        }
+
         #endregion
 
         #region Public Methods
