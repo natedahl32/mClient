@@ -169,8 +169,9 @@ namespace mClient.Clients
         public void NewWorldLoad(PacketIn packet)
         {
             var mapId = packet.ReadUInt32();
-            // update the players position
+            // update the players position and the map they are on
             player.PlayerObject.Position = new Coordinate(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
+            player.MapID = mapId;
 
             // send an ack
             WorldportAck();

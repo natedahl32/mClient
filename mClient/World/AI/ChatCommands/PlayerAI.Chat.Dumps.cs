@@ -1,5 +1,7 @@
 ﻿using mClient.DBC;
 using mClient.Shared;
+using mClient.World.Items;
+using mClient.World.Quest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +13,10 @@ namespace mClient.World.AI
     public partial class PlayerChatHandler
     {
         private const string DUMP_SPELL_COMMAND = "spell";
+        private const string DUMP_ITEM_COMMAND = "item";
+        private const string DUMP_QUEST_COMMAND = "quest";
 
-        private List<string> mAllDumpCommands = new List<string>() { DUMP_SPELL_COMMAND };
+        private List<string> mAllDumpCommands = new List<string>() { DUMP_SPELL_COMMAND, DUMP_ITEM_COMMAND, DUMP_QUEST_COMMAND };
 
         /// <summary>
         /// Handles all dump commands
@@ -51,10 +55,47 @@ namespace mClient.World.AI
 
                     // Get the spell and dump info
                     var spell = SpellTable.Instance.getSpell(spellId);
-                    var dumpInfo = spell.DumpInfo();
+                    var spellDump = spell.DumpInfo();
 
                     // Log it
-                    Log.WriteLine(LogType.Normal, dumpInfo);
+                    Log.WriteLine(LogType.Normal, spellDump);
+
+                    return true;
+
+                case DUMP_ITEM_COMMAND:
+                    // Try to parse item id first
+                    uint itemId = 0;
+                    if (!uint.TryParse(split[2], out itemId))
+                    {
+                        // Now try to extract an item id from the link
+                        itemId = ItemInfo.ExtractItemId(message);
+                        if (itemId <= 0)
+                            return false;
+                    }
+                    
+                    var item = ItemManager.Instance.Get(itemId);
+                    if (item == null)
+                        return false;
+
+                    var itemDump = item.DumpInfo();
+
+                    // Log it
+                    Log.WriteLine(LogType.Normal, itemDump);
+
+                    return true;
+
+                case DUMP_QUEST_COMMAND:
+                    // Get the quest to dump data for
+                    uint questId = 0;
+                    if (!uint.TryParse(split[2], out questId))
+                        return false;
+
+                    // Get the spell and dump info
+                    var quest = QuestManager.Instance.Get(questId);
+                    var questDump = quest.DumpInfo();
+
+                    // Log it
+                    Log.WriteLine(LogType.Normal, questDump);
 
                     return true;
             }

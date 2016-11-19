@@ -8,6 +8,7 @@ using mClient.Network;
 using mClient.Crypt;
 using mClient.Constants;
 using mClient.World.AI.Activity.Messages;
+using mClient.Clients.UpdateBlocks;
 
 namespace mClient.Clients
 {
@@ -93,40 +94,8 @@ namespace mClient.Clients
             packet.ReadByte(); // unknown
 
             // Spell cast targets
-            var targetsMask = (SpellTargetFlags)packet.ReadUInt16();
-
-            WoWGuid unitTarget = null;
-            if (targetsMask.Has(SpellTargetFlags.TARGET_FLAG_UNIT) ||
-                targetsMask.Has(SpellTargetFlags.TARGET_FLAG_PVP_CORPSE) ||
-                targetsMask.Has(SpellTargetFlags.TARGET_FLAG_OBJECT) ||
-                targetsMask.Has(SpellTargetFlags.TARGET_FLAG_CORPSE) ||
-                targetsMask.Has(SpellTargetFlags.TARGET_FLAG_UNK2))
-            {
-                unitTarget = packet.ReadPackedGuidToWoWGuid();
-            }
-
-            if (targetsMask.Has(SpellTargetFlags.TARGET_FLAG_ITEM) ||
-                targetsMask.Has(SpellTargetFlags.TARGET_FLAG_TRADE_ITEM))
-            {
-                var itemGuid = packet.ReadPackedGuidToWoWGuid();
-            }
-
-            if (targetsMask.Has(SpellTargetFlags.TARGET_FLAG_SOURCE_LOCATION))
-            {
-                var x = packet.ReadFloat();
-                var y = packet.ReadFloat();
-                var z = packet.ReadFloat();
-            }
-
-            if (targetsMask.Has(SpellTargetFlags.TARGET_FLAG_DEST_LOCATION))
-            {
-                var x = packet.ReadFloat();
-                var y = packet.ReadFloat();
-                var z = packet.ReadFloat();
-            }
-
-            if (targetsMask.Has(SpellTargetFlags.TARGET_FLAG_STRING))
-                packet.ReadString();
+            var spellCastTargets = new SpellCastTargets();
+            spellCastTargets.ReadFromPacket(packet);
 
             // TODO: Get ammo information if we need it, don't think we do though
 
@@ -137,7 +106,7 @@ namespace mClient.Clients
                 CasterGuid = casterGuid2,
                 SpellId = spellId,
                 CastFlags = castFlags,
-                UnitTarget = (unitTarget != null ? objectMgr.getObject(unitTarget) : null)
+                UnitTarget = (spellCastTargets.UnitTargetGuid != null ? objectMgr.getObject(spellCastTargets.UnitTargetGuid) : null)
             };
             player.PlayerAI.SendMessageToAllActivities(message);
 

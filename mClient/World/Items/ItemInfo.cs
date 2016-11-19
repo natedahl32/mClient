@@ -1,6 +1,7 @@
 ﻿using mClient.Constants;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace mClient.World.Items
 {
@@ -43,7 +44,7 @@ namespace mClient.World.Items
         /// <summary>
         /// Gets or sets the item flags
         /// </summary>
-        public UInt32 ItemFlags { get; set; }
+        public ItemPrototypeFlags ItemFlags { get; set; }
 
         /// <summary>
         /// Gets or sets the buy price
@@ -223,14 +224,45 @@ namespace mClient.World.Items
             }
         }
 
-        #region Static Methods
+        #region Public Methods
 
-        /// <summary>
-        /// Extracts an item id from a message where an item was linked. If multiple items are linked in the message
-        /// only the first item will be extracted.
-        /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
+        public string DumpInfo()
+        {
+            var dump = string.Empty;
+            foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(this))
+            {
+                if (descriptor.PropertyType != typeof(IList<ItemSpellEffect>))
+                {
+                    string name = descriptor.Name;
+                    object value = descriptor.GetValue(this);
+                    dump += string.Format("{0}: {1} {2}", name, value, Environment.NewLine);
+                }
+            }
+
+            // Now dump all item spell effects and other arrays/lists
+            var i = 1;
+            foreach (var effect in SpellEffects)
+            {
+                dump += string.Format("Item Spell Effect {0}: {1}", i, Environment.NewLine);
+                dump += string.Format("  Spell ID: {0} {1}", effect.SpellId, Environment.NewLine);
+                dump += string.Format("  Spell Trigger: {0} {1}", effect.SpellTrigger, Environment.NewLine);
+                dump += string.Format("  Spell Charges: {0} {1}", effect.SpellCharges, Environment.NewLine);
+                i++;
+            }
+
+            return dump;
+        }
+
+        #endregion
+
+            #region Static Methods
+
+            /// <summary>
+            /// Extracts an item id from a message where an item was linked. If multiple items are linked in the message
+            /// only the first item will be extracted.
+            /// </summary>
+            /// <param name="message"></param>
+            /// <returns></returns>
         public static uint ExtractItemId(string message)
         {
             if (string.IsNullOrEmpty(message)) return 0;

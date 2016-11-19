@@ -97,6 +97,7 @@
     <Compile Include="Clients\WorldServerClient\Objects\WorldServerClient.Unit.cs" />
     <Compile Include="Clients\WorldServerClient\UpdateBlocks\MovementBlock.cs" />
     <Compile Include="Clients\WorldServerClient\UpdateBlocks\MovementInfo.cs" />
+    <Compile Include="Clients\WorldServerClient\UpdateBlocks\SpellCastTargets.cs" />
     <Compile Include="Clients\WorldServerClient\UpdateBlocks\SplineInfo.cs" />
     <Compile Include="Clients\WorldServerClient\UpdateBlocks\TransportInfo.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Corpse.cs" />
@@ -195,6 +196,7 @@
     <Compile Include="World\AI\Activity\Messages\QuestGiverRequestItemsMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\QuestListMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\QuestOfferRewards.cs" />
+    <Compile Include="World\AI\Activity\Messages\QuestUpdateAddKillMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\SpellCastFailedMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\SpellCastGoMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\SpellCastInterruptedMessage.cs" />
@@ -205,6 +207,7 @@
     <Compile Include="World\AI\Activity\Movement\TeleportToCoordinate.cs" />
     <Compile Include="World\AI\Activity\Quest\AcceptQuest.cs" />
     <Compile Include="World\AI\Activity\Quest\CompleteQuest.cs" />
+    <Compile Include="World\AI\Activity\Quest\CompleteQuestObjectiveForGO.cs" />
     <Compile Include="World\AI\Activity\Quest\TurnInQuests.cs" />
     <Compile Include="World\AI\Activity\Trade\BeginTrade.cs" />
     <Compile Include="World\AI\Activity\Trade\TradeItems.cs" />

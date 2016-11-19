@@ -1,4 +1,5 @@
-﻿using mClient.Constants;
+﻿using mClient.Clients.UpdateBlocks;
+using mClient.Constants;
 using mClient.Network;
 using mClient.Shared;
 using mClient.World.AI.Activity.Messages;
@@ -212,7 +213,7 @@ namespace mClient.Clients
 
             packet.ReadUInt32();    // display info ID
             item.Quality = (ItemQualities)packet.ReadUInt32();
-            item.ItemFlags = packet.ReadUInt32();
+            item.ItemFlags = (ItemPrototypeFlags)packet.ReadUInt32();
             item.BuyPrice = packet.ReadUInt32();
             item.SellPrice = packet.ReadUInt32();
             item.InventoryType = (InventoryType)packet.ReadUInt32();
@@ -483,6 +484,27 @@ namespace mClient.Clients
             packet.Write(vendorGuid);
             packet.Write(itemGuid);
             packet.Write(count);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Uses an item that is currently in inventory
+        /// </summary>
+        /// <param name="bagIndex"></param>
+        /// <param name="slot"></param>
+        /// <param name="target"></param>
+        public void UseItemInInventoryOnTarget(byte bagIndex, byte slot, WoWGuid target)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_USE_ITEM);
+            packet.Write(bagIndex);
+            packet.Write(slot);
+            packet.Write((byte)0);
+
+            var spellCastTargets = new SpellCastTargets();
+            spellCastTargets.TargetsMask = SpellTargetFlags.TARGET_FLAG_UNIT;
+            spellCastTargets.UnitTargetGuid = target;
+            spellCastTargets.WriteToPacket(ref packet);
+
             Send(packet);
         }
 

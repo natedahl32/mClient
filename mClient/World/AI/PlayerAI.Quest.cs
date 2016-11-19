@@ -17,6 +17,8 @@ namespace mClient.World.AI
         #region Declarations
 
         private const float DISTANCE_TRAVELED_TO_UPDATE_QUEST_GIVERS = 20.0f;
+        private const float MAXIMUM_DISTANCE_FOR_SOURCE_POINT_OBJECTIVE = 20.0f;
+        private const float MAXIMUM_DISTANCE_FOR_GO_OBJECTIVE = 10.0f;
 
         // Holds the last coordinate that we did a quest status update check
         private Coordinate mLastQuestStatusCheckCoordinate;
@@ -72,10 +74,62 @@ namespace mClient.World.AI
                                 .Do("Find Quest To Accept", t => FindQuestToAccept())
                                 .Do("Accept Quetss", t => AcceptQuest())
                             .End()
+                            .Do("Check for Quest Objectives", t => CheckForQuestObjectivesNear())
                         .End()
                     .End()
                  .End()
                  .Build();
+        }
+
+        /// <summary>
+        /// Checks for any quest objectives near that we can complete
+        /// </summary>
+        /// <returns></returns>
+        private BehaviourTreeStatus CheckForQuestObjectivesNear()
+        {
+            foreach (var questLogItem in Player.PlayerObject.Quests.Where(q => !q.IsComplete))
+            {
+                var quest = QuestManager.Instance.Get(questLogItem.QuestId);
+                if (quest == null)
+                    continue;
+
+                // If this quest has a quest point we need to get to and we are close
+                if (quest.QuestPointMapId > 0 && quest.QuestPoint != null && quest.QuestPoint.Equals(Coords3.Zero()))
+                {
+                    var position = new Coordinate(quest.QuestPoint.X, quest.QuestPoint.Y, quest.QuestPoint.Z);
+                    var distance = TerrainMgr.CalculateDistance(Player.Position, position);
+                    if (distance <= MAXIMUM_DISTANCE_FOR_SOURCE_POINT_OBJECTIVE)
+                    {
+                        // TODO: Need an activity for this to complete it
+                        return BehaviourTreeStatus.Success;
+                    }
+                }
+                    
+
+                // If there is a required creature or GO that is near us
+                foreach (var objective in quest.QuestObjectives)
+                {
+                    if (objective.RequiredCreatureOrGameObjectId > 0)
+                    {
+                        // Check for objects with this id within our vicinity
+                        foreach (var go in Client.objectMgr.getObjectArray().Where(o => o.ObjectFieldEntry == objective.RequiredCreatureOrGameObjectId))
+                        {
+                            var distance = TerrainMgr.CalculateDistance(Player.Position, go.Position);
+                            if (distance <= MAXIMUM_DISTANCE_FOR_GO_OBJECTIVE)
+                            {
+                                StartActivity(new CompleteQuestObjectiveForGO(quest, go, this));
+                                return BehaviourTreeStatus.Success;
+                            }
+                        }
+                    }
+                }
+
+                // TODO: If there is a required item that is bought off of a merchant and that merchant is near us
+                // TODO: Any other quest objective scenarios?
+            }
+
+            // Nothing
+            return BehaviourTreeStatus.Failure;
         }
 
         /// <summary>

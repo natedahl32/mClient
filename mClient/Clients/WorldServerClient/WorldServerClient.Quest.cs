@@ -145,8 +145,16 @@ namespace mClient.Clients
             packet.ReadUInt32();
             packet.ReadUInt32();
             packet.ReadUInt32();
-            packet.ReadUInt32();
+            var sourceItemId = packet.ReadUInt32();
             var questFlags = (QuestFlags)packet.ReadUInt32();
+
+            // Check for the source item and if we don't have it, query for it
+            if (sourceItemId > 0)
+            {
+                var item = ItemManager.Instance.Get(sourceItemId);
+                if (item == null)
+                    QueryItemPrototype(sourceItemId);
+            }
 
             // Quest rewards
             for (int i = 0; i < 4; i++)
@@ -219,7 +227,8 @@ namespace mClient.Clients
                 QuestFlags = questFlags,
                 QuestPointMapId = questPointMapId,
                 QuestPoint = new Coords3() { X = questPointX, Y = questPointY },
-                QuestObjectives = objectives
+                QuestObjectives = objectives,
+                SourceItemId = sourceItemId
             };
 
             QuestManager.Instance.Add(questInfo);
@@ -280,28 +289,6 @@ namespace mClient.Clients
             // Send message to activities
             var message = new QuestListMessage() { FromEntityGuid = entityGuid, QuestIdList = quests };
             player.PlayerAI.SendMessageToAllActivities(message);
-
-            /*
-            // First, try to complete all the quests if we have them in our log to make room for new ones
-            foreach (var q in quests)
-                if (player.PlayerObject.GetQuestSlot(q) < QuestConstants.MAX_QUEST_LOG_SIZE)
-                    CompleteQuest(entityGuid, q);
-
-            // if the players quest log is not full, accept the quest
-            foreach (var q in quests)
-                if (!player.PlayerObject.IsQuestLogFull)
-                    AcceptQuest(entityGuid, q);
-
-            // Remove flag from AI, telling them we got the quests
-            player.PlayerAI.WaitingToAcceptQuests = false;
-
-            // Remove the quest giver as well so we don't keep trying to get quests from this entity immediately until
-            // we can update the quest giver statuses
-            player.RemoveQuestGiver(entityGuid);
-
-            // Finally update any quest giver statuses
-            GetQuestGiverStatuses();
-            */
         }
 
         /// <summary>
@@ -330,29 +317,6 @@ namespace mClient.Clients
             // Send message to activities
             var message = new QuestListMessage() { FromEntityGuid = entityGuid, QuestIdList = quests };
             player.PlayerAI.SendMessageToAllActivities(message);
-
-            /*
-            // First, try to complete all the quests if we have them in our log to make room for new ones
-            foreach (var q in quests)
-                if (player.PlayerObject.GetQuestSlot(q) < QuestConstants.MAX_QUEST_LOG_SIZE)
-                    CompleteQuest(entityGuid, q);
-
-            // if the players quest log is not full, accept the quest
-            foreach (var q in quests)
-                if (!player.PlayerObject.IsQuestLogFull)
-                    AcceptQuest(entityGuid, q);
-
-
-            // Remove flag from AI, telling them we got the quests
-            player.PlayerAI.WaitingToAcceptQuests = false;
-
-            // Remove the quest giver as well so we don't keep trying to get quests from this entity immediately until
-            // we can update the quest giver statuses
-            player.RemoveQuestGiver(entityGuid);
-
-            // Finally update any quest giver statuses
-            GetQuestGiverStatuses();
-            */
         }
 
         /// <summary>
@@ -486,6 +450,15 @@ namespace mClient.Clients
             // and can turn in the quest if need be
             if (killCount >= requiredCount)
                 GetQuestGiverStatuses();
+
+            var message = new QuestUpdateAddKillMessage()
+            {
+                QuestId = questId,
+                CreateOrGoId = creatureTemplateEntry,
+                KillCount = killCount,
+                KillRequiredCount = requiredCount
+            };
+            player.PlayerAI.SendMessageToAllActivities(message);
         }
 
         /// <summary>

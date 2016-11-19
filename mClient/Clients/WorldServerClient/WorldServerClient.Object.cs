@@ -165,7 +165,10 @@ namespace mClient.Clients
         public void HandleUpdateMovementBlock(PacketIn packet, Object newObject)
         {
             var movementBlock = MovementBlock.Read(packet);
-            newObject.Position = new Coordinate(movementBlock.Movement.Position.X, movementBlock.Movement.Position.Y, movementBlock.Movement.Position.Z, movementBlock.Movement.Facing);
+            if (movementBlock.Movement != null && movementBlock.Movement.Position != null)
+            {
+                newObject.Position = new Coordinate(movementBlock.Movement.Position.X, movementBlock.Movement.Position.Y, movementBlock.Movement.Position.Z, movementBlock.Movement.Facing);
+            }
         }
 
         public void HandleUpdateObjectFieldBlock(PacketIn packet, Object newObject)

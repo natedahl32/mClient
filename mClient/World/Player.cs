@@ -785,7 +785,7 @@ namespace mClient.World
             if (spell == null)
                 return;
 
-            // Start a cooldown for spells that have a cast time, they haven't been started yet because they can be canceled
+            // Start a cooldown for spells that have a cast time, the cooldown has not been started yet because they can be canceled
             if (spell.CastTime > 0)
                 mSpellCooldownManager.StartCooldown(spell);
 
@@ -843,7 +843,11 @@ namespace mClient.World
         /// <param name="message"></param>
         private void HandleChargeEffect(SpellEntry spell, SpellCastGoMessage message)
         {
-            // TODO: Need to fix the charge effect on bots. When on a client it looks like it starts briefly and then stops right away and the bot never charges all the way to the target.
+            // TODO: Need to fix the charge effect on bots. When on a client it looks like it starts briefly and then stops right away and the bot never charges all the way to the target. I believe
+            // this has something to do with our movement code where it is overwriting the charge effect. However, I'm not sure if we need to do anything here in the client for the charge effect or
+            // if the server handles that. Judging by how the bot seems to start with the charge I assume the server handles it.
+
+
         }
 
         #endregion

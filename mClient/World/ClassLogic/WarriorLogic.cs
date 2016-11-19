@@ -120,21 +120,22 @@ namespace mClient.World.ClassLogic
                     needBuffs.Add(Spell(BATTLE_STANCE), new List<Player>() { Player });
 
                 // Check each player in the group for buffs
-                foreach (var groupMember in Player.CurrentGroup.PlayersInGroup)
-                {
-                    // Battle Shout buff
-                    if (HasSpellAndCanCast(BATTLE_SHOUT))
+                if (Player.CurrentGroup != null && Player.CurrentGroup.PlayersInGroup.Count() > 0)
+                    foreach (var groupMember in Player.CurrentGroup.PlayersInGroup)
                     {
-                        var battleShoutSpell = Spell(BATTLE_SHOUT);
-                        // TODO: Make sure group member is in range of spell as well
-                        // TODO: Make sure group member does not have BETTER buff than the one we are casting
-                        if (!groupMember.HasAura(BATTLE_SHOUT))
-                            if (needBuffs.ContainsKey(battleShoutSpell))
-                                needBuffs[battleShoutSpell].Add(groupMember);
-                            else
-                                needBuffs.Add(battleShoutSpell, new List<Player>() { groupMember });
+                        // Battle Shout buff
+                        if (HasSpellAndCanCast(BATTLE_SHOUT))
+                        {
+                            var battleShoutSpell = Spell(BATTLE_SHOUT);
+                            // TODO: Make sure group member is in range of spell as well
+                            // TODO: Make sure group member does not have BETTER buff than the one we are casting
+                            if (!groupMember.HasAura(BATTLE_SHOUT))
+                                if (needBuffs.ContainsKey(battleShoutSpell))
+                                    needBuffs[battleShoutSpell].Add(groupMember);
+                                else
+                                    needBuffs.Add(battleShoutSpell, new List<Player>() { groupMember });
+                        }
                     }
-                }
 
                 return needBuffs;
             }

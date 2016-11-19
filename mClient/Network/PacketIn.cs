@@ -106,7 +106,7 @@ namespace mClient.Network
 
         public Coords3 ReadCoords3()
         {
-            Coords3 v;
+            Coords3 v = new Coords3();
 
             v.X = ReadSingle();
             v.Y = ReadSingle();
