@@ -80,11 +80,19 @@ namespace mClient.World.AI.Activity.Loot
                 // the chest has to do with one of the data fields and the Lock.dbc file, but I can't find a connection.
                 PlayerAI.Client.CastSpell(mLootableObject, OPEN_SPELL_ID);
                 mIsLooting = true;
+                // Set expectation that we get loot
+                Expect(() => mItemsToLoot != null, 6000); // open spell is a 5 second cast, so wait 6 seconds
                 return;
             }
 
             // If we don't have items to loot yet keep waiting for them
-            if (mItemsToLoot == null) return;
+            if (mItemsToLoot == null)
+            {
+                // If our expecation that we got loot has lapsed, get out
+                if (ExpectationHasElapsed)
+                    PlayerAI.CompleteActivity();
+                return;
+            }
 
             // If we have items to loot still do that now
             if (mItemsToLoot.Count > 0)

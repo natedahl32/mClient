@@ -34,6 +34,11 @@ namespace mClient.World.AI
         {
             if (Player.IsInCombat)
                 return BehaviourTreeStatus.Success;
+            else
+            {
+                mTargetSelection = null;
+                mIsAttackingTarget = false;
+            }
             return BehaviourTreeStatus.Failure;
         }
 
