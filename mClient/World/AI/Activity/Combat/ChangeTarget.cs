@@ -44,6 +44,13 @@ namespace mClient.World.AI.Activity.Combat
                 return;
             }
 
+            // If the target is now dead, don't change to it (we get stuck if this activity gets paused and when we come back the target is dead)
+            if (mNewTarget.IsDead)
+            {
+                PlayerAI.CompleteActivity();
+                return;
+            }
+
             // Change targets
             PlayerAI.SetTargetSelection(mNewTarget);
         }

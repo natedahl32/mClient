@@ -545,6 +545,9 @@ namespace mClient.World
         /// <returns></returns>
         public bool IsItemUseful(Clients.Item item)
         {
+            // If not base item info, keep it becasue we can't tell for sure
+            if (item.BaseInfo == null) return true;
+
             // If the item is grey quality it is not useful. Grey equipment can be useful at lower levels
             // but it is assumed those items have already been equipped.
             if (item.BaseInfo.Quality == ItemQualities.ITEM_QUALITY_POOR)

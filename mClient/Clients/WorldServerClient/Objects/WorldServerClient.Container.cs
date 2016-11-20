@@ -2,6 +2,7 @@
 using mClient.Shared;
 using mClient.World.Items;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,7 @@ namespace mClient.Clients
     {
         #region Declarations
 
-        private Dictionary<int, Item> mInventory = new Dictionary<int, Item>();
+        private ConcurrentDictionary<int, Item> mInventory = new ConcurrentDictionary<int, Item>();
 
         #endregion
 
@@ -58,7 +59,10 @@ namespace mClient.Clients
         public void ClearSlot(int slot)
         {
             if (mInventory.ContainsKey(slot))
-                mInventory[slot] = null;
+            {
+                var currentItem = mInventory[slot];
+                mInventory.TryUpdate(slot, null, currentItem);
+            }
         }
 
         /// <summary>
@@ -75,11 +79,14 @@ namespace mClient.Clients
 
                 // Add the item to the containers inventory
                 if (mInventory.ContainsKey(slot))
-                    mInventory[slot] = item;
+                {
+                    var currentItem = mInventory[slot];
+                    mInventory.TryUpdate(slot, item, currentItem);
+                }
                 else
                 {
                     if (item != null)
-                        mInventory.Add(slot, item);
+                        mInventory.TryAdd(slot, item);
                 }
 
                 // If we have an item object, check if it's in the item manager and if not, query for it

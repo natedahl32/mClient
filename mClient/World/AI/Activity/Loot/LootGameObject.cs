@@ -81,7 +81,7 @@ namespace mClient.World.AI.Activity.Loot
                 PlayerAI.Client.CastSpell(mLootableObject, OPEN_SPELL_ID);
                 mIsLooting = true;
                 // Set expectation that we get loot
-                Expect(() => mItemsToLoot != null, 6000); // open spell is a 5 second cast, so wait 6 seconds
+                Expect(() => mItemsToLoot != null, 10000); // open spell is a 5 second cast, so wait at least double that
                 return;
             }
 

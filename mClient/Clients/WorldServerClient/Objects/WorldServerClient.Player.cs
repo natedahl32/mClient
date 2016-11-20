@@ -4,6 +4,7 @@ using mClient.World.Items;
 using mClient.World.Quest;
 using mClient.World.Skill;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,9 +15,9 @@ namespace mClient.Clients
     {
         #region Declarations
 
-        private Dictionary<int, Container> mInventoryBags = new Dictionary<int, Container>();
-        private Dictionary<int, Item> mInventory = new Dictionary<int, Item>();
-        private Dictionary<EquipmentSlots, Item> mEquippedItems = new Dictionary<EquipmentSlots, Item>();
+        private ConcurrentDictionary<int, Container> mInventoryBags = new ConcurrentDictionary<int, Container>();
+        private ConcurrentDictionary<int, Item> mInventory = new ConcurrentDictionary<int, Item>();
+        private ConcurrentDictionary<EquipmentSlots, Item> mEquippedItems = new ConcurrentDictionary<EquipmentSlots, Item>();
 
         #endregion
 
@@ -26,7 +27,7 @@ namespace mClient.Clients
         {
             // Fill equipment slots with nothing
             for (int i = (int)EquipmentSlots.EQUIPMENT_SLOT_START; i < (int)EquipmentSlots.EQUIPMENT_SLOT_END; i++)
-                mEquippedItems.Add((EquipmentSlots)i, null);
+                mEquippedItems.TryAdd((EquipmentSlots)i, null);
         }
 
         #endregion
@@ -391,7 +392,10 @@ namespace mClient.Clients
                 {
                     // Clear out the item from inventory since it will be equipped
                     if (bag == ItemConstants.INVENTORY_SLOT_BAG_0)
-                        mInventory[slot] = null;
+                    {
+                        var currentItem = mInventory[slot];
+                        mInventory.TryUpdate(slot, null, currentItem);
+                    }
                     else
                     {
                         var holdingBag = Bags.Where(b => b.Bag == bag).SingleOrDefault();
@@ -403,9 +407,12 @@ namespace mClient.Clients
 
                 // Set the new bag to it's position
                 if (mInventoryBags.ContainsKey(equipToSlot))
-                    mInventoryBags[equipToSlot] = newBag;
+                {
+                    var currentBag = mInventoryBags[equipToSlot];
+                    mInventoryBags.TryUpdate(equipToSlot, newBag, currentBag);
+                }
                 else
-                    mInventoryBags.Add(equipToSlot, newBag);
+                    mInventoryBags.TryAdd(equipToSlot, newBag);
 
                 return true;
             }
@@ -551,7 +558,10 @@ namespace mClient.Clients
         {
             // Inventory items
             if (slot.Bag == ItemConstants.INVENTORY_SLOT_BAG_0)
-                mInventory[slot.Slot] = null;
+            {
+                var currentItem = mInventory[slot.Slot];
+                mInventory.TryUpdate(slot.Slot, null, currentItem);
+            }
             // Bags
             else
             {
@@ -592,11 +602,14 @@ namespace mClient.Clients
                     // This is a bag
                     var container = item as Container;
                     if (mInventoryBags.ContainsKey(equippedSlotValue))
-                        mInventoryBags[equippedSlotValue] = container;
+                    {
+                        var currentContainer = mInventoryBags[equippedSlotValue];
+                        mInventoryBags.TryUpdate(equippedSlotValue, container, currentContainer);
+                    }
                     else
                     {
                         if (container != null)
-                            mInventoryBags.Add(equippedSlotValue, container);
+                            mInventoryBags.TryAdd(equippedSlotValue, container);
                     }
 
                     // Update the items in the container
@@ -611,24 +624,30 @@ namespace mClient.Clients
                     // This is an equipped item
                     var equippedSlot = (EquipmentSlots)equippedSlotValue;
                     if (mEquippedItems.ContainsKey(equippedSlot))
-                        mEquippedItems[equippedSlot] = item;
+                    {
+                        var currentItem = mEquippedItems[equippedSlot];
+                        mEquippedItems.TryUpdate(equippedSlot, item, currentItem);
+                    }
                     else
                     {
                         if (item != null)
-                            mEquippedItems.Add(equippedSlot, item);
+                            mEquippedItems.TryAdd(equippedSlot, item);
                     }
                 }
             }
             // Inventory items
             else if (slot < (int)PlayerFields.PLAYER_FIELD_BANK_SLOT_1)
             {
-                var inventorySlot = (slot - (int)PlayerFields.PLAYER_FIELD_PACK_SLOT_1) / 2;
+                var inventorySlot = ((slot - (int)PlayerFields.PLAYER_FIELD_PACK_SLOT_1) / 2) + (int)InventoryPackSlots.INVENTORY_SLOT_ITEM_START;
                 if (mInventory.ContainsKey(inventorySlot))
-                    mInventory[inventorySlot + (int)InventoryPackSlots.INVENTORY_SLOT_ITEM_START] = item;
+                {
+                    var currentItem = mInventory[inventorySlot];
+                    mInventory.TryUpdate(inventorySlot, item, currentItem);
+                }
                 else
                 {
                     if (item != null)
-                        mInventory.Add(inventorySlot + (int)InventoryPackSlots.INVENTORY_SLOT_ITEM_START, item);
+                        mInventory.TryAdd(inventorySlot, item);
                 }
             }
             // TOOD: Need to add bank bags, bank slots, and keyring to this as well
