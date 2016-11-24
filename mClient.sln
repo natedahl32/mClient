@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotServer", "BotServer\BotS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mClient.BotServer", "mClient.BotServer\mClient.BotServer.csproj", "{F2304967-F882-41A9-A134-F20AF7FF0A36}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mClient.Maps", "mClient.Maps\mClient.Maps.csproj", "{8A268721-27CA-460F-A87D-FD5618AC8D4A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{F2304967-F882-41A9-A134-F20AF7FF0A36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2304967-F882-41A9-A134-F20AF7FF0A36}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2304967-F882-41A9-A134-F20AF7FF0A36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A268721-27CA-460F-A87D-FD5618AC8D4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A268721-27CA-460F-A87D-FD5618AC8D4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A268721-27CA-460F-A87D-FD5618AC8D4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A268721-27CA-460F-A87D-FD5618AC8D4A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

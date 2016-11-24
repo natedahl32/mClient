@@ -255,6 +255,13 @@ namespace mClient.World.AI
             {
                 try
                 {
+                    // Update the map and instance of the player for the client
+                    if (Player.PlayerObject != null)
+                    {
+                        Client.movementMgr.MapID = Player.MapID;
+                        Client.movementMgr.InstanceID = Player.InstanceID;
+                    }
+
                     // Wait 2 seconds before we start AI to make sure we are logged in to the game
                     if ((MM_GetTime() - lastUpdateTime) < 2000) continue;
 

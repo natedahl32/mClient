@@ -164,6 +164,8 @@
     <Compile Include="Network\PacketIn.cs" />
     <Compile Include="Network\PacketLoop.cs" />
     <Compile Include="Network\PacketOut.cs" />
+    <Compile Include="Pathfinding\MapMoveHelper.cs" />
+    <Compile Include="Pathfinding\PathFinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shared\AbstractObjectManager.cs" />
     <Compile Include="Shared\BlizChunkHeader.cs" />
@@ -216,6 +218,7 @@
     <Compile Include="World\AI\Activity\Trade\TradeItems.cs" />
     <Compile Include="World\AI\Activity\Train\LearnSpellFromTrainer.cs" />
     <Compile Include="World\AI\Activity\Train\TrainAvailableSpells.cs" />
+    <Compile Include="Pathfinding\Map.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Combat.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Dumps.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Inventory.cs" />
@@ -313,6 +316,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\mClient.Maps\mClient.Maps.csproj">
+      <Project>{8a268721-27ca-460f-a87d-fd5618ac8d4a}</Project>
+      <Name>mClient.Maps</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

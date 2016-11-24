@@ -48,6 +48,7 @@
     <Compile Include="BotAccount.cs" />
     <Compile Include="BotServer.cs" />
     <Compile Include="Data\ServerInfo.cs" />
+    <Compile Include="mCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

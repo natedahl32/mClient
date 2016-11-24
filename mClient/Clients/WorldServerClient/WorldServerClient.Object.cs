@@ -121,6 +121,11 @@ namespace mClient.Clients
                             objectMgr.addObject(moveObject);
                         }
 
+                        if (moveGuid.GetOldGuid() == player.Guid.GetOldGuid())
+                        {
+                            var i = 0;
+                        }
+
                         HandleUpdateMovementBlock(packet, moveObject);
                         objectMgr.updateObject(moveObject);
 

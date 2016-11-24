@@ -12,6 +12,7 @@ using mClient.Shared;
 using mClient.Constants;
 using mClient.Terrain;
 using PObject = mClient.Clients.Object;
+using mClient.Pathfinding;
 
 namespace mClient.Clients
 {
@@ -77,6 +78,10 @@ namespace mClient.Clients
         {
             get { return Flag.IsMoveFlagSet(MovementFlags.MOVEMENTFLAG_FORWARD); }
         }
+
+        public uint MapID { get; set; }
+
+        public uint InstanceID { get; set; }
 
         #endregion
 
@@ -229,6 +234,12 @@ namespace mClient.Clients
 
                 Coordinate expected = new Coordinate(loc.X + predictedDX, loc.Y + predictedDY, player.Position.Z, player.Position.O);
                 expected = terrainMgr.getZ(expected);
+
+                // Get the Z value based path finder values returned (takes into account map objects)
+                var pathZ = MapMoveHelper.GetZPolyBoundaryForLocation(player, MapID, InstanceID, new Maps.Vector3(expected.X, expected.Y, expected.Z));
+                if (pathZ > expected.Z)
+                    expected.Z = pathZ;
+
                 player.Position = expected;
 
             }

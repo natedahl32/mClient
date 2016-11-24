@@ -43,7 +43,7 @@ namespace mClient.Terrain
             // Get Vertex Coordinates
             int iv = (int)Math.Round((double)Math.Abs((X - x) / vdiff));
             int jv = (int)Math.Round((double)Math.Abs((Y - y) / vdiff));
-
+            
             // Add the vertex height difference to the base height of the maptile, and return it!
             float ActualZ = Z + mapChunkTable[i][j].VerticesOuter[iv][jv];
 

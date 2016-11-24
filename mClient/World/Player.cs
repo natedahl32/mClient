@@ -149,6 +149,11 @@ namespace mClient.World
         public UInt32 MapID { get; set; }
 
         /// <summary>
+        /// Gets the instance ID the player is in
+        /// </summary>
+        public uint InstanceID { get; set; }
+
+        /// <summary>
         /// Gets the Gender of the player
         /// </summary>
         public byte Gender { get; set; }
