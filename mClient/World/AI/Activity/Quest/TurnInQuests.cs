@@ -168,6 +168,18 @@ namespace mClient.World.AI.Activity.Quest
                     }
                 }
             }
+
+            // Handles a quest list returned from an npc
+            if (message.MessageType == Constants.WorldServerOpCode.SMSG_QUESTGIVER_OFFER_REWARD)
+            {
+                // This is a single quest returned from a quest giver
+                var questOfferMessage = message as QuestOfferRewards;
+                if (questOfferMessage != null)
+                {
+                    if (PlayerAI.Player.PlayerObject.GetQuestSlot(questOfferMessage.QuestId) < QuestConstants.MAX_QUEST_LOG_SIZE)
+                        mQuestsWeHaveInLog = new List<uint>() { questOfferMessage.QuestId };
+                }
+            }
         }
 
         #endregion

@@ -31,6 +31,45 @@ namespace mClient.Constants
             0xffff8000,        // ORANGE
             0xffe6cc80         // LIGHT YELLOW
         };
+
+        public static uint[] ItemWeaponSkills = new uint[MAX_ITEM_SUBCLASS_WEAPON]
+        {
+            (uint)SkillType.SKILL_AXES,
+            (uint)SkillType.SKILL_2H_AXES,
+            (uint)SkillType.SKILL_BOWS,
+            (uint)SkillType.SKILL_GUNS,
+            (uint)SkillType.SKILL_MACES,
+            (uint)SkillType.SKILL_2H_MACES,
+            (uint)SkillType.SKILL_POLEARMS,
+            (uint)SkillType.SKILL_SWORDS,
+            (uint)SkillType.SKILL_2H_SWORDS,
+            0,
+            (uint)SkillType.SKILL_STAVES,
+            0,
+            0,
+            (uint)SkillType.SKILL_UNARMED,
+            0,
+            (uint)SkillType.SKILL_DAGGERS,
+            (uint)SkillType.SKILL_THROWN,
+            (uint)SkillType.SKILL_ASSASSINATION,
+            (uint)SkillType.SKILL_CROSSBOWS,
+            (uint)SkillType.SKILL_WANDS,
+            (uint)SkillType.SKILL_FISHING
+        };
+
+        public static uint[] ItemArmorSkills = new uint[MAX_ITEM_SUBCLASS_ARMOR]
+        {
+            0,
+            (uint)SkillType.SKILL_CLOTH,
+            (uint)SkillType.SKILL_LEATHER,
+            (uint)SkillType.SKILL_MAIL,
+            (uint)SkillType.SKILL_PLATE_MAIL,
+            0,
+            (uint)SkillType.SKILL_SHIELD,
+            0,
+            0,
+            0
+        };
     }
 
     public enum EquipmentSlots

@@ -502,17 +502,6 @@ namespace mClient.World
         }
 
         /// <summary>
-        /// Gets whether or not the player has the skill for the item/subclass combination
-        /// </summary>
-        /// <param name="itemClass"></param>
-        /// <param name="subClass"></param>
-        /// <returns></returns>
-        public bool HasProficiency(ItemClass itemClass, uint subClass)
-        {
-            return mProficiencies.Any(p => p.ItemClass == itemClass && p.ItemSubClassMask == subClass);
-        }
-
-        /// <summary>
         /// Gets whether or not the player has a spell
         /// </summary>
         /// <param name="spellId"></param>
@@ -576,14 +565,14 @@ namespace mClient.World
                 case ItemClass.ITEM_CLASS_WEAPON:
                     if (item.BaseInfo.SubClass >= Constants.ItemConstants.MAX_ITEM_SUBCLASS_WEAPON)
                         return false;
-                    if (!HasProficiency(ItemClass.ITEM_CLASS_WEAPON, item.BaseInfo.SubClass))
+                    if (!PlayerObject.HasSkill((SkillType)ItemConstants.ItemWeaponSkills[item.BaseInfo.SubClass]))
                         return false;
                     return true;
 
                 case ItemClass.ITEM_CLASS_ARMOR:
                     if (item.BaseInfo.SubClass >= Constants.ItemConstants.MAX_ITEM_SUBCLASS_ARMOR)
                         return false;
-                    if (!HasProficiency(ItemClass.ITEM_CLASS_ARMOR, item.BaseInfo.SubClass))
+                    if (!PlayerObject.HasSkill((SkillType)ItemConstants.ItemArmorSkills[item.BaseInfo.SubClass]))
                         return false;
                     return true;
 
@@ -720,8 +709,14 @@ namespace mClient.World
         /// <returns></returns>
         public bool IsItemAnUpgrade(Clients.Item item)
         {
+            if (item == null) return false;
+
             // If the item is not useful to us it is not an upgrade
             if (!IsItemUseful(item))
+                return false;
+
+            // If we don't have base info for the item yet
+            if (item.BaseInfo == null)
                 return false;
 
             // If the item is not armor or a weapon we cannot consider it an upgrade

@@ -331,7 +331,7 @@ namespace mClient.Clients
             var questId = packet.ReadUInt32();
             packet.ReadString();    // Quest title
             packet.ReadString();    // Offer reward text
-            packet.ReadUInt32();    // Auto complete
+            var autoComplete = packet.ReadUInt32();    // Auto complete
 
             var emoteCount = packet.ReadUInt32();
             for (int i = 0; i < emoteCount; i++)
@@ -352,7 +352,7 @@ namespace mClient.Clients
             }
 
             // Send a message with the reward items to the activities
-            var message = new QuestOfferRewards() { RewardItems = rewardItems };
+            var message = new QuestOfferRewards() { RewardItems = rewardItems, QuestId = questId, AutoComplete = (autoComplete == 1) };
             player.PlayerAI.SendMessageToAllActivities(message);
 
             // I don't think we need anything below this. It is just for display purposes for a client.

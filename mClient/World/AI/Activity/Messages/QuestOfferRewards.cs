@@ -24,6 +24,16 @@ namespace mClient.World.AI.Activity.Messages
         #region Properties
 
         /// <summary>
+        /// Id of the quest offering rewards
+        /// </summary>
+        public uint QuestId { get; set; }
+
+        /// <summary>
+        /// Auto complete the quest?
+        /// </summary>
+        public bool AutoComplete { get; set; }
+
+        /// <summary>
         /// List of items offered as a reward
         /// </summary>
         public IList<RewardItem> RewardItems { get; set; }

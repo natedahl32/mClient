@@ -47,7 +47,7 @@ namespace mClient.World.AI
         {
             // Are there any game objects near us that we can loot?
             var gameObjects = Client.objectMgr.GetAllGameObjects();
-            if (gameObjects.Any(o => o.BaseInfo.GameObjectType == Constants.GameObjectType.Chest && !o.HasBeenLooted && o.CanInteract))
+            if (gameObjects.Any(o => o.BaseInfo != null && o.BaseInfo.GameObjectType == Constants.GameObjectType.Chest && !o.HasBeenLooted && o.CanInteract))
                 return BehaviourTreeStatus.Success;
 
             return BehaviourTreeStatus.Failure;
@@ -62,7 +62,7 @@ namespace mClient.World.AI
             // Get game objects
             var gameObjects = Client.objectMgr.GetAllGameObjects();
             // Check for chests that we haven't looted yet and can interact with
-            foreach (var chest in gameObjects.Where(o => o.BaseInfo.GameObjectType == Constants.GameObjectType.Chest && !o.HasBeenLooted && o.CanInteract))
+            foreach (var chest in gameObjects.Where(o => o.BaseInfo != null && o.BaseInfo.GameObjectType == Constants.GameObjectType.Chest && !o.HasBeenLooted && o.CanInteract))
             {
                 // If the chest has not been looted yet and it is within distance for us to loot
                 var chestGO = chest as Clients.GameObject;
