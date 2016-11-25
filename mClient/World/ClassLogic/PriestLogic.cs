@@ -1,4 +1,6 @@
-﻿using mClient.DBC;
+﻿using mClient.Clients;
+using mClient.Constants;
+using mClient.DBC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -192,6 +194,56 @@ namespace mClient.World.ClassLogic
             SMITE = InitSpell(Spells.SMITE_1);
             SILENCE = InitSpell(Spells.SILENCE_1);
             VAMPIRIC_EMBRACE = InitSpell(Spells.VAMPIRIC_EMBRACE_1);
+        }
+
+        public override float CompareItems(Item item1, Item item2)
+        {
+            // Get the base value of the compare
+            var baseCompare = base.CompareItems(item1, item2);
+
+            float item1Score = 0f;
+            float item2Score = 0f;
+
+            if (item1.BaseInfo.ItemClass == ItemClass.ITEM_CLASS_WEAPON && item2.BaseInfo.ItemClass == ItemClass.ITEM_CLASS_WEAPON)
+            {
+                if (item1.BaseInfo.SubClass == (int)ItemSubclassWeapon.ITEM_SUBCLASS_WEAPON_WAND)
+                    item1Score += (item1.DPS * 0.9f);
+                if (item1.BaseInfo.SubClass == (int)ItemSubclassWeapon.ITEM_SUBCLASS_WEAPON_WAND)
+                    item2Score += (item2.DPS * 0.9f);
+            }
+
+            var newCompare = item1Score - item2Score;
+            return baseCompare + newCompare;
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        protected override void SetStatWeights()
+        {
+            base.SetStatWeights();
+
+            if (Spec == MainSpec.PRIEST_SPEC_DISCIPLINE || Spec == MainSpec.PRIEST_SPEC_HOLY)
+            {
+                mStatWeights[ItemModType.ITEM_MOD_STAMINA] = 0.45f;
+                mStatWeights[ItemModType.ITEM_MOD_SPIRIT] = 0.6f;
+                mStatWeights[ItemModType.ITEM_MOD_INTELLECT] = 0.9f;
+                mStatWeights[ItemModType.ITEM_MOD_STRENGTH] = 0.01f;
+                mStatWeights[ItemModType.ITEM_MOD_AGILITY] = 0.01f;
+                mStatWeights[ItemModType.ITEM_MOD_MANA] = 0.85f;
+                mStatWeights[ItemModType.ITEM_MOD_HEALTH] = 0.5f;
+            }
+            else if (Spec == MainSpec.PRIEST_SPEC_SHADOW)
+            {
+                mStatWeights[ItemModType.ITEM_MOD_STAMINA] = 0.45f;
+                mStatWeights[ItemModType.ITEM_MOD_SPIRIT] = 0.35f;
+                mStatWeights[ItemModType.ITEM_MOD_INTELLECT] = 0.9f;
+                mStatWeights[ItemModType.ITEM_MOD_STRENGTH] = 0.01f;
+                mStatWeights[ItemModType.ITEM_MOD_AGILITY] = 0.01f;
+                mStatWeights[ItemModType.ITEM_MOD_MANA] = 0.55f;
+                mStatWeights[ItemModType.ITEM_MOD_HEALTH] = 0.5f;
+            }
         }
 
         #endregion

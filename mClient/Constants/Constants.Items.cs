@@ -18,6 +18,8 @@ namespace mClient.Constants
         public const int MAX_ITEM_SUBCLASS_WEAPON = 21;
         public const int MAX_ITEM_SUBCLASS_ARMOR = 10;
 
+        public const int MAX_ITEM_MOD = 8;
+
         public const int MAX_ITEM_QUALITY = 7;
         public static uint[] ItemQualityColors = new uint[MAX_ITEM_QUALITY]
         {
@@ -54,6 +56,16 @@ namespace mClient.Constants
         EQUIPMENT_SLOT_RANGED       = 17,
         EQUIPMENT_SLOT_TABARD       = 18,
         EQUIPMENT_SLOT_END          = 19
+    }
+    public enum ItemEnchantmentType
+    {
+        ITEM_ENCHANTMENT_TYPE_NONE = 0,
+        ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL = 1,
+        ITEM_ENCHANTMENT_TYPE_DAMAGE = 2,
+        ITEM_ENCHANTMENT_TYPE_EQUIP_SPELL = 3,
+        ITEM_ENCHANTMENT_TYPE_RESISTANCE = 4,
+        ITEM_ENCHANTMENT_TYPE_STAT = 5,
+        ITEM_ENCHANTMENT_TYPE_TOTEM = 6
     }
 
     public enum InventorySlots                                         // 4 slots
@@ -531,5 +543,25 @@ namespace mClient.Constants
         ITEM_DYNFLAG_UNK15 = 0x00008000,
         ITEM_DYNFLAG_UNK16 = 0x00010000,
         ITEM_DYNFLAG_UNK17 = 0x00020000,
+    }
+
+    public enum EnchantmentSlot
+    {
+        PERM_ENCHANTMENT_SLOT = 0,
+        TEMP_ENCHANTMENT_SLOT = 1,
+        MAX_INSPECTED_ENCHANTMENT_SLOT = 2,
+
+        PROP_ENCHANTMENT_SLOT_0 = 3,                        // used with RandomSuffix
+        PROP_ENCHANTMENT_SLOT_1 = 4,                        // used with RandomSuffix
+        PROP_ENCHANTMENT_SLOT_2 = 5,                        // used with RandomSuffix
+        PROP_ENCHANTMENT_SLOT_3 = 6,
+        MAX_ENCHANTMENT_SLOT = 7
+    }
+
+    public enum EnchantmentOffset
+    {
+        ENCHANTMENT_ID_OFFSET = 0,
+        ENCHANTMENT_DURATION_OFFSET = 1,
+        ENCHANTMENT_CHARGES_OFFSET = 2
     }
 }

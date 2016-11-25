@@ -235,13 +235,12 @@ namespace mClient.Clients
                 Coordinate expected = new Coordinate(loc.X + predictedDX, loc.Y + predictedDY, player.Position.Z, player.Position.O);
                 expected = terrainMgr.getZ(expected);
 
-                // Get the Z value based path finder values returned (takes into account map objects)
-                var pathZ = MapMoveHelper.GetZPolyBoundaryForLocation(player, MapID, InstanceID, new Maps.Vector3(expected.X, expected.Y, expected.Z));
-                if (pathZ > expected.Z)
-                    expected.Z = pathZ;
+                // If we have a follow target, check their Z value and if we are close enough to them change our Z value to reflect those. This is gigantic hack to make sure
+                // our bots stay above game objects. But it allows them to keep up with us withouth having to implement a 3D librar to do calculations.
+                if (mFollowTarget != null && TerrainMgr.CalculateDistance(expected, mFollowTarget.Position) <= 10.0f)
+                    expected.Z = mFollowTarget.Position.Z;
 
                 player.Position = expected;
-
             }
 
             oldLocation = loc;

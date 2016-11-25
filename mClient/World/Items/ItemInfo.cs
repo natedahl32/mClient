@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace mClient.World.Items
 {
@@ -225,6 +226,18 @@ namespace mClient.World.Items
         }
 
         #region Public Methods
+
+        /// <summary>
+        /// Gets the stat value on an item for a type
+        /// </summary>
+        /// <param name="stat"></param>
+        /// <returns></returns>
+        public uint GetStatValue(ItemModType stat)
+        {
+            if (ItemStats.Any(s => s.StatType == stat))
+                return ItemStats.Where(s => s.StatType == stat).Select(s => s.StatValue).SingleOrDefault();
+            return 0;
+        }
 
         public string DumpInfo()
         {

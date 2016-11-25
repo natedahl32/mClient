@@ -16,8 +16,8 @@ namespace mClient.World.AI
     {
         #region Declarations
 
-        private const float DISTANCE_TRAVELED_TO_UPDATE_QUEST_GIVERS = 20.0f;
-        private const float MAXIMUM_DISTANCE_FOR_SOURCE_POINT_OBJECTIVE = 20.0f;
+        private const float DISTANCE_TRAVELED_TO_UPDATE_QUEST_GIVERS = 15.0f;
+        private const float MAXIMUM_DISTANCE_FOR_SOURCE_POINT_OBJECTIVE = 15.0f;
         private const float MAXIMUM_DISTANCE_FOR_GO_OBJECTIVE = 10.0f;
 
         // Holds the last coordinate that we did a quest status update check

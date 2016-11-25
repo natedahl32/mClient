@@ -167,6 +167,11 @@ namespace mClient.DBC
             return AttributesEx4.HasFlag(attribute);
         }
 
+        public int CalculateSimpleValue(SpellEffectIndex eff)
+        {
+            return EffectBasePoints[(int)eff] + (int)EffectBaseDice[(int)eff];
+        }
+
         public string DumpInfo()
         {
             var dump = string.Empty;

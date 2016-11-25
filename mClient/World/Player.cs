@@ -359,6 +359,12 @@ namespace mClient.World
                 PlayerAI.NotInMeleeRange = false;
         }
 
+        public void ClearEnemyList()
+        {
+            mEnemyList.Clear();
+            PlayerAI.NotInMeleeRange = false;
+        }
+
         /// <summary>
         /// Adds a spell to the player
         /// </summary>
@@ -553,9 +559,8 @@ namespace mClient.World
             // If not base item info, keep it becasue we can't tell for sure
             if (item.BaseInfo == null) return true;
 
-            // If the item is grey quality it is not useful. Grey equipment can be useful at lower levels
-            // but it is assumed those items have already been equipped.
-            if (item.BaseInfo.Quality == ItemQualities.ITEM_QUALITY_POOR)
+            // If the item is grey quality it is not useful. Grey equipment can be useful at lower levels so we exclude equipment from this check
+            if (item.BaseInfo.Quality == ItemQualities.ITEM_QUALITY_POOR && item.BaseInfo.ItemClass != ItemClass.ITEM_CLASS_WEAPON && item.BaseInfo.ItemClass != ItemClass.ITEM_CLASS_ARMOR)
                 return false;
 
             // Quest related items are useful
@@ -573,8 +578,6 @@ namespace mClient.World
                         return false;
                     if (!HasProficiency(ItemClass.ITEM_CLASS_WEAPON, item.BaseInfo.SubClass))
                         return false;
-                    // TODO: Check if it's an upgrade for us or not, for both primary and off spec. If it is for either
-                    // it is useful.
                     return true;
 
                 case ItemClass.ITEM_CLASS_ARMOR:
@@ -582,8 +585,6 @@ namespace mClient.World
                         return false;
                     if (!HasProficiency(ItemClass.ITEM_CLASS_ARMOR, item.BaseInfo.SubClass))
                         return false;
-                    // TODO: Check if it's an upgrade for us or not, for both primary and off spec. If it is for either
-                    // it is useful.
                     return true;
 
                 case ItemClass.ITEM_CLASS_KEY:
@@ -710,6 +711,46 @@ namespace mClient.World
 
             // By default return false.
             return false;
+        }
+
+        /// <summary>
+        /// Determines whether or not the passed item is an upgrade to the currently equipped item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool IsItemAnUpgrade(Clients.Item item)
+        {
+            // If the item is not useful to us it is not an upgrade
+            if (!IsItemUseful(item))
+                return false;
+
+            // If the item is not armor or a weapon we cannot consider it an upgrade
+            if (item.BaseInfo.ItemClass != ItemClass.ITEM_CLASS_ARMOR && item.BaseInfo.ItemClass != ItemClass.ITEM_CLASS_WEAPON)
+                return false;
+
+            // Get the item(s) currently equipped in this slot
+            var equippedItems = PlayerObject.GetEquippedItemsByInventoryType(item.BaseInfo.InventoryType);
+            // If not items equipped for that slot, it is an upgrade
+            if (equippedItems.Count() == 0)
+                return true;
+
+            bool isUpgrade = false;
+
+            // Loop through each item and check it against the item give to us. If we find an upgrade we break immediately.
+            foreach (var equipped in equippedItems)
+            {
+                if (equipped != null)
+                {
+                    // Check with class AI to determine upgrades
+                    if (mClassLogic.CompareItems(item, equipped) > 0)
+                    {
+                        isUpgrade = true;
+                        break;
+                    }
+                }
+            }
+
+            return isUpgrade;
         }
 
         /// <summary>

@@ -248,6 +248,85 @@ namespace mClient.Clients
         }
 
         /// <summary>
+        /// Gets items that are currently equipped by inventory type
+        /// </summary>
+        /// <param name="invType"></param>
+        /// <returns></returns>
+        public IEnumerable<Item> GetEquippedItemsByInventoryType(InventoryType invType)
+        {
+            var items = new List<Item>();
+            var equipmentSlotsToCheck = new List<EquipmentSlots>();
+            switch (invType)
+            {
+                case InventoryType.INVTYPE_HEAD:
+                    equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_HEAD);
+                    break;
+                case InventoryType.INVTYPE_NECK:
+                    equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_NECK);
+                    break;
+                case InventoryType.INVTYPE_SHOULDERS:
+                    equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_SHOULDERS);
+                    break;
+                case InventoryType.INVTYPE_CHEST:
+                    equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_CHEST);
+                    break;
+                case InventoryType.INVTYPE_WAIST:
+                    equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_WAIST);
+                    break;
+                case InventoryType.INVTYPE_LEGS:
+                    equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_LEGS);
+                    break;
+                case InventoryType.INVTYPE_FEET:
+                    equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_FEET);
+                    break;
+                case InventoryType.INVTYPE_WRISTS:
+                    equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_WRISTS);
+                    break;
+                case InventoryType.INVTYPE_HANDS:
+                    equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_HANDS);
+                    break;
+                case InventoryType.INVTYPE_FINGER:
+                    equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_FINGER1);
+                    equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_FINGER2);
+                    break;
+                case InventoryType.INVTYPE_TRINKET:
+                    equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_TRINKET1);
+                    equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_TRINKET2);
+                    break;
+                case InventoryType.INVTYPE_WEAPON:
+                    equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_MAINHAND);
+                    equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_OFFHAND);
+                    break;
+                case InventoryType.INVTYPE_WEAPONMAINHAND:
+                case InventoryType.INVTYPE_2HWEAPON:
+                    equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_MAINHAND);
+                    break;
+                case InventoryType.INVTYPE_SHIELD:
+                case InventoryType.INVTYPE_WEAPONOFFHAND:
+                    equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_OFFHAND);
+                    break;
+                case InventoryType.INVTYPE_RANGED:
+                    equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_RANGED);
+                    break;
+                case InventoryType.INVTYPE_CLOAK:
+                    equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_BACK);
+                    break;
+                default:
+                    break;
+            }
+
+            // Check each equipment slot for an item and return it
+            foreach (var slot in equipmentSlotsToCheck)
+            {
+                var item = GetItemInEquipmentSlot(slot);
+                if (item != null)
+                    items.Add(item);
+            }
+
+            return items;
+        }
+
+        /// <summary>
         /// Gets the inventory item in the slot
         /// </summary>
         /// <param name="bag"></param>

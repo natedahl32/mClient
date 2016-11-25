@@ -1,12 +1,10 @@
-﻿using mClient.Constants;
+﻿using mClient.Clients;
+using mClient.Constants;
 using mClient.DBC;
 using mClient.Terrain;
 using mClient.World.ClassLogic;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace mClient.World
 {
@@ -28,6 +26,12 @@ namespace mClient.World
             BERSERKING,
             WILL_OF_THE_FORSAKEN;
 
+        // stat weights, used for determining gear upgrades
+        protected readonly Dictionary<ItemModType, float> mStatWeights = new Dictionary<ItemModType, float>();
+
+        // player spec
+        private MainSpec mAssignedSpec;
+
         #endregion
 
         #region Constructors
@@ -36,6 +40,16 @@ namespace mClient.World
         {
             if (player == null) throw new ArgumentNullException("player");
             mPlayer = player;
+            mAssignedSpec = MainSpec.NONE;
+
+            // Add empty stat weights for each stat
+            mStatWeights.Add(ItemModType.ITEM_MOD_AGILITY, 0f);
+            mStatWeights.Add(ItemModType.ITEM_MOD_HEALTH, 0f);
+            mStatWeights.Add(ItemModType.ITEM_MOD_INTELLECT, 0f);
+            mStatWeights.Add(ItemModType.ITEM_MOD_MANA, 0f);
+            mStatWeights.Add(ItemModType.ITEM_MOD_SPIRIT, 0f);
+            mStatWeights.Add(ItemModType.ITEM_MOD_STAMINA, 0f);
+            mStatWeights.Add(ItemModType.ITEM_MOD_STRENGTH, 0f);
         }
 
         #endregion
@@ -77,6 +91,21 @@ namespace mClient.World
         /// </summary>
         public abstract IEnumerable<uint> IgnoreLearningSpells { get; }
 
+        /// <summary>
+        /// Gets the assigned spec of the player
+        /// </summary>
+        public MainSpec Spec
+        {
+            get { return mAssignedSpec; }
+            protected set
+            {
+                var oldSpec = mAssignedSpec;
+                mAssignedSpec = value;
+                if (oldSpec != mAssignedSpec)
+                    SetStatWeights();
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -97,9 +126,61 @@ namespace mClient.World
             WILL_OF_THE_FORSAKEN = InitSpell(RacialTraits.WILL_OF_THE_FORSAKEN_ALL);
         }
 
+        /// <summary>
+        /// Compares items to determine which is better. 
+        /// If result > 0 than item1 is better than item2. 
+        /// If result < 0 than item2 is better than item1.
+        /// If result == 0 than the two items are equal.
+        /// </summary>
+        /// <param name="item1"></param>
+        /// <param name="item2"></param>
+        /// <returns></returns>
+        public virtual float CompareItems(Item item1, Item item2)
+        {
+            // Get item score for stats
+            float item1Score = GetItemScore(item1);
+            float item2Score = GetItemScore(item2);
+
+            // Get item enchantment scores
+            item1Score += GetItemEnchantmentScore(item1);
+            item2Score += GetItemEnchantmentScore(item2);
+
+            // Return the score difference
+            return item1Score - item2Score;
+        }
+
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// Sets stat weights based on spec
+        /// </summary>
+        protected virtual void SetStatWeights()
+        {
+            if (Spec == MainSpec.NONE)
+            {
+                mStatWeights[ItemModType.ITEM_MOD_STAMINA] = 0.75f;
+                mStatWeights[ItemModType.ITEM_MOD_HEALTH] = 0.8f;
+
+                if (IsMelee)
+                {
+                    mStatWeights[ItemModType.ITEM_MOD_AGILITY] = 0.5f;
+                    mStatWeights[ItemModType.ITEM_MOD_STRENGTH] = 0.5f;
+                    mStatWeights[ItemModType.ITEM_MOD_INTELLECT] = 0.1f;
+                    mStatWeights[ItemModType.ITEM_MOD_MANA] = 0.1f;
+                    mStatWeights[ItemModType.ITEM_MOD_SPIRIT] = 0.1f;
+                }
+                else
+                {
+                    mStatWeights[ItemModType.ITEM_MOD_AGILITY] = 0.1f;
+                    mStatWeights[ItemModType.ITEM_MOD_STRENGTH] = 0.1f;
+                    mStatWeights[ItemModType.ITEM_MOD_INTELLECT] = 0.5f;
+                    mStatWeights[ItemModType.ITEM_MOD_MANA] = 0.55f;
+                    mStatWeights[ItemModType.ITEM_MOD_SPIRIT] = 0.4f;
+                }
+            }
+        }
 
         /// <summary>
         /// Initializes a spell by getting the current rank of the spell the player currently has
@@ -177,6 +258,130 @@ namespace mClient.World
         protected SpellEntry Spell(uint spellId)
         {
             return SpellTable.Instance.getSpell(spellId);
+        }
+
+        /// <summary>
+        /// Gets an items score based on state weights defined
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        protected float GetItemScore(Item item)
+        {
+            float score = 0f;
+
+            for (int i = 0; i < ItemConstants.MAX_ITEM_MOD; i++)
+            {
+                var statValue = item.BaseInfo.GetStatValue((ItemModType)i);
+
+                // Health needs to be divided by the units of health per stamian otherwise health will be overvalued due to the amount of it on items. Same for mana.
+                if (i == (int)ItemModType.ITEM_MOD_HEALTH)
+                    statValue = statValue / 10;
+                if (i == (int)ItemModType.ITEM_MOD_MANA)
+                    statValue = statValue / 15;
+
+                // Calculate the score
+                score += (statValue * mStatWeights[(ItemModType)i]);
+            }
+
+            return score;
+        }
+
+        /// <summary>
+        /// Gets the score for enchantments on items
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        protected float GetItemEnchantmentScore(Item item)
+        {
+            float score = 0f;
+
+            for (int i = (int)EnchantmentSlot.PERM_ENCHANTMENT_SLOT; i < (int)EnchantmentSlot.MAX_ENCHANTMENT_SLOT; i++)
+            {
+                uint enchantmentId = item.GetEnchantmentIdForSlot((EnchantmentSlot)i);
+                if (enchantmentId == 0)
+                    continue;
+
+                var enchant = SpellItemEnchantmentTable.Instance.getById(enchantmentId);
+                if (enchant == null)
+                    continue;
+
+                for (int s = 0; s < 3; i++)
+                {
+                    uint displayType = enchant.EnchantmentType[s];
+                    uint amount = enchant.EnchantmentAmount[s];
+                    uint spellId = enchant.SpellId[s];
+
+                    // check the spell
+                    if (spellId > 0)
+                    {
+                        var spell = SpellTable.Instance.getSpell(spellId);
+                        if (spell != null)
+                        {
+                            for (uint effIndex = 0; effIndex < SpellConstants.MAX_EFFECT_INDEX; effIndex++)
+                            {
+                                if (spell.EffectApplyAuraName[effIndex] == (int)AuraType.SPELL_AURA_MOD_STAT)
+                                {
+                                    var value = spell.CalculateSimpleValue((SpellEffectIndex)effIndex);
+
+                                    switch (spell.EffectMiscValue[effIndex])
+                                    {
+                                        case (int)Stats.STAT_STRENGTH:
+                                            score += (value * mStatWeights[ItemModType.ITEM_MOD_STRENGTH]);
+                                            break;
+                                        case (int)Stats.STAT_AGILITY:
+                                            score += (value * mStatWeights[ItemModType.ITEM_MOD_AGILITY]);
+                                            break;
+                                        case (int)Stats.STAT_STAMINA:
+                                            score += (value * mStatWeights[ItemModType.ITEM_MOD_STAMINA]);
+                                            break;
+                                        case (int)Stats.STAT_INTELLECT:
+                                            score += (value * mStatWeights[ItemModType.ITEM_MOD_INTELLECT]);
+                                            break;
+                                        case (int)Stats.STAT_SPIRIT:
+                                            score += (value * mStatWeights[ItemModType.ITEM_MOD_SPIRIT]);
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // checks enchant types
+                    switch ((ItemEnchantmentType)displayType)
+                    {
+                        case ItemEnchantmentType.ITEM_ENCHANTMENT_TYPE_NONE:
+                            break;
+                        case ItemEnchantmentType.ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL: // TODO: Add calculation for combat spells
+                            break;
+                        case ItemEnchantmentType.ITEM_ENCHANTMENT_TYPE_DAMAGE: // TODO: Add calculation for damage type enchantments
+                            break;
+                        case ItemEnchantmentType.ITEM_ENCHANTMENT_TYPE_EQUIP_SPELL: // TODO: Add calculations
+                            break;
+                        case ItemEnchantmentType.ITEM_ENCHANTMENT_TYPE_RESISTANCE: // TODO: Add calculations
+                            break;
+                        case ItemEnchantmentType.ITEM_ENCHANTMENT_TYPE_STAT:
+                            uint value = amount;
+
+                            // Need to modify the health value so it isn't overvalued. Same with mana
+                            if (spellId == (int)ItemModType.ITEM_MOD_HEALTH)
+                                value = value / 10;
+                            if (spellId == (int)ItemModType.ITEM_MOD_MANA)
+                                value = value / 15;
+
+                            score += (value * mStatWeights[(ItemModType)spellId]);
+
+                            break;
+                        case ItemEnchantmentType.ITEM_ENCHANTMENT_TYPE_TOTEM: // TODO: Add calculations
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            return score;
         }
 
         #endregion

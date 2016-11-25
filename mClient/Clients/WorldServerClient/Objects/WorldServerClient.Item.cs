@@ -8,6 +8,12 @@ namespace mClient.Clients
 {
     public class Item : Object
     {
+        #region Declarations
+
+        private const uint MAX_ENCHANTMENT_OFFSET = 3;
+
+        #endregion
+
         #region Constructors
 
         public Item(WoWGuid guid) : base(guid)
@@ -99,9 +105,56 @@ namespace mClient.Clients
             }
         }
 
+        /// <summary>
+        /// Gets the DPS of an item
+        /// </summary>
+        public float DPS
+        {
+            get
+            {
+                if (BaseInfo.Delay == 0)
+                    return 0;
+                float temp = 0f;
+                for (int i = 0; i < ItemConstants.MAX_ITEM_PROTO_DAMAGES; i++)
+                    temp += BaseInfo.ItemDamages[i].MinDamage + BaseInfo.ItemDamages[i].MaxDamage;
+                return temp * 500 / BaseInfo.Delay;
+            }
+        }
+
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// Gets the enchantment id for this item in the slot
+        /// </summary>
+        /// <param name="slot"></param>
+        /// <returns></returns>
+        public uint GetEnchantmentIdForSlot(EnchantmentSlot slot)
+        {
+            return GetFieldValue((int)ItemFields.ITEM_FIELD_ENCHANTMENT + (int)slot * (int)MAX_ENCHANTMENT_OFFSET + (int)EnchantmentOffset.ENCHANTMENT_ID_OFFSET);
+        }
+
+        /// <summary>
+        /// Gets the enchantment duration for this item in the slot
+        /// </summary>
+        /// <param name="slot"></param>
+        /// <returns></returns>
+        public uint GetEnchantmentDurationForSlot(EnchantmentSlot slot)
+        {
+            return GetFieldValue((int)ItemFields.ITEM_FIELD_ENCHANTMENT + (int)slot * (int)MAX_ENCHANTMENT_OFFSET + (int)EnchantmentOffset.ENCHANTMENT_DURATION_OFFSET);
+        }
+
+        /// <summary>
+        /// Gets the enchantment charges for this item in the slot
+        /// </summary>
+        /// <param name="slot"></param>
+        /// <returns></returns>
+        public uint GetEnchantmentChargesForSlot(EnchantmentSlot slot)
+        {
+            return GetFieldValue((int)ItemFields.ITEM_FIELD_ENCHANTMENT + (int)slot * (int)MAX_ENCHANTMENT_OFFSET + (int)EnchantmentOffset.ENCHANTMENT_CHARGES_OFFSET);
+        }
+
 
         /// <summary>
         /// Get the equipment slot by this items inventory type

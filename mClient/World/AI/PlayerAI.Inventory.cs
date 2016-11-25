@@ -4,6 +4,7 @@ using mClient.Clients;
 using mClient.Constants;
 using mClient.Terrain;
 using mClient.World.AI.Activity.BuySell;
+using mClient.World.AI.Activity.Item;
 using System;
 using System.Linq;
 
@@ -36,11 +37,7 @@ namespace mClient.World.AI
                         .Do("Equip better bag in inventory", t => EquipBag())
                     .End()
                     .Selector("Handle Upgrades in Inventory")
-                        .Do("Equip better items in inventory", t =>
-                        {
-                            // TOOD: Find upgrades and equip them
-                            return BehaviourTreeStatus.Failure;
-                        })
+                        .Do("Equip better items in inventory", t => EquipUpgradesInInventory())
                     .End()
                     .Sequence("Sell Items in Inventory")
                         .Do("Has Items for Sale", t => HasForSellItemsInInventory())
@@ -49,6 +46,22 @@ namespace mClient.World.AI
                     .End()
                  .End()
                  .Build();
+        }
+
+        /// <summary>
+        /// Finds any upgrades in inventory and equips them
+        /// </summary>
+        /// <returns></returns>
+        private BehaviourTreeStatus EquipUpgradesInInventory()
+        {
+            foreach (var invItem in Player.PlayerObject.InventoryItems)
+                if (invItem.Item != null && Player.IsItemAnUpgrade(invItem.Item))
+                {
+                    StartActivity(new AutoEquipItemFromInventory(invItem, this));
+                    return BehaviourTreeStatus.Success;
+                }
+
+            return BehaviourTreeStatus.Failure;
         }
 
         /// <summary>

@@ -1,4 +1,6 @@
-﻿using mClient.DBC;
+﻿using mClient.Clients;
+using mClient.Constants;
+using mClient.DBC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -232,6 +234,69 @@ namespace mClient.World.ClassLogic
             MANA_SPRING_EFFECT = InitSpell(Spells.MANA_SPRING_EFFECT_1);
             TREMOR_TOTEM_EFFECT = InitSpell(Spells.TREMOR_TOTEM_EFFECT_1);
             EARTHBIND_EFFECT = InitSpell(Spells.EARTHBIND_EFFECT_1);
+        }
+
+        public override float CompareItems(Item item1, Item item2)
+        {
+            // Get the base value of the compare
+            var baseCompare = base.CompareItems(item1, item2);
+
+            float item1Score = 0f;
+            float item2Score = 0f;
+
+            // Compare DPS of a weapon for druids in feral spec
+            if (Spec == MainSpec.SHAMAN_SPEC_ENHANCEMENT)
+            {
+                if (item1.BaseInfo.ItemClass == ItemClass.ITEM_CLASS_WEAPON && item2.BaseInfo.ItemClass == ItemClass.ITEM_CLASS_WEAPON)
+                {
+                    // TODO: Calculate slow vs fast on mainhand/offhand weapons
+                    item1Score += (item1.DPS * 0.9f);
+                    item2Score += (item2.DPS * 0.9f);
+                }
+            }
+
+            var newCompare = item1Score - item2Score;
+            return baseCompare + newCompare;
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        protected override void SetStatWeights()
+        {
+            base.SetStatWeights();
+
+            if (Spec == MainSpec.SHAMAN_SPEC_ELEMENTAL)
+            {
+                mStatWeights[ItemModType.ITEM_MOD_STAMINA] = 0.45f;
+                mStatWeights[ItemModType.ITEM_MOD_SPIRIT] = 0.1f;
+                mStatWeights[ItemModType.ITEM_MOD_INTELLECT] = 0.9f;
+                mStatWeights[ItemModType.ITEM_MOD_STRENGTH] = 0.01f;
+                mStatWeights[ItemModType.ITEM_MOD_AGILITY] = 0.01f;
+                mStatWeights[ItemModType.ITEM_MOD_MANA] = 0.6f;
+                mStatWeights[ItemModType.ITEM_MOD_HEALTH] = 0.5f;
+            }
+            else if (Spec == MainSpec.SHAMAN_SPEC_ENHANCEMENT)
+            {
+                mStatWeights[ItemModType.ITEM_MOD_STAMINA] = 0.45f;
+                mStatWeights[ItemModType.ITEM_MOD_SPIRIT] = 0.01f;
+                mStatWeights[ItemModType.ITEM_MOD_INTELLECT] = 0.3f;
+                mStatWeights[ItemModType.ITEM_MOD_STRENGTH] = 0.7f;
+                mStatWeights[ItemModType.ITEM_MOD_AGILITY] = 0.9f;
+                mStatWeights[ItemModType.ITEM_MOD_MANA] = 0.35f;
+                mStatWeights[ItemModType.ITEM_MOD_HEALTH] = 0.5f;
+            }
+            else if (Spec == MainSpec.SHAMAN_SPEC_RESTORATION)
+            {
+                mStatWeights[ItemModType.ITEM_MOD_STAMINA] = 0.65f;
+                mStatWeights[ItemModType.ITEM_MOD_SPIRIT] = 0.2f;
+                mStatWeights[ItemModType.ITEM_MOD_INTELLECT] = 0.9f;
+                mStatWeights[ItemModType.ITEM_MOD_STRENGTH] = 0.01f;
+                mStatWeights[ItemModType.ITEM_MOD_AGILITY] = 0.01f;
+                mStatWeights[ItemModType.ITEM_MOD_MANA] = 0.7f;
+                mStatWeights[ItemModType.ITEM_MOD_HEALTH] = 0.6f;
+            }
         }
 
         #endregion

@@ -34,6 +34,14 @@ namespace mClient.World.AI.Activity.Combat
 
         public override void Process()
         {
+            // If our target is dead, remove it from the enemy list
+            if (PlayerAI.TargetSelection != null && PlayerAI.TargetSelection.IsDead)
+            {
+                PlayerAI.SetTargetSelection(null);
+                PlayerAI.CompleteActivity();
+                return;
+            }
+
             // Complete the activity if:
             if (PlayerAI.TargetSelection == null)
             {

@@ -11,8 +11,9 @@ namespace mClient.World.AI
     public partial class PlayerChatHandler
     {
         private const string COMBAT_ATTACK_COMMAND = "attack";
+        private const string COMBAT_RELEASE_COMMAND = "release";
 
-        private List<string> mAllCombatCommands = new List<string>() { COMBAT_ATTACK_COMMAND };
+        private List<string> mAllCombatCommands = new List<string>() { COMBAT_ATTACK_COMMAND, COMBAT_RELEASE_COMMAND };
 
         /// <summary>
         /// Handles all quest commands
@@ -59,6 +60,12 @@ namespace mClient.World.AI
 
                     // Forces us to start attacking this target regardless of if we have a target already or not
                     Player.PlayerAI.StartActivity(new ChangeTarget(sendersTarget, Player.PlayerAI));
+
+                    return true;
+
+                // combat release - removes all enemies from the threat list and removes them from combat
+                case COMBAT_RELEASE_COMMAND:
+
 
                     return true;
             }

@@ -49,7 +49,14 @@ namespace mClient.World.AI.Activity.Loot
         }
 
         public override void Process()
-        {
+        { 
+            // If our expectation has elapsed than complete
+            if (ExpectationHasElapsed)
+            {
+                PlayerAI.CompleteActivity();
+                return;
+            }
+
             // We are close enough, if we aren't looting start looting 
             if (!mIsLooting)
             {
@@ -65,6 +72,10 @@ namespace mClient.World.AI.Activity.Loot
                 // We are close enough, now loot it
                 PlayerAI.Client.Loot(mLootableObject.Guid);
                 mIsLooting = true;
+
+                // Set expectation that we get our item loot list back in 5 seconds
+                Expect(() => mItemsToLoot != null);
+
                 return;
             }
 

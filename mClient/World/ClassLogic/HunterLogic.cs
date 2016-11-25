@@ -1,9 +1,11 @@
-﻿using mClient.DBC;
+﻿using mClient.Constants;
+using mClient.DBC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using mClient.Clients;
 
 namespace mClient.World.ClassLogic
 {
@@ -216,6 +218,41 @@ namespace mClient.World.ClassLogic
             SCATTER_SHOT = InitSpell(Spells.SCATTER_SHOT_1);
             TRUESHOT_AURA = InitSpell(Spells.TRUESHOT_AURA_1);
             WYVERN_STING = InitSpell(Spells.WYVERN_STING_1);
+        }
+
+        public override float CompareItems(Item item1, Item item2)
+        {
+            // Get the base value of the compare
+            var baseCompare = base.CompareItems(item1, item2);
+
+            float item1Score = 0f;
+            float item2Score = 0f;
+
+            if (item1.BaseInfo.ItemClass == ItemClass.ITEM_CLASS_WEAPON && item2.BaseInfo.ItemClass == ItemClass.ITEM_CLASS_WEAPON)
+            {
+                item1Score += (item1.DPS * 0.9f);
+                item2Score += (item2.DPS * 0.9f);
+            }
+
+            var newCompare = item1Score - item2Score;
+            return baseCompare + newCompare;
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        protected override void SetStatWeights()
+        {
+            base.SetStatWeights();
+
+            mStatWeights[ItemModType.ITEM_MOD_STAMINA] = 0.45f;
+            mStatWeights[ItemModType.ITEM_MOD_SPIRIT] = 0.01f;
+            mStatWeights[ItemModType.ITEM_MOD_INTELLECT] = 0.01f;
+            mStatWeights[ItemModType.ITEM_MOD_STRENGTH] = 0.6f;
+            mStatWeights[ItemModType.ITEM_MOD_AGILITY] = 0.9f;
+            mStatWeights[ItemModType.ITEM_MOD_MANA] = 0.3f;
+            mStatWeights[ItemModType.ITEM_MOD_HEALTH] = 0.45f;
         }
 
         #endregion

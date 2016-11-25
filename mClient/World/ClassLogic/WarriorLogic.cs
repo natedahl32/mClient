@@ -1,4 +1,5 @@
-﻿using mClient.Constants;
+﻿using mClient.Clients;
+using mClient.Constants;
 using mClient.DBC;
 using System;
 using System.Collections.Generic;
@@ -240,6 +241,67 @@ namespace mClient.World.ClassLogic
             BLOODSURGE = InitSpell(Procs.BLOODSURGE_1);
             TASTE_FOR_BLOOD = InitSpell(Procs.TASTE_FOR_BLOOD_1);
             SUDDEN_DEATH = InitSpell(Procs.SUDDEN_DEATH_1);
+        }
+
+        public override float CompareItems(Item item1, Item item2)
+        {
+            // Get the base value of the compare
+            var baseCompare = base.CompareItems(item1, item2);
+
+            float item1Score = 0f;
+            float item2Score = 0f;
+
+            // Weapon DPS
+            if (item1.BaseInfo.ItemClass == ItemClass.ITEM_CLASS_WEAPON && item2.BaseInfo.ItemClass == ItemClass.ITEM_CLASS_WEAPON)
+            {
+                item1Score += (item1.DPS * 0.9f);
+                item2Score += (item2.DPS * 0.9f);
+            }
+
+            // Armor calculations
+            if (Spec == MainSpec.WARRIOR_SPEC_PROTECTION)
+            {
+                // Reduce armor score so it isn't overvalued. There can be a lot on items
+                float item1Armor = item1.BaseInfo.Resistances[SpellSchools.SPELL_SCHOOL_NORMAL] / 20;
+                float item2Armor = item2.BaseInfo.Resistances[SpellSchools.SPELL_SCHOOL_NORMAL] / 20;
+
+                item1Score += (item1Armor * 0.9f);
+                item2Score += (item2Armor * 0.9f);
+            }
+
+
+            var newCompare = item1Score - item2Score;
+            return baseCompare + newCompare;
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        protected override void SetStatWeights()
+        {
+            base.SetStatWeights();
+
+            if (Spec == MainSpec.WARRIOR_SPEC_ARMS || Spec == MainSpec.WARRIOR_SPEC_FURY)
+            {
+                mStatWeights[ItemModType.ITEM_MOD_STAMINA] = 0.55f;
+                mStatWeights[ItemModType.ITEM_MOD_SPIRIT] = 0.01f;
+                mStatWeights[ItemModType.ITEM_MOD_INTELLECT] = 0.01f;
+                mStatWeights[ItemModType.ITEM_MOD_STRENGTH] = 0.9f;
+                mStatWeights[ItemModType.ITEM_MOD_AGILITY] = 0.7f;
+                mStatWeights[ItemModType.ITEM_MOD_MANA] = 0.01f;
+                mStatWeights[ItemModType.ITEM_MOD_HEALTH] = 0.55f;
+            }
+            else if (Spec == MainSpec.WARRIOR_SPEC_PROTECTION)
+            {
+                mStatWeights[ItemModType.ITEM_MOD_STAMINA] = 0.55f;
+                mStatWeights[ItemModType.ITEM_MOD_SPIRIT] = 0.01f;
+                mStatWeights[ItemModType.ITEM_MOD_INTELLECT] = 0.01f;
+                mStatWeights[ItemModType.ITEM_MOD_STRENGTH] = 0.91f;
+                mStatWeights[ItemModType.ITEM_MOD_AGILITY] = 0.7f;
+                mStatWeights[ItemModType.ITEM_MOD_MANA] = 0.01f;
+                mStatWeights[ItemModType.ITEM_MOD_HEALTH] = 0.55f;
+            }
         }
 
         #endregion

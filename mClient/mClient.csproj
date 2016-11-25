@@ -150,6 +150,8 @@
     <Compile Include="DBC\SpellCastTimeEntry.cs" />
     <Compile Include="DBC\SpellCastTimeTable.cs" />
     <Compile Include="DBC\SpellEntry.cs" />
+    <Compile Include="DBC\SpellItemEnchantmentEntry.cs" />
+    <Compile Include="DBC\SpellItemEnchantmentTable.cs" />
     <Compile Include="DBC\SpellRangeEntry.cs" />
     <Compile Include="DBC\SpellRangeTable.cs" />
     <Compile Include="DBC\SpellTable.cs" />
@@ -188,6 +190,7 @@
     <Compile Include="World\AI\Activity\Combat\OutOfCombatBuff.cs" />
     <Compile Include="World\AI\Activity\Death\FindCorpse.cs" />
     <Compile Include="World\AI\Activity\Death\ReleaseSpirit.cs" />
+    <Compile Include="World\AI\Activity\Item\AutoEquipItemFromInventory.cs" />
     <Compile Include="World\AI\Activity\Loot\LootGameObject.cs" />
     <Compile Include="World\AI\Activity\Loot\LootItemFromObject.cs" />
     <Compile Include="World\AI\Activity\Loot\LootObject.cs" />
