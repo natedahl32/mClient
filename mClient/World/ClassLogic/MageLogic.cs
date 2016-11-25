@@ -1,6 +1,7 @@
 ﻿using mClient.Clients;
 using mClient.Constants;
 using mClient.DBC;
+using mClient.World.Items;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -190,7 +191,7 @@ namespace mClient.World.ClassLogic
             SLOW = InitSpell(Spells.SLOW_1);
         }
 
-        public override float CompareItems(Item item1, Item item2)
+        public override float CompareItems(ItemInfo item1, ItemInfo item2)
         {
             // Get the base value of the compare
             var baseCompare = base.CompareItems(item1, item2);
@@ -198,11 +199,11 @@ namespace mClient.World.ClassLogic
             float item1Score = 0f;
             float item2Score = 0f;
 
-            if (item1.BaseInfo.ItemClass == ItemClass.ITEM_CLASS_WEAPON && item2.BaseInfo.ItemClass == ItemClass.ITEM_CLASS_WEAPON)
+            if (item1.ItemClass == ItemClass.ITEM_CLASS_WEAPON && item2.ItemClass == ItemClass.ITEM_CLASS_WEAPON)
             {
-                if (item1.BaseInfo.SubClass == (int)ItemSubclassWeapon.ITEM_SUBCLASS_WEAPON_WAND)
+                if (item1.SubClass == (int)ItemSubclassWeapon.ITEM_SUBCLASS_WEAPON_WAND)
                     item1Score += (item1.DPS * 0.9f);
-                if (item1.BaseInfo.SubClass == (int)ItemSubclassWeapon.ITEM_SUBCLASS_WEAPON_WAND)
+                if (item2.SubClass == (int)ItemSubclassWeapon.ITEM_SUBCLASS_WEAPON_WAND)
                     item2Score += (item2.DPS * 0.9f);
             }
 

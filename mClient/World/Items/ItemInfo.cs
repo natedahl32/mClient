@@ -225,6 +225,22 @@ namespace mClient.World.Items
             }
         }
 
+        /// <summary>
+        /// Gets the DPS of an item
+        /// </summary>
+        public float DPS
+        {
+            get
+            {
+                if (Delay == 0)
+                    return 0;
+                float temp = 0f;
+                for (int i = 0; i < ItemConstants.MAX_ITEM_PROTO_DAMAGES; i++)
+                    temp += ItemDamages[i].MinDamage + ItemDamages[i].MaxDamage;
+                return temp * 500 / Delay;
+            }
+        }
+
         #region Public Methods
 
         /// <summary>

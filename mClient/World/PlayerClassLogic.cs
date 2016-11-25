@@ -3,6 +3,7 @@ using mClient.Constants;
 using mClient.DBC;
 using mClient.Terrain;
 using mClient.World.ClassLogic;
+using mClient.World.Items;
 using System;
 using System.Collections.Generic;
 
@@ -137,13 +138,31 @@ namespace mClient.World
         /// <returns></returns>
         public virtual float CompareItems(Item item1, Item item2)
         {
+            // Get base item compare
+            float baseCompare = CompareItems(item1.BaseInfo, item2.BaseInfo);
+
+            // Get item enchantment score
+            float item1Score = GetItemEnchantmentScore(item1);
+            float item2Score = GetItemEnchantmentScore(item2);
+
+            // Return the score difference
+            return (item1Score - item2Score) + baseCompare;
+        }
+
+        /// <summary>
+        /// Compares items to determine which is better. 
+        /// If result > 0 than item1 is better than item2. 
+        /// If result < 0 than item2 is better than item1.
+        /// If result == 0 than the two items are equal.
+        /// </summary>
+        /// <param name="item1"></param>
+        /// <param name="item2"></param>
+        /// <returns></returns>
+        public virtual float CompareItems(ItemInfo item1, ItemInfo item2)
+        {
             // Get item score for stats
             float item1Score = GetItemScore(item1);
             float item2Score = GetItemScore(item2);
-
-            // Get item enchantment scores
-            item1Score += GetItemEnchantmentScore(item1);
-            item2Score += GetItemEnchantmentScore(item2);
 
             // Return the score difference
             return item1Score - item2Score;
@@ -265,13 +284,13 @@ namespace mClient.World
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        protected float GetItemScore(Item item)
+        protected float GetItemScore(ItemInfo item)
         {
             float score = 0f;
 
             for (int i = 0; i < ItemConstants.MAX_ITEM_MOD; i++)
             {
-                var statValue = item.BaseInfo.GetStatValue((ItemModType)i);
+                var statValue = item.GetStatValue((ItemModType)i);
 
                 // Health needs to be divided by the units of health per stamian otherwise health will be overvalued due to the amount of it on items. Same for mana.
                 if (i == (int)ItemModType.ITEM_MOD_HEALTH)

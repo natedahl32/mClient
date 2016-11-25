@@ -8,6 +8,7 @@ using System.Threading;
 using FluentBehaviourTree;
 using mClient.World.AI.Activity;
 using System.Collections.Generic;
+using mClient.Constants;
 
 namespace mClient.World.AI
 {

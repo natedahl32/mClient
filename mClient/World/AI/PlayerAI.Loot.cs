@@ -14,7 +14,6 @@ namespace mClient.World.AI
 
         protected IBehaviourTreeNode CreateLootAITree()
         {
-            // TODO: Need to code in a wait for rez if we are in combat
             var builder = new BehaviourTreeBuilder();
             return builder
                 .Sequence("loot-sequence")

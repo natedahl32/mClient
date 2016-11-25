@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using mClient.Constants;
 using mClient.Clients;
+using mClient.World.Items;
 
 namespace mClient.World.ClassLogic
 {
@@ -233,7 +234,7 @@ namespace mClient.World.ClassLogic
 
         }
 
-        public override float CompareItems(Item item1, Item item2)
+        public override float CompareItems(ItemInfo item1, ItemInfo item2)
         {
             // Get the base value of the compare
             var baseCompare = base.CompareItems(item1, item2);
@@ -244,7 +245,7 @@ namespace mClient.World.ClassLogic
             // Compare DPS of a weapon for druids in feral spec
             if (Spec == MainSpec.DRUID_SPEC_FERAL)
             {
-                if (item1.BaseInfo.ItemClass == ItemClass.ITEM_CLASS_WEAPON && item2.BaseInfo.ItemClass == ItemClass.ITEM_CLASS_WEAPON)
+                if (item1.ItemClass == ItemClass.ITEM_CLASS_WEAPON && item2.ItemClass == ItemClass.ITEM_CLASS_WEAPON)
                 {
                     item1Score += (item1.DPS * 0.9f);
                     item2Score += (item2.DPS * 0.9f);

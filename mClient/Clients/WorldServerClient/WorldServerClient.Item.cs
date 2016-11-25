@@ -2,6 +2,7 @@
 using mClient.Constants;
 using mClient.Network;
 using mClient.Shared;
+using mClient.World.AI.Activity.Loot;
 using mClient.World.AI.Activity.Messages;
 using mClient.World.Items;
 using System;
@@ -36,6 +37,36 @@ namespace mClient.Clients
             }
 
             message.ItemCount = itemCount;
+            player.PlayerAI.SendMessageToAllActivities(message);
+        }
+
+        /// <summary>
+        /// Handles rolls for loot
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_LOOT_START_ROLL)]
+        public void HandleLootRollStart(PacketIn packet)
+        {
+            RollOnLootMessage message = new RollOnLootMessage();
+            message.LootSourceGuid = packet.ReadUInt64();
+            message.ItemSlot = packet.ReadUInt32();
+            message.ItemId = packet.ReadUInt32();
+            message.RandomSuffix = packet.ReadUInt32();
+            message.RandomPropertyId = packet.ReadUInt32();
+            message.RollTimeout = packet.ReadUInt32();
+            // Tells us what roll options we have
+            message.RollOptionMask = packet.ReadByte();
+
+            // TODO: Probably need to fix this. We don't want to sit and wait for a loot roll while we are in combat, which will happen if we loot and get this message during combat
+            // Start the activity before we query for the item prototype
+            player.PlayerAI.StartActivity(new RollForLoot(message.LootSourceGuid, message.ItemSlot, message.ItemId, message.RandomSuffix, message.RandomPropertyId, message.RollTimeout, message.RollOptionMask, player.PlayerAI));
+
+            // Check for the item and if we don't have it yet send a request for it
+            var item = ItemManager.Instance.Get(message.ItemId);
+            if (item == null)
+                QueryItemPrototype(message.ItemId);
+
+            // Send the message in case activities are expecting the message
             player.PlayerAI.SendMessageToAllActivities(message);
         }
 
@@ -506,6 +537,17 @@ namespace mClient.Clients
             spellCastTargets.WriteToPacket(ref packet);
 
             Send(packet);
+        }
+
+        /// <summary>
+        /// Rolls for an item
+        /// </summary>
+        public void RollForItem(ulong guid, uint itemSlot, RollVote roll)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_LOOT_ROLL);
+            packet.Write(guid);
+            packet.Write(itemSlot);
+            packet.Write((byte)roll);
         }
 
         #endregion

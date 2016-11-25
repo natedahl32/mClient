@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using mClient.Clients;
+using mClient.World.Items;
 
 namespace mClient.World.ClassLogic
 {
@@ -220,7 +221,7 @@ namespace mClient.World.ClassLogic
             WYVERN_STING = InitSpell(Spells.WYVERN_STING_1);
         }
 
-        public override float CompareItems(Item item1, Item item2)
+        public override float CompareItems(ItemInfo item1, ItemInfo item2)
         {
             // Get the base value of the compare
             var baseCompare = base.CompareItems(item1, item2);
@@ -228,7 +229,7 @@ namespace mClient.World.ClassLogic
             float item1Score = 0f;
             float item2Score = 0f;
 
-            if (item1.BaseInfo.ItemClass == ItemClass.ITEM_CLASS_WEAPON && item2.BaseInfo.ItemClass == ItemClass.ITEM_CLASS_WEAPON)
+            if (item1.ItemClass == ItemClass.ITEM_CLASS_WEAPON && item2.ItemClass == ItemClass.ITEM_CLASS_WEAPON)
             {
                 item1Score += (item1.DPS * 0.9f);
                 item2Score += (item2.DPS * 0.9f);

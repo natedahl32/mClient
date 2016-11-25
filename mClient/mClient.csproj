@@ -194,6 +194,7 @@
     <Compile Include="World\AI\Activity\Loot\LootGameObject.cs" />
     <Compile Include="World\AI\Activity\Loot\LootItemFromObject.cs" />
     <Compile Include="World\AI\Activity\Loot\LootObject.cs" />
+    <Compile Include="World\AI\Activity\Loot\RollForLoot.cs" />
     <Compile Include="World\AI\Activity\Messages\CorpseQueryMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\InventoryChangeMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\ItemPushResultMessage.cs" />
@@ -203,6 +204,7 @@
     <Compile Include="World\AI\Activity\Messages\QuestListMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\QuestOfferRewards.cs" />
     <Compile Include="World\AI\Activity\Messages\QuestUpdateAddKillMessage.cs" />
+    <Compile Include="World\AI\Activity\Messages\RollOnLootMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\SpellCastFailedMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\SpellCastGoMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\SpellCastInterruptedMessage.cs" />

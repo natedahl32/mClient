@@ -12,6 +12,7 @@ using mClient.DBC;
 using mClient.World.AI.Activity.Messages;
 using mClient.World.AI.Activity.Movement;
 using mClient.World.Spells;
+using mClient.World.Items;
 
 namespace mClient.World
 {
@@ -539,40 +540,40 @@ namespace mClient.World
         }
 
         /// <summary>
-        /// Determines whether or not the passed item is useful
+        /// Determines whether or not the passed base item is useful
         /// </summary>
-        /// <param name="item"></param>
+        /// <param name="baseItem"></param>
         /// <returns></returns>
-        public bool IsItemUseful(Clients.Item item)
+        public bool IsItemUseful(ItemInfo item)
         {
             // If not base item info, keep it becasue we can't tell for sure
-            if (item.BaseInfo == null) return true;
+            if (item == null) return true;
 
             // If the item is grey quality it is not useful. Grey equipment can be useful at lower levels so we exclude equipment from this check
-            if (item.BaseInfo.Quality == ItemQualities.ITEM_QUALITY_POOR && item.BaseInfo.ItemClass != ItemClass.ITEM_CLASS_WEAPON && item.BaseInfo.ItemClass != ItemClass.ITEM_CLASS_ARMOR)
+            if (item.Quality == ItemQualities.ITEM_QUALITY_POOR && item.ItemClass != ItemClass.ITEM_CLASS_WEAPON && item.ItemClass != ItemClass.ITEM_CLASS_ARMOR)
                 return false;
 
             // Quest related items are useful
-            if (item.BaseInfo.StartsQuestId > 0)
+            if (item.StartsQuestId > 0)
                 return true;
 
-            switch (item.BaseInfo.ItemClass)
+            switch (item.ItemClass)
             {
                 case ItemClass.ITEM_CLASS_QUEST:
                     // TODO: Check if item is requirement for a quest we have. Or if it's used in a quest we are on.
                     return true;
 
                 case ItemClass.ITEM_CLASS_WEAPON:
-                    if (item.BaseInfo.SubClass >= Constants.ItemConstants.MAX_ITEM_SUBCLASS_WEAPON)
+                    if (item.SubClass >= Constants.ItemConstants.MAX_ITEM_SUBCLASS_WEAPON)
                         return false;
-                    if (!PlayerObject.HasSkill((SkillType)ItemConstants.ItemWeaponSkills[item.BaseInfo.SubClass]))
+                    if (!PlayerObject.HasSkill((SkillType)ItemConstants.ItemWeaponSkills[item.SubClass]))
                         return false;
                     return true;
 
                 case ItemClass.ITEM_CLASS_ARMOR:
-                    if (item.BaseInfo.SubClass >= Constants.ItemConstants.MAX_ITEM_SUBCLASS_ARMOR)
+                    if (item.SubClass >= Constants.ItemConstants.MAX_ITEM_SUBCLASS_ARMOR)
                         return false;
-                    if (!PlayerObject.HasSkill((SkillType)ItemConstants.ItemArmorSkills[item.BaseInfo.SubClass]))
+                    if (!PlayerObject.HasSkill((SkillType)ItemConstants.ItemArmorSkills[item.SubClass]))
                         return false;
                     return true;
 
@@ -593,10 +594,10 @@ namespace mClient.World
 
                 case ItemClass.ITEM_CLASS_RECIPE:
                     // If we have the spells for this item already than it is not useful
-                    if (HasAllSpells(item.BaseInfo.SpellEffects.Select(s => (ushort)s.SpellId)))
+                    if (HasAllSpells(item.SpellEffects.Select(s => (ushort)s.SpellId)))
                         return false;
 
-                    switch ((ItemSubclassRecipe)item.BaseInfo.SubClass)
+                    switch ((ItemSubclassRecipe)item.SubClass)
                     {
                         case ItemSubclassRecipe.ITEM_SUBCLASS_LEATHERWORKING_PATTERN:
                             if (PlayerObject.HasSkill(SkillType.SKILL_LEATHERWORKING))
@@ -640,7 +641,7 @@ namespace mClient.World
                     break;
 
                 case ItemClass.ITEM_CLASS_TRADE_GOODS:
-                    switch ((ItemSubclassTradeGoods)item.BaseInfo.SubClass)
+                    switch ((ItemSubclassTradeGoods)item.SubClass)
                     {
                         case ItemSubclassTradeGoods.ITEM_SUBCLASS_PARTS:
                         case ItemSubclassTradeGoods.ITEM_SUBCLASS_EXPLOSIVES:
@@ -700,6 +701,58 @@ namespace mClient.World
 
             // By default return false.
             return false;
+        }
+
+        /// <summary>
+        /// Determines whether or not the passed item is useful
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool IsItemUseful(Clients.Item item)
+        {
+            return IsItemUseful(item.BaseInfo);
+        }
+
+        /// <summary>
+        /// Determines whether or not the passed item is an upgrade to the currently equipped item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool IsItemAnUpgrade(ItemInfo item)
+        {
+            if (item == null) return false;
+
+            // If the item is not useful to us it is not an upgrade
+            if (!IsItemUseful(item))
+                return false;
+
+            // If the item is not armor or a weapon we cannot consider it an upgrade
+            if (item.ItemClass != ItemClass.ITEM_CLASS_ARMOR && item.ItemClass != ItemClass.ITEM_CLASS_WEAPON)
+                return false;
+
+            // Get the item(s) currently equipped in this slot
+            var equippedItems = PlayerObject.GetEquippedItemsByInventoryType(item.InventoryType);
+            // If not items equipped for that slot, it is an upgrade
+            if (equippedItems.Count() == 0)
+                return true;
+
+            bool isUpgrade = false;
+
+            // Loop through each item and check it against the item give to us. If we find an upgrade we break immediately.
+            foreach (var equipped in equippedItems)
+            {
+                if (equipped != null)
+                {
+                    // Check with class AI to determine upgrades
+                    if (mClassLogic.CompareItems(item, equipped.BaseInfo) > 0)
+                    {
+                        isUpgrade = true;
+                        break;
+                    }
+                }
+            }
+
+            return isUpgrade;
         }
 
         /// <summary>

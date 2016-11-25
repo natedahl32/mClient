@@ -1,6 +1,7 @@
 ﻿using mClient.Clients;
 using mClient.Constants;
 using mClient.DBC;
+using mClient.World.Items;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -211,7 +212,7 @@ namespace mClient.World.ClassLogic
             SHADOW_RESISTANCE_AURA = InitSpell(Spells.SHADOW_RESISTANCE_AURA_1);
         }
 
-        public override float CompareItems(Item item1, Item item2)
+        public override float CompareItems(ItemInfo item1, ItemInfo item2)
         {
             // Get the base value of the compare
             var baseCompare = base.CompareItems(item1, item2);
@@ -222,7 +223,7 @@ namespace mClient.World.ClassLogic
             // Weapon DPS
             if (Spec == MainSpec.PALADIN_SPEC_PROTECTION || Spec == MainSpec.PALADIN_SPEC_RETRIBUTION)
             {
-                if (item1.BaseInfo.ItemClass == ItemClass.ITEM_CLASS_WEAPON && item2.BaseInfo.ItemClass == ItemClass.ITEM_CLASS_WEAPON)
+                if (item1.ItemClass == ItemClass.ITEM_CLASS_WEAPON && item2.ItemClass == ItemClass.ITEM_CLASS_WEAPON)
                 {
                     item1Score += (item1.DPS * 0.9f);
                     item2Score += (item2.DPS * 0.9f);
@@ -233,8 +234,8 @@ namespace mClient.World.ClassLogic
             if (Spec == MainSpec.PALADIN_SPEC_PROTECTION)
             {
                 // Reduce armor score so it isn't overvalued. There can be a lot on items
-                float item1Armor = item1.BaseInfo.Resistances[SpellSchools.SPELL_SCHOOL_NORMAL] / 20;
-                float item2Armor = item2.BaseInfo.Resistances[SpellSchools.SPELL_SCHOOL_NORMAL] / 20;
+                float item1Armor = item1.Resistances[SpellSchools.SPELL_SCHOOL_NORMAL] / 20;
+                float item2Armor = item2.Resistances[SpellSchools.SPELL_SCHOOL_NORMAL] / 20;
 
                 item1Score += (item1Armor * 0.9f);
                 item2Score += (item2Armor * 0.9f);
