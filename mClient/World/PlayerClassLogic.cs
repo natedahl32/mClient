@@ -168,6 +168,51 @@ namespace mClient.World
             return item1Score - item2Score;
         }
 
+        /// <summary>
+        /// Compares items to determine which is better. 
+        /// If result > 0 than item1 is better than item2. 
+        /// If result < 0 than item2 is better than item1.
+        /// If result == 0 than the two items are equal.
+        /// </summary>
+        /// <param name="item1"></param>
+        /// <param name="randomPropertyIdForItem1"></param>
+        /// <param name="item2"></param>
+        /// <param name="randomPropertyIdForItem2"></param>
+        /// <returns></returns>
+        public virtual float CompareItems(ItemInfo item1, uint randomPropertyIdForItem1, ItemInfo item2, uint randomPropertyIdForItem2)
+        {
+            // Get base score
+            float baseScore = CompareItems(item1, item2);
+
+            float item1Score = 0f;
+            float item2Score = 0f;
+
+            // Add in random property enchantment if supplied
+            if (randomPropertyIdForItem1 > 0)
+            {
+                var randomItemProperty = ItemRandomPropertiesTable.Instance.getById(randomPropertyIdForItem1);
+                if (randomItemProperty != null)
+                {
+                    for (int i = 0; i < 3; i++)
+                        if (randomItemProperty.EnchantId[i] > 0)
+                            item1Score += GetEnchantmentScore(randomItemProperty.EnchantId[i]);
+                }
+            }
+            if (randomPropertyIdForItem2 > 0)
+            {
+                var randomItemProperty = ItemRandomPropertiesTable.Instance.getById(randomPropertyIdForItem2);
+                if (randomItemProperty != null)
+                {
+                    for (int i = 0; i < 3; i++)
+                        if (randomItemProperty.EnchantId[i] > 0)
+                            item2Score += GetEnchantmentScore(randomItemProperty.EnchantId[i]);
+                }
+            }
+
+            // Return the score difference
+            return (item1Score - item2Score) + baseScore;
+        }
+
         #endregion
 
         #region Private Methods
@@ -320,83 +365,100 @@ namespace mClient.World
                 if (enchantmentId == 0)
                     continue;
 
-                var enchant = SpellItemEnchantmentTable.Instance.getById(enchantmentId);
-                if (enchant == null)
-                    continue;
+                score += GetEnchantmentScore(enchantmentId);
+            }
 
-                for (int s = 0; s < 3; i++)
+            return score;
+        }
+
+        /// <summary>
+        /// Gets the score for an enchantment
+        /// </summary>
+        /// <param name="enchantmentId">Id of the enchantment to calculate score for</param>
+        /// <returns></returns>
+        protected float GetEnchantmentScore(uint enchantmentId)
+        {
+            float score = 0f;
+
+            if (enchantmentId == 0)
+                return score;
+
+            var enchant = SpellItemEnchantmentTable.Instance.getById(enchantmentId);
+            if (enchant == null)
+                return score;
+
+            for (int s = 0; s < 3; s++)
+            {
+                uint displayType = enchant.EnchantmentType[s];
+                uint amount = enchant.EnchantmentAmount[s];
+                uint spellId = enchant.SpellId[s];
+
+                // check the spell
+                if (spellId > 0)
                 {
-                    uint displayType = enchant.EnchantmentType[s];
-                    uint amount = enchant.EnchantmentAmount[s];
-                    uint spellId = enchant.SpellId[s];
-
-                    // check the spell
-                    if (spellId > 0)
+                    var spell = SpellTable.Instance.getSpell(spellId);
+                    if (spell != null)
                     {
-                        var spell = SpellTable.Instance.getSpell(spellId);
-                        if (spell != null)
+                        for (uint effIndex = 0; effIndex < SpellConstants.MAX_EFFECT_INDEX; effIndex++)
                         {
-                            for (uint effIndex = 0; effIndex < SpellConstants.MAX_EFFECT_INDEX; effIndex++)
+                            if (spell.EffectApplyAuraName[effIndex] == (int)AuraType.SPELL_AURA_MOD_STAT)
                             {
-                                if (spell.EffectApplyAuraName[effIndex] == (int)AuraType.SPELL_AURA_MOD_STAT)
-                                {
-                                    var value = spell.CalculateSimpleValue((SpellEffectIndex)effIndex);
+                                var value = spell.CalculateSimpleValue((SpellEffectIndex)effIndex);
 
-                                    switch (spell.EffectMiscValue[effIndex])
-                                    {
-                                        case (int)Stats.STAT_STRENGTH:
-                                            score += (value * mStatWeights[ItemModType.ITEM_MOD_STRENGTH]);
-                                            break;
-                                        case (int)Stats.STAT_AGILITY:
-                                            score += (value * mStatWeights[ItemModType.ITEM_MOD_AGILITY]);
-                                            break;
-                                        case (int)Stats.STAT_STAMINA:
-                                            score += (value * mStatWeights[ItemModType.ITEM_MOD_STAMINA]);
-                                            break;
-                                        case (int)Stats.STAT_INTELLECT:
-                                            score += (value * mStatWeights[ItemModType.ITEM_MOD_INTELLECT]);
-                                            break;
-                                        case (int)Stats.STAT_SPIRIT:
-                                            score += (value * mStatWeights[ItemModType.ITEM_MOD_SPIRIT]);
-                                            break;
-                                        default:
-                                            break;
-                                    }
+                                switch (spell.EffectMiscValue[effIndex])
+                                {
+                                    case (int)Stats.STAT_STRENGTH:
+                                        score += (value * mStatWeights[ItemModType.ITEM_MOD_STRENGTH]);
+                                        break;
+                                    case (int)Stats.STAT_AGILITY:
+                                        score += (value * mStatWeights[ItemModType.ITEM_MOD_AGILITY]);
+                                        break;
+                                    case (int)Stats.STAT_STAMINA:
+                                        score += (value * mStatWeights[ItemModType.ITEM_MOD_STAMINA]);
+                                        break;
+                                    case (int)Stats.STAT_INTELLECT:
+                                        score += (value * mStatWeights[ItemModType.ITEM_MOD_INTELLECT]);
+                                        break;
+                                    case (int)Stats.STAT_SPIRIT:
+                                        score += (value * mStatWeights[ItemModType.ITEM_MOD_SPIRIT]);
+                                        break;
+                                    default:
+                                        break;
                                 }
                             }
                         }
                     }
+                }
 
-                    // checks enchant types
-                    switch ((ItemEnchantmentType)displayType)
-                    {
-                        case ItemEnchantmentType.ITEM_ENCHANTMENT_TYPE_NONE:
-                            break;
-                        case ItemEnchantmentType.ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL: // TODO: Add calculation for combat spells
-                            break;
-                        case ItemEnchantmentType.ITEM_ENCHANTMENT_TYPE_DAMAGE: // TODO: Add calculation for damage type enchantments
-                            break;
-                        case ItemEnchantmentType.ITEM_ENCHANTMENT_TYPE_EQUIP_SPELL: // TODO: Add calculations
-                            break;
-                        case ItemEnchantmentType.ITEM_ENCHANTMENT_TYPE_RESISTANCE: // TODO: Add calculations
-                            break;
-                        case ItemEnchantmentType.ITEM_ENCHANTMENT_TYPE_STAT:
-                            uint value = amount;
+                // checks enchant types
+                switch ((ItemEnchantmentType)displayType)
+                {
+                    case ItemEnchantmentType.ITEM_ENCHANTMENT_TYPE_NONE:
+                        break;
+                    case ItemEnchantmentType.ITEM_ENCHANTMENT_TYPE_COMBAT_SPELL: // TODO: Add calculation for combat spells
+                        break;
+                    case ItemEnchantmentType.ITEM_ENCHANTMENT_TYPE_DAMAGE: // TODO: Add calculation for damage type enchantments
+                        break;
+                    case ItemEnchantmentType.ITEM_ENCHANTMENT_TYPE_EQUIP_SPELL: // TODO: Add calculations
+                        break;
+                    case ItemEnchantmentType.ITEM_ENCHANTMENT_TYPE_RESISTANCE: // TODO: Add calculations
+                        break;
+                    case ItemEnchantmentType.ITEM_ENCHANTMENT_TYPE_STAT:
+                        uint value = amount;
 
-                            // Need to modify the health value so it isn't overvalued. Same with mana
-                            if (spellId == (int)ItemModType.ITEM_MOD_HEALTH)
-                                value = value / 10;
-                            if (spellId == (int)ItemModType.ITEM_MOD_MANA)
-                                value = value / 15;
+                        // Need to modify the health value so it isn't overvalued. Same with mana
+                        if (spellId == (int)ItemModType.ITEM_MOD_HEALTH)
+                            value = value / 10;
+                        if (spellId == (int)ItemModType.ITEM_MOD_MANA)
+                            value = value / 15;
 
-                            score += (value * mStatWeights[(ItemModType)spellId]);
+                        score += (value * mStatWeights[(ItemModType)spellId]);
 
-                            break;
-                        case ItemEnchantmentType.ITEM_ENCHANTMENT_TYPE_TOTEM: // TODO: Add calculations
-                            break;
-                        default:
-                            break;
-                    }
+                        break;
+                    case ItemEnchantmentType.ITEM_ENCHANTMENT_TYPE_TOTEM: // TODO: Add calculations
+                        break;
+                    default:
+                        break;
                 }
             }
 

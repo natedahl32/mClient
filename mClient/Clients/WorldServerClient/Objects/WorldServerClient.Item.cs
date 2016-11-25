@@ -105,6 +105,14 @@ namespace mClient.Clients
             }
         }
 
+        /// <summary>
+        /// Gets the random properties id on this item
+        /// </summary>
+        public uint RandomPropertiesId
+        {
+            get { return GetFieldValue((int)ItemFields.ITEM_FIELD_RANDOM_PROPERTIES_ID); }
+        }
+
         #endregion
 
         #region Public Methods

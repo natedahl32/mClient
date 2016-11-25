@@ -718,7 +718,7 @@ namespace mClient.World
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public bool IsItemAnUpgrade(ItemInfo item)
+        public bool IsItemAnUpgrade(ItemInfo item, uint randomPropertyId)
         {
             if (item == null) return false;
 
@@ -744,7 +744,7 @@ namespace mClient.World
                 if (equipped != null)
                 {
                     // Check with class AI to determine upgrades
-                    if (mClassLogic.CompareItems(item, equipped.BaseInfo) > 0)
+                    if (mClassLogic.CompareItems(item, randomPropertyId, equipped.BaseInfo, equipped.RandomPropertiesId) > 0)
                     {
                         isUpgrade = true;
                         break;
@@ -753,6 +753,16 @@ namespace mClient.World
             }
 
             return isUpgrade;
+        }
+
+        /// <summary>
+        /// Determines whether or not the passed item is an upgrade to the currently equipped item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool IsItemAnUpgrade(ItemInfo item)
+        {
+            return IsItemAnUpgrade(item, 0);
         }
 
         /// <summary>

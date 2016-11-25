@@ -69,7 +69,7 @@ namespace mClient.World.AI.Activity.Loot
                 // If it's useful and it is a weapon or armor, check if it's an upgrade
                 if (isUseful && (item.ItemClass == Constants.ItemClass.ITEM_CLASS_WEAPON || item.ItemClass == Constants.ItemClass.ITEM_CLASS_ARMOR))
                 {
-                    if (PlayerAI.Player.IsItemAnUpgrade(item))
+                    if (PlayerAI.Player.IsItemAnUpgrade(item, mRandomPropertyId))
                     {
                         RollNeed();
                         PlayerAI.CompleteActivity();
