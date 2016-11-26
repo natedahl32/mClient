@@ -1,6 +1,7 @@
 ﻿using FluentBehaviourTree;
 using mClient.Clients;
 using mClient.World.AI.Activity.Combat;
+using mClient.World.AI.Activity.Item;
 using mClient.World.AI.Activity.Movement;
 using mClient.World.AI.Activity.Train;
 using System.Linq;
@@ -27,12 +28,67 @@ namespace mClient.World.AI
                         .Do("Has Skills to Train", t => HasSkillsToTrain())
                         .Do("Find Class Trainer", t => FindClassTrainer())
                     .End()
+                    .Sequence("Repair Items")
+                        .Do("Need to Repair?", t => NeedToRepair())
+                        .Do("Find Repair Man", t => FindRepairMan())
+                    .End()
                     .Do("Buff Group", t => BuffUp())
                     .Do("Should I stay?", t => Stay())
                     .Do("Should I follow?", t => Follow())
                     .Do("Do I have a move command?", t => NoMoveCommand())
                  .End()
                  .Build();
+        }
+
+        /// <summary>
+        /// Determines if we need to repair or not
+        /// </summary>
+        /// <returns></returns>
+        private BehaviourTreeStatus NeedToRepair()
+        {
+            // Need to repair if total item durability is less than 75%
+            if (Player.PlayerObject.EquipmentDurabilityPercentage < 0.75f)
+                return BehaviourTreeStatus.Success;
+
+            // Need to repair if any one piece is below 50% durability
+            foreach (var item in Player.PlayerObject.EquippedItems)
+                if (item.MaxDurability > 0 && (item.Durability / item.MaxDurability) < 0.5f)
+                    return BehaviourTreeStatus.Success;
+
+            return BehaviourTreeStatus.Failure;
+        }
+
+        /// <summary>
+        /// Finds a repair man to repair our gear
+        /// </summary>
+        /// <returns></returns>
+        private BehaviourTreeStatus FindRepairMan()
+        {
+            // Find a repair man that is in range of us
+            var closestDistance = 1000000.0f;
+            mClient.Clients.Unit chosenUnit = null;
+            foreach (var u in Client.objectMgr.GetAllUnits())
+            {
+                // If the unit is not a trainer
+                if (!u.IsRepair) continue;
+
+                // Check the distance on them
+                var distance = Client.movementMgr.CalculateDistance(u.Position);
+                if (distance < closestDistance && distance < MAX_TRAINER_DISTANCE)
+                {
+                    closestDistance = distance;
+                    chosenUnit = u;
+                }
+            }
+
+            // If we found one return success
+            if (chosenUnit != null)
+            {
+                StartActivity(new RepairAllItems(chosenUnit, this));
+                return BehaviourTreeStatus.Success;
+            }
+
+            return BehaviourTreeStatus.Failure;
         }
 
         /// <summary>

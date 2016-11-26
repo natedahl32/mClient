@@ -1,15 +1,16 @@
 ﻿using mClient.Clients;
 using mClient.World.AI.Activity.Movement;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace mClient.World.AI.Activity.Death
 {
     public class ReleaseSpirit : BaseActivity
     {
+        #region Declarations
+
+        private bool mReclaimed = false;
+
+        #endregion
+
         #region Constructors
 
         public ReleaseSpirit(PlayerAI ai) : base(ai)
@@ -29,12 +30,6 @@ namespace mClient.World.AI.Activity.Death
 
         #region Public Methods
 
-        public override void Start()
-        {
-            base.Start();
-            PlayerAI.Client.ReclaimCorpse();
-        }
-
         public override void Process()
         {
             if (!PlayerAI.Player.PlayerObject.IsDead)
@@ -48,6 +43,15 @@ namespace mClient.World.AI.Activity.Death
             {
                 PlayerAI.StartActivity(new TeleportToCoordinate(PlayerAI.Player.MapID, PlayerAI.Player.PlayerCorpse.Position, PlayerAI));
                 return;
+            }
+            else
+            {
+                if (!mReclaimed)
+                {
+                    PlayerAI.Client.ReclaimCorpse();
+                    mReclaimed = true;
+                }
+                // Wait to come back alive
             }
         }
 

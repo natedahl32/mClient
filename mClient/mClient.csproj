@@ -194,6 +194,7 @@
     <Compile Include="World\AI\Activity\Death\ReleaseSpirit.cs" />
     <Compile Include="World\AI\Activity\Death\Repop.cs" />
     <Compile Include="World\AI\Activity\Item\AutoEquipItemFromInventory.cs" />
+    <Compile Include="World\AI\Activity\Item\RepairAllItems.cs" />
     <Compile Include="World\AI\Activity\Loot\LootGameObject.cs" />
     <Compile Include="World\AI\Activity\Loot\LootItemFromObject.cs" />
     <Compile Include="World\AI\Activity\Loot\LootObject.cs" />
@@ -211,6 +212,7 @@
     <Compile Include="World\AI\Activity\Messages\SpellCastFailedMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\SpellCastGoMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\SpellCastInterruptedMessage.cs" />
+    <Compile Include="World\AI\Activity\Messages\TeleportAckMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\TradeStatusMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\TrainerBuySucceededMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\TrainerSpellListMessage.cs" />

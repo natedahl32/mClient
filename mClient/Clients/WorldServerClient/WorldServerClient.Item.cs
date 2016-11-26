@@ -548,6 +548,29 @@ namespace mClient.Clients
             packet.Write(guid);
             packet.Write(itemSlot);
             packet.Write((byte)roll);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Repairs all items in the players inventory
+        /// </summary>
+        /// <param name="mpcGuid"></param>
+        public void RepairAllItems(ulong npcGuid)
+        {
+            RepairItem(npcGuid, 0);
+        }
+
+        /// <summary>
+        /// Repairs a single item that belongs to the player
+        /// </summary>
+        /// <param name="mpcGuid"></param>
+        /// <param name="itemGuid"></param>
+        public void RepairItem(ulong npcGuid, ulong itemGuid)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_REPAIR_ITEM);
+            packet.Write(npcGuid);
+            packet.Write(itemGuid);
+            Send(packet);
         }
 
         #endregion

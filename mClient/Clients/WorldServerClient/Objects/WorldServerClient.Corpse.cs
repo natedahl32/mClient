@@ -19,20 +19,6 @@ namespace mClient.Clients
             get { return GetWoWGuid(GetFieldValue((int)CorpseFields.CORPSE_FIELD_OWNER), GetFieldValue((int)CorpseFields.CORPSE_FIELD_OWNER + 1)); }
         }
 
-        /// <summary>
-        /// Gets the position of the corpse
-        /// </summary>
-        public override Coordinate Position
-        {
-            get
-            {
-                var x = GetFieldValue((int)CorpseFields.CORPSE_FIELD_POS_X);
-                var y = GetFieldValue((int)CorpseFields.CORPSE_FIELD_POS_Y);
-                var z = GetFieldValue((int)CorpseFields.CORPSE_FIELD_POS_Z);
-                return new Coordinate(x, y, z);
-            }
-        }
-
         #endregion
     }
 }

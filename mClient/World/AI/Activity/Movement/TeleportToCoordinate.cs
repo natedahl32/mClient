@@ -1,5 +1,6 @@
 ﻿using mClient.Clients;
 using mClient.Shared;
+using mClient.World.AI.Activity.Messages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,6 +52,25 @@ namespace mClient.World.AI.Activity.Movement
             {
                 PlayerAI.CompleteActivity();
                 return;
+            }
+        }
+
+        public override void HandleMessage(ActivityMessage message)
+        {
+            base.HandleMessage(message);
+
+            if (message.MessageType == Constants.WorldServerOpCode.MSG_MOVE_TELEPORT_ACK)
+            {
+                var teleAckMessage = message as TeleportAckMessage;
+                if (teleAckMessage != null)
+                {
+                    if (teleAckMessage.Teleporter.GetOldGuid() == PlayerAI.Player.Guid.GetOldGuid() &&
+                        teleAckMessage.Location == mTeleportTo)
+                    {
+                        // We should be done. We recieved an acknowledgement of the teleport
+                        var i = 0;
+                    }
+                }
             }
         }
 

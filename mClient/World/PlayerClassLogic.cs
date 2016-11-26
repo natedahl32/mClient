@@ -160,6 +160,9 @@ namespace mClient.World
         /// <returns></returns>
         public virtual float CompareItems(ItemInfo item1, ItemInfo item2)
         {
+            // Make sure stat weights are set for our current spec
+            SetStatWeights();
+
             // Get item score for stats
             float item1Score = GetItemScore(item1);
             float item2Score = GetItemScore(item2);
@@ -336,6 +339,8 @@ namespace mClient.World
             for (int i = 0; i < ItemConstants.MAX_ITEM_MOD; i++)
             {
                 var statValue = item.GetStatValue((ItemModType)i);
+                if (statValue == 0)
+                    continue;
 
                 // Health needs to be divided by the units of health per stamian otherwise health will be overvalued due to the amount of it on items. Same for mana.
                 if (i == (int)ItemModType.ITEM_MOD_HEALTH)

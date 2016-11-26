@@ -13,6 +13,7 @@ using mClient.Network;
 using mClient.Constants;
 using mClient.Terrain;
 using mClient.Clients.UpdateBlocks;
+using mClient.World.AI.Activity.Messages;
 
 namespace mClient.Clients
 {
@@ -148,16 +149,19 @@ namespace mClient.Clients
         [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_TELEPORT_ACK)]
         public void TeleportAck(PacketIn packet)
         {
-
+            var message = new TeleportAckMessage();
             var teleporterGuid = packet.ReadPackedGuidToWoWGuid();
+            message.Teleporter = teleporterGuid;
             packet.ReadUInt32();
             var movementInfo = MovementInfo.Read(packet);
+
+            message.Location = new Coordinate(movementInfo.Position.X, movementInfo.Position.Y, movementInfo.Position.Z, movementInfo.Facing);
 
             if (teleporterGuid.GetOldGuid() == player.Guid.GetOldGuid())
             {
                 // update the players position
-                player.PlayerObject.Position = new Coordinate(movementInfo.Position.X, movementInfo.Position.Y, movementInfo.Position.Z, movementInfo.Facing);
-
+                player.PlayerObject.Position = message.Location;
+                
                 // send back an ack
                 TeleportAck();
             }
@@ -165,8 +169,10 @@ namespace mClient.Clients
             {
                 Object obj = objectMgr.getObject(teleporterGuid);
                 if (obj != null)
-                    obj.Position = new Coordinate(movementInfo.Position.X, movementInfo.Position.Y, movementInfo.Position.Z, movementInfo.Facing);
+                    obj.Position = message.Location;
             }
+
+            player.PlayerAI.SendMessageToAllActivities(message);
         }
 
         /// <summary>

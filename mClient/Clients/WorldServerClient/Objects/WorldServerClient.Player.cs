@@ -123,16 +123,12 @@ namespace mClient.Clients
             {
                 uint totalMaxDurability = 0;
                 uint totalDurability = 0;
-                for (int i = (int)EquipmentSlots.EQUIPMENT_SLOT_START; i < (int)EquipmentSlots.EQUIPMENT_SLOT_END; i++)
+                foreach (var item in EquippedItems)
                 {
-                    var item = GetItemInEquipmentSlot((EquipmentSlots)i);
-                    if (item != null)
+                    if (item.MaxDurability > 0)
                     {
-                        if (item.MaxDurability > 0)
-                        {
-                            totalDurability += item.Durability;
-                            totalMaxDurability += item.MaxDurability;
-                        }
+                        totalDurability += item.Durability;
+                        totalMaxDurability += item.MaxDurability;
                     }
                 }
 
@@ -140,6 +136,24 @@ namespace mClient.Clients
                     return 0f;
 
                 return totalDurability / totalMaxDurability;
+            }
+        }
+
+        /// <summary>
+        /// Gets all equipped items on the payer
+        /// </summary>
+        public IEnumerable<Item> EquippedItems
+        {
+            get
+            {
+                var items = new List<Item>();
+                for (int i = (int)EquipmentSlots.EQUIPMENT_SLOT_START; i < (int)EquipmentSlots.EQUIPMENT_SLOT_END; i++)
+                {
+                    var item = GetItemInEquipmentSlot((EquipmentSlots)i);
+                    if (item != null)
+                        items.Add(item);
+                }
+                return items;
             }
         }
 
