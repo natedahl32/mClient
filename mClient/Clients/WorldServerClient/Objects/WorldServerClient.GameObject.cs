@@ -45,7 +45,12 @@ namespace mClient.Clients
                 if (BaseInfo.GameObjectType == GameObjectType.Chest || BaseInfo.GameObjectType == GameObjectType.QuestGiver)
                 {
                     var dynValue = (GameObjectDynamicLowFlags)GetFieldValue((int)GameObjectFields.GAMEOBJECT_DYN_FLAGS);
-                    return dynValue.HasFlag(GameObjectDynamicLowFlags.GO_DYNFLAG_LO_ACTIVATE) || dynValue.HasFlag(GameObjectDynamicLowFlags.GO_DYNFLAG_LO_SPARKLE);
+                    if (dynValue.HasFlag(GameObjectDynamicLowFlags.GO_DYNFLAG_LO_NO_INTERACT))
+                        return false;
+                    if (dynValue.HasFlag(GameObjectDynamicLowFlags.GO_DYNFLAG_LO_SPARKLE))
+                        return true;
+                    if (dynValue.HasFlag(GameObjectDynamicLowFlags.GO_DYNFLAG_LO_ACTIVATE))
+                        return true;
                 }
                 // Goobers also have the dynamic flag set but just use the activate flag, not the sparkle flag
                 if (BaseInfo.GameObjectType == GameObjectType.Goober)

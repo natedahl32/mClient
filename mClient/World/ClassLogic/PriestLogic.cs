@@ -213,6 +213,13 @@ namespace mClient.World.ClassLogic
                     item2Score += (item2.DPS * 0.9f);
             }
 
+            // Reduce armor score so it isn't overvalued. There can be a lot on items
+            float item1Armor = item1.Resistances[SpellSchools.SPELL_SCHOOL_NORMAL] / 20;
+            float item2Armor = item2.Resistances[SpellSchools.SPELL_SCHOOL_NORMAL] / 20;
+
+            item1Score += (item1Armor * 0.1f);
+            item2Score += (item2Armor * 0.1f);
+
             var newCompare = item1Score - item2Score;
             return baseCompare + newCompare;
         }

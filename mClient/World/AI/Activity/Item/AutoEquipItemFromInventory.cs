@@ -45,7 +45,7 @@ namespace mClient.World.AI.Activity.Item
         {
             base.Start();
 
-            PlayerAI.Client.SendChatMsg(ChatMsg.Party, Languages.Universal, $"I'm equipping the item {mInventoryItemToEquip.Item.BaseInfo.ItemName}.");
+            PlayerAI.Client.SendChatMsg(ChatMsg.Party, Languages.Universal, $"I'm equipping the item {mInventoryItemToEquip.Item.BaseInfo.ItemGameLink}.");
 
             // Send the auto equip message to the server
             PlayerAI.Client.AutoEquipItem((byte)mInventoryItemToEquip.Bag, (byte)mInventoryItemToEquip.Slot);
