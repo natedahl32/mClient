@@ -222,6 +222,14 @@ namespace mClient.Clients
             }
         }
 
+        /// <summary>
+        /// Get player flags for this player
+        /// </summary>
+        public PlayerFlags PlayerFlag
+        {
+            get { return (PlayerFlags)GetFieldValue((int)PlayerFields.PLAYER_FLAGS); }
+        }
+
         #endregion
 
         #region Public Methods

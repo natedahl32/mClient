@@ -1,5 +1,7 @@
 ﻿using FluentBehaviourTree;
+using mClient.Clients;
 using mClient.World.AI.Activity.Combat;
+using mClient.World.AI.Activity.Movement;
 using mClient.World.AI.Activity.Train;
 using System.Linq;
 
@@ -121,6 +123,17 @@ namespace mClient.World.AI
                 // If we don't have a player that issued the command we can't follow them
                 if (Player.IssuedMoveCommand == null)
                     return BehaviourTreeStatus.Failure;
+
+                // We can't do anything without the position of the command issuer.
+                if (Player.IssuedMoveCommand.Position == null)
+                    return BehaviourTreeStatus.Failure;
+
+                // If we are not close to them, teleport to them. Null position from the issuer probably means we are too far away.
+                if (Client.movementMgr.CalculateDistance(Player.IssuedMoveCommand.Position) >= MovementMgr.MAXIMUM_FOLLOW_DISTANCE)
+                {
+                    StartActivity(new TeleportToCoordinate(Player.MapID, Player.IssuedMoveCommand.Position, this));
+                    return BehaviourTreeStatus.Success;
+                }
 
                 // Follow the target that issued the move command
                 SetFollowTarget(Player.IssuedMoveCommand);

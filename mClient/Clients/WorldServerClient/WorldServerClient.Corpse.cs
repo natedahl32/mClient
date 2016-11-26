@@ -85,6 +85,15 @@ namespace mClient.Clients
             Send(packet);
         }
 
+        /// <summary>
+        /// Sends repop request to server after a death
+        /// </summary>
+        public void Repop()
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_REPOP_REQUEST);
+            Send(packet);
+        }
+
         #endregion
     }
 }

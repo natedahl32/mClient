@@ -55,7 +55,7 @@ namespace mClient.World.AI
         private BehaviourTreeStatus EquipUpgradesInInventory()
         {
             foreach (var invItem in Player.PlayerObject.InventoryItems)
-                if (invItem.Item != null && Player.IsItemAnUpgrade(invItem.Item))
+                if (invItem != null && invItem.Item != null && invItem.Item.BaseInfo != null && Player.IsItemAnUpgrade(invItem.Item))
                 {
                     StartActivity(new AutoEquipItemFromInventory(invItem, this));
                     return BehaviourTreeStatus.Success;

@@ -192,6 +192,7 @@
     <Compile Include="World\AI\Activity\Combat\OutOfCombatBuff.cs" />
     <Compile Include="World\AI\Activity\Death\FindCorpse.cs" />
     <Compile Include="World\AI\Activity\Death\ReleaseSpirit.cs" />
+    <Compile Include="World\AI\Activity\Death\Repop.cs" />
     <Compile Include="World\AI\Activity\Item\AutoEquipItemFromInventory.cs" />
     <Compile Include="World\AI\Activity\Loot\LootGameObject.cs" />
     <Compile Include="World\AI\Activity\Loot\LootItemFromObject.cs" />

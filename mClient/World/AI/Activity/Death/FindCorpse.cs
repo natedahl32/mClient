@@ -1,10 +1,19 @@
-﻿using mClient.World.AI.Activity.Messages;
+﻿using mClient.Shared;
+using mClient.World.AI.Activity.Messages;
 using mClient.World.AI.Activity.Movement;
 
 namespace mClient.World.AI.Activity.Death
 {
     public class FindCorpse : BaseActivity
     {
+        #region Declarations
+
+        private uint mCorpseMap;
+        private Coordinate mCorpseLocation;
+        private bool mHasTeleportedToCorpse;
+
+        #endregion
+
         #region Constructors
 
         public FindCorpse(PlayerAI ai) : base(ai)
@@ -29,14 +38,29 @@ namespace mClient.World.AI.Activity.Death
             base.Start();
             // Send a query for our corpse
             PlayerAI.Client.SendCorpseQuery();
+
+            // Expect a query response in 2 seconds
+            Expect(() => PlayerAI.Player.PlayerCorpse != null, 10000);
         }
 
         public override void Process()
         {
+            // if our expectation elapses, send another query request
+            if (ExpectationHasElapsed)
+                PlayerAI.Client.SendCorpseQuery();
+
             // if we have our corpse we can complete this activity
             if (PlayerAI.Player.PlayerCorpse != null)
             {
                 PlayerAI.CompleteActivity();
+                return;
+            }
+
+            // if we have a corpse location and we have not teleported to it yet, go to it
+            if (mCorpseLocation != null && !mHasTeleportedToCorpse)
+            {
+                mHasTeleportedToCorpse = true;
+                PlayerAI.StartActivity(new TeleportToCoordinate(mCorpseMap, mCorpseLocation, PlayerAI));
                 return;
             }
         }
@@ -51,7 +75,8 @@ namespace mClient.World.AI.Activity.Death
                 if (corpseMessage == null) return;
 
                 // Push a new activity that allows us to teleport to our corpse
-                PlayerAI.StartActivity(new TeleportToCoordinate(corpseMessage.MapId, corpseMessage.Location, PlayerAI));
+                mCorpseMap = corpseMessage.MapId;
+                mCorpseLocation = corpseMessage.Location;
             }
         }
 

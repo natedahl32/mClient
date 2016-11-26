@@ -15,6 +15,7 @@ namespace mClient.Clients
         public void HandlePartyMemberStatsFull(PacketIn packet)
         {
             // Get guid
+
             WoWGuid guid = packet.ReadPackedGuidToWoWGuid();
 
             // Check if player is online or offline
@@ -30,13 +31,22 @@ namespace mClient.Clients
             var level = packet.ReadUInt16();
 
             var zoneId = packet.ReadUInt16();
-            var x = packet.ReadUInt16();
-            var y = packet.ReadUInt16();
+            var x = packet.ReadInt16();
+            var y = packet.ReadInt16();
 
             // Find the party member and update their stats
             var member = player.CurrentGroup.GetPlayer(guid);
             if (member != null && member.PlayerObject != null)
+            {
+                //byte[] tempX = new byte[4];
+                //Array.Copy(xBytes, 0, tempX, 2, 2);
+                //byte[] tempY = new byte[4];
+                //Array.Copy(yBytes, 0, tempY, 2, 2);
+                //float x = BitConverter.ToSingle(tempX, 0);
+                //float y = BitConverter.ToSingle(tempY, 0);
                 member.PlayerObject.Update(currentHP, maxHP, level, currentPower, maxPower);
+                member.PlayerObject.Position = new Coordinate(x, y, 0f);
+            }
         }
 
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_GROUP_INVITE)]

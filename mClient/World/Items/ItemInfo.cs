@@ -236,7 +236,8 @@ namespace mClient.World.Items
                     return 0;
                 float temp = 0f;
                 for (int i = 0; i < ItemConstants.MAX_ITEM_PROTO_DAMAGES; i++)
-                    temp += ItemDamages[i].MinDamage + ItemDamages[i].MaxDamage;
+                    if (i < ItemDamages.Count)
+                        temp += ItemDamages[i].MinDamage + ItemDamages[i].MaxDamage;
                 return temp * 500 / Delay;
             }
         }

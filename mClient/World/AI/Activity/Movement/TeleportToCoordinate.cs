@@ -1,4 +1,5 @@
-﻿using mClient.Shared;
+﻿using mClient.Clients;
+using mClient.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +47,7 @@ namespace mClient.World.AI.Activity.Movement
         public override void Process()
         {
             // if we are at the spot we teleported to we are done
-            if (PlayerAI.Player.Position == mTeleportTo)
+            if (PlayerAI.Client.movementMgr.CalculateDistance(mTeleportTo) <= MovementMgr.MINIMUM_FOLLOW_DISTANCE)
             {
                 PlayerAI.CompleteActivity();
                 return;

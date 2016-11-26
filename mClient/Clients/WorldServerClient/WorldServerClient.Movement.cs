@@ -38,7 +38,6 @@ namespace mClient.Clients
         [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_TOGGLE_LOGGING)]
         [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_TELEPORT)]
         [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_TELEPORT_CHEAT)]
-        [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_TELEPORT_ACK)]
         [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_TOGGLE_FALL_LOGGING)]
         [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_FALL_LAND)]
         [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_START_SWIM)]
@@ -149,15 +148,25 @@ namespace mClient.Clients
         [PacketHandlerAtribute(WorldServerOpCode.MSG_MOVE_TELEPORT_ACK)]
         public void TeleportAck(PacketIn packet)
         {
+
             var teleporterGuid = packet.ReadPackedGuidToWoWGuid();
             packet.ReadUInt32();
             var movementInfo = MovementInfo.Read(packet);
 
-            // update the players position
-            player.PlayerObject.Position = new Coordinate(movementInfo.Position.X, movementInfo.Position.Y, movementInfo.Position.Z, movementInfo.Facing);
+            if (teleporterGuid.GetOldGuid() == player.Guid.GetOldGuid())
+            {
+                // update the players position
+                player.PlayerObject.Position = new Coordinate(movementInfo.Position.X, movementInfo.Position.Y, movementInfo.Position.Z, movementInfo.Facing);
 
-            // send back an ack
-            TeleportAck();
+                // send back an ack
+                TeleportAck();
+            }
+            else
+            {
+                Object obj = objectMgr.getObject(teleporterGuid);
+                if (obj != null)
+                    obj.Position = new Coordinate(movementInfo.Position.X, movementInfo.Position.Y, movementInfo.Position.Z, movementInfo.Facing);
+            }
         }
 
         /// <summary>
