@@ -51,12 +51,18 @@ namespace mClient.Clients
                         return true;
                     if (dynValue.HasFlag(GameObjectDynamicLowFlags.GO_DYNFLAG_LO_ACTIVATE))
                         return true;
+                    // If the flag has a conditional value we return false because we don't have the sparkle or activate flags
+                    if (value.HasFlag(GameObjectFlags.GO_FLAG_INTERACT_COND))
+                        return false;
                 }
                 // Goobers also have the dynamic flag set but just use the activate flag, not the sparkle flag
                 if (BaseInfo.GameObjectType == GameObjectType.Goober)
                 {
                     var dynValue = (GameObjectDynamicLowFlags)GetFieldValue((int)GameObjectFields.GAMEOBJECT_DYN_FLAGS);
-                    return dynValue.HasFlag(GameObjectDynamicLowFlags.GO_DYNFLAG_LO_ACTIVATE);
+                    if (dynValue.HasFlag(GameObjectDynamicLowFlags.GO_DYNFLAG_LO_ACTIVATE))
+                        return true;
+                    if (value.HasFlag(GameObjectFlags.GO_FLAG_INTERACT_COND))
+                        return false;
                 }
 
                 // No non-interact flag, so we assume we can interact

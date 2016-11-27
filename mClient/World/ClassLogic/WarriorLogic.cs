@@ -263,8 +263,8 @@ namespace mClient.World.ClassLogic
             if (Spec == MainSpec.WARRIOR_SPEC_PROTECTION)
             {
                 // Reduce armor score so it isn't overvalued. There can be a lot on items
-                float item1Armor = item1.Resistances[SpellSchools.SPELL_SCHOOL_NORMAL] / 20;
-                float item2Armor = item2.Resistances[SpellSchools.SPELL_SCHOOL_NORMAL] / 20;
+                float item1Armor = item1.Resistances[SpellSchools.SPELL_SCHOOL_NORMAL] / 20f;
+                float item2Armor = item2.Resistances[SpellSchools.SPELL_SCHOOL_NORMAL] / 20f;
 
                 item1Score += (item1Armor * 0.9f);
                 item2Score += (item2Armor * 0.9f);
@@ -272,8 +272,8 @@ namespace mClient.World.ClassLogic
             else
             {
                 // Reduce armor score so it isn't overvalued. There can be a lot on items
-                float item1Armor = item1.Resistances[SpellSchools.SPELL_SCHOOL_NORMAL] / 20;
-                float item2Armor = item2.Resistances[SpellSchools.SPELL_SCHOOL_NORMAL] / 20;
+                float item1Armor = item1.Resistances[SpellSchools.SPELL_SCHOOL_NORMAL] / 20f;
+                float item2Armor = item2.Resistances[SpellSchools.SPELL_SCHOOL_NORMAL] / 20f;
 
                 item1Score += (item1Armor * 0.1f);
                 item2Score += (item2Armor * 0.1f);

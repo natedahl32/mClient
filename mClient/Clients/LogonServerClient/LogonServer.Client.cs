@@ -311,7 +311,7 @@ namespace mClient.Clients
             //packetIn.ReadByte();
             UInt16 Length = packetIn.ReadUInt16();
             UInt32 Request = packetIn.ReadUInt32();
-            int realmscount = packetIn.ReadInt16();
+            int realmscount = packetIn.ReadByte();
 
             //Console.Write(packetIn.ToHex());
 
