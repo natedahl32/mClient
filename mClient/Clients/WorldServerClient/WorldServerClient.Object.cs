@@ -10,6 +10,7 @@ using mClient.Clients.UpdateBlocks;
 using mClient.World.Creature;
 using mClient.World.GameObject;
 using mClient.World.Items;
+using mClient.World.Guild;
 
 namespace mClient.Clients
 {
@@ -313,6 +314,24 @@ namespace mClient.Clients
 			packet.Write(guid);
 			Send(packet);
 		}
+
+        public void GuildQuery(uint guildId)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_GUILD_QUERY);
+            packet.Write(guildId);
+            Send(packet);
+        }
+
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_GUILD_QUERY_RESPONSE)]
+        public void Handle_GuildQuery(PacketIn packet)
+        {
+            var guildId = packet.ReadUInt32();
+            var guildName = packet.ReadString();
+
+            var guild = GuildManager.Instance.Get(guildId);
+            if (guild == null)
+                GuildManager.Instance.Add(new GuildInfo(guildId, guildName));
+        }
 
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_GAMEOBJECT_QUERY_RESPONSE)]
         public void Handle_GameObjectQuery(PacketIn packet)

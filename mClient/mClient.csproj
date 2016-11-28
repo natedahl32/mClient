@@ -290,7 +290,8 @@
     <Compile Include="World\GameObject\Trap.cs" />
     <Compile Include="World\Group.cs" />
     <Compile Include="World\GameObject\GameObjectInfo.cs" />
-    <Compile Include="World\Guild.cs" />
+    <Compile Include="World\Guild\GuildInfo.cs" />
+    <Compile Include="World\Guild\GuildManager.cs" />
     <Compile Include="World\Items\ItemInfo.cs" />
     <Compile Include="World\Items\ItemManager.cs" />
     <Compile Include="World\Items\ItemSpellDamage.cs" />

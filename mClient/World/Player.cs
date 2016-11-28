@@ -4,15 +4,14 @@ using PObject = mClient.Clients.Object;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using mClient.Clients;
 using mClient.World.AI;
 using mClient.World.Quest;
 using mClient.DBC;
 using mClient.World.AI.Activity.Messages;
-using mClient.World.AI.Activity.Movement;
 using mClient.World.Spells;
 using mClient.World.Items;
+using mClient.World.Guild;
 
 namespace mClient.World
 {
@@ -30,7 +29,7 @@ namespace mClient.World
         // Group the player is in and group member data for this player
         private Group mGroup = null;
         private GroupMemberData mGroupData = null;
-        private Guild mGuild = null;
+        private GuildInfo mGuild = null;
 
         // Player AI and Logic
         private PlayerAI mPlayerAI = null;
@@ -123,7 +122,16 @@ namespace mClient.World
         /// <summary>
         /// Gets the guild the player is in
         /// </summary>
-        public Guild Guild { get { return mGuild; } }
+        public GuildInfo Guild
+        {
+            get
+            {
+                if (PlayerObject.GuildId == 0) return null;
+                if (mGuild == null)
+                    mGuild = GuildManager.Instance.Get(PlayerObject.GuildId);
+                return mGuild;
+            }
+        }
 
         /// <summary>
         /// Gets the position of the player

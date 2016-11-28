@@ -1,5 +1,6 @@
 ﻿using mClient.Constants;
 using mClient.Shared;
+using mClient.World.Guild;
 using mClient.World.Items;
 using mClient.World.Quest;
 using mClient.World.Skill;
@@ -242,6 +243,22 @@ namespace mClient.Clients
         public PlayerFlags PlayerFlag
         {
             get { return (PlayerFlags)GetFieldValue((int)PlayerFields.PLAYER_FLAGS); }
+        }
+
+        /// <summary>
+        /// Gets the ID of the guild the player is in
+        /// </summary>
+        public uint GuildId
+        {
+            get { return GetFieldValue((int)PlayerFields.PLAYER_GUILDID); }
+        }
+
+        /// <summary>
+        /// Gets the guild rank the player is in
+        /// </summary>
+        public uint GuildRank
+        {
+            get { return GetFieldValue((int)PlayerFields.PLAYER_GUILDRANK); }
         }
 
         #endregion
@@ -536,6 +553,13 @@ namespace mClient.Clients
             // Can be null when sent from base class
             if (client != null)
             {
+                // Guild
+                if (x == (int)PlayerFields.PLAYER_GUILDID)
+                {
+                    var guild = GuildManager.Instance.Get(value);
+                    if (guild == null)
+                        client.GuildQuery(value);
+                }
                 // Quests
                 if (x >= (int)PlayerFields.PLAYER_QUEST_LOG_1_1 && x <= (int)PlayerFields.PLAYER_QUEST_LOG_LAST_3)
                 {
