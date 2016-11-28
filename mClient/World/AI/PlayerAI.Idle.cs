@@ -116,7 +116,7 @@ namespace mClient.World.AI
 
                 // If the trainer is not a class trainer and for our class
                 var myTrainerSubName = Player.ClassLogic.ClassName + " Trainer";
-                if (u.BaseCreatureInfo.SubName != myTrainerSubName) continue;
+                if (u.BaseCreatureInfo != null && u.BaseCreatureInfo.SubName != myTrainerSubName) continue;
 
                 // Right kind of class trainer, check the distance on them
                 var distance = Client.movementMgr.CalculateDistance(u.Position);
