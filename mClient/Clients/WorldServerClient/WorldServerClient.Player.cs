@@ -203,6 +203,17 @@ namespace mClient.Clients
             Send(packet);
         }
 
+        /// <summary>
+        /// Sets hearthstone to an innkeeper
+        /// </summary>
+        /// <param name="guid"></param>
+        public void SetHearthstone(ulong guid)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_BINDER_ACTIVATE);
+            packet.Write(guid);
+            Send(packet);
+        }
+
         #endregion
     }
 }

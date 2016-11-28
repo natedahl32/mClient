@@ -29,7 +29,7 @@ namespace mClient.World.AI
         {
             var split = message.Split(new string[] { " " }, StringSplitOptions.None);
 
-            // Make sure this is a combat command
+            // Make sure this is a dump command
             if (split[0].ToLower() != "dump") return false;
 
             // If no sub command send correct usage

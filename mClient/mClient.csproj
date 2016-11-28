@@ -227,12 +227,14 @@
     <Compile Include="World\AI\Activity\Trade\BeginTrade.cs" />
     <Compile Include="World\AI\Activity\Trade\TradeItems.cs" />
     <Compile Include="World\AI\Activity\Train\LearnSpellFromTrainer.cs" />
+    <Compile Include="World\AI\Activity\Train\SetHearthstone.cs" />
     <Compile Include="World\AI\Activity\Train\TrainAvailableSpells.cs" />
     <Compile Include="Pathfinding\Map.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Combat.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Dumps.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Inventory.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Quest.cs" />
+    <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Set.cs" />
     <Compile Include="World\AI\PlayerAI.Chat.cs" />
     <Compile Include="World\AI\PlayerAI.Combat.cs" />
     <Compile Include="World\AI\PlayerAI.cs" />
