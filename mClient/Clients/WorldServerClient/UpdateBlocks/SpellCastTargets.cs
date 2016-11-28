@@ -55,7 +55,7 @@ namespace mClient.Clients.UpdateBlocks
             if (TargetsMask.Has(SpellTargetFlags.TARGET_FLAG_UNIT) ||
                 TargetsMask.Has(SpellTargetFlags.TARGET_FLAG_PVP_CORPSE) ||
                 TargetsMask.Has(SpellTargetFlags.TARGET_FLAG_OBJECT) ||
-                TargetsMask.Has(SpellTargetFlags.TARGET_FLAG_CORPSE) ||
+                TargetsMask.Has(SpellTargetFlags.TARGET_FLAG_CORPSE_ALLY) ||
                 TargetsMask.Has(SpellTargetFlags.TARGET_FLAG_UNK2))
             {
                 UnitTargetGuid = packet.ReadPackedGuidToWoWGuid();
@@ -79,12 +79,6 @@ namespace mClient.Clients.UpdateBlocks
 
             if (TargetsMask.Has(SpellTargetFlags.TARGET_FLAG_STRING))
                 packet.ReadString();
-
-            if (TargetsMask.Has(SpellTargetFlags.TARGET_FLAG_CORPSE) ||
-                TargetsMask.Has(SpellTargetFlags.TARGET_FLAG_PVP_CORPSE))
-            {
-                CorpseGuid = packet.ReadPackedGuidToWoWGuid();
-            }
         }
 
         /// <summary>
@@ -98,7 +92,7 @@ namespace mClient.Clients.UpdateBlocks
             if (UnitTargetGuid != null && 
                 (TargetsMask.Has(SpellTargetFlags.TARGET_FLAG_UNIT) ||
                 TargetsMask.Has(SpellTargetFlags.TARGET_FLAG_OBJECT) ||
-                TargetsMask.Has(SpellTargetFlags.TARGET_FLAG_OBJECT_UNK) ||
+                TargetsMask.Has(SpellTargetFlags.TARGET_FLAG_CORPSE_ALLY) ||
                 TargetsMask.Has(SpellTargetFlags.TARGET_FLAG_UNK2)))
             {
                 packet.WritePackedUInt64(UnitTargetGuid.GetOldGuid());
@@ -123,13 +117,6 @@ namespace mClient.Clients.UpdateBlocks
                 packet.Write(DestinationLocation.X);
                 packet.Write(DestinationLocation.Y);
                 packet.Write(DestinationLocation.Z);
-            }
-
-            if (CorpseGuid != null && 
-                (TargetsMask.Has(SpellTargetFlags.TARGET_FLAG_CORPSE) ||
-                TargetsMask.Has(SpellTargetFlags.TARGET_FLAG_PVP_CORPSE)))
-            {
-                packet.WritePackedUInt64(CorpseGuid.GetOldGuid());
             }
         }
 

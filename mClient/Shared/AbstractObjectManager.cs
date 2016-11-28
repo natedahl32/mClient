@@ -16,7 +16,7 @@ namespace mClient.Shared
         private const int ITEMS_ADDED_TO_SERIALIZE = 1;
 
         protected List<T> mObjects = new List<T>();
-        private Object mLock = new Object();
+        protected Object mLock = new Object();
         private Object mWriteLock = new Object();
         private int addedSinceSerialize = 0;
 

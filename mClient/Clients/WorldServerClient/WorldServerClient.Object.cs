@@ -343,6 +343,11 @@ namespace mClient.Clients
         {
             Entry entry = new Entry();
             entry.entry = packet.ReadUInt32();
+
+            // Check if we received creature not found message
+            if (entry.entry == (entry.entry | 2147483648))
+                return;
+
             entry.name = packet.ReadString();
             entry.blarg = packet.ReadBytes(3);
             entry.subname = packet.ReadString();

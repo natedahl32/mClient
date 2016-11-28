@@ -35,13 +35,15 @@ namespace mClient.World.Quest
 
         public override QuestInfo Get(uint id)
         {
-            return mObjects.Where(q => q != null && q.QuestId == id).SingleOrDefault();
+            lock (mLock)
+                return mObjects.Where(q => q != null && q.QuestId == id).SingleOrDefault();
         }
 
         public override bool Exists(QuestInfo obj)
         {
             if (obj == null) return false;
-            return mObjects.Any(q => q.QuestId == obj.QuestId);
+            lock (mLock)
+                return mObjects.Any(q => q.QuestId == obj.QuestId);
         }
 
         /// <summary>
@@ -52,7 +54,8 @@ namespace mClient.World.Quest
         public QuestInfo GetQuest(string questTitle)
         {
             if (string.IsNullOrEmpty(questTitle)) return null;
-            return mObjects.Where(q => q.QuestName.ToLower() == questTitle.ToLower()).SingleOrDefault();
+            lock (mLock)
+                return mObjects.Where(q => q.QuestName.ToLower() == questTitle.ToLower()).SingleOrDefault();
         }
 
         #endregion

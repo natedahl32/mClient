@@ -86,12 +86,22 @@ namespace mClient.Clients
             var spellId = packet.ReadUInt32();
             var castFlags = packet.ReadUInt16();
 
+            // hits
             var targetCount = packet.ReadByte();
             for (int i = 0; i < targetCount; i++)
             {
                 var targetGuid = packet.ReadUInt64();
             }
-            packet.ReadByte(); // unknown
+
+            // miss
+            var miss = packet.ReadByte();
+            for (int i = 0; i < miss; i++)
+            {
+                var targetGuid = packet.ReadUInt64();
+                var missCondition = (SpellMissInfo)packet.ReadByte();
+                if (missCondition == SpellMissInfo.SPELL_MISS_REFLECT)
+                    packet.ReadByte(); // reflect result
+            }
 
             // Spell cast targets
             var spellCastTargets = new SpellCastTargets();
@@ -131,12 +141,12 @@ namespace mClient.Clients
             {
                 flags = SpellTargetFlags.TARGET_FLAG_OBJECT;
                 if ((target as GameObject) != null && (target as GameObject).BaseInfo.GameObjectType == GameObjectType.Chest)
-                    flags = flags | SpellTargetFlags.TARGET_FLAG_UNK1;
+                    flags = flags | SpellTargetFlags.TARGET_FLAG_GAMEOBJECT_ITEM;
             }
             else if (target.Type == ObjectType.Item || target.Type == ObjectType.Container)
                 flags = SpellTargetFlags.TARGET_FLAG_ITEM;
             else if (target.Type == ObjectType.Corpse)
-                flags = SpellTargetFlags.TARGET_FLAG_CORPSE;
+                flags = SpellTargetFlags.TARGET_FLAG_CORPSE_ALLY;
             else
             {
                 flags = SpellTargetFlags.TARGET_FLAG_UNIT;
@@ -170,7 +180,7 @@ namespace mClient.Clients
                 packet.Write(target.Position.Z);
             }
 
-            if (flags.Has(SpellTargetFlags.TARGET_FLAG_CORPSE | SpellTargetFlags.TARGET_FLAG_PVP_CORPSE))
+            if (flags.Has(SpellTargetFlags.TARGET_FLAG_CORPSE_ALLY | SpellTargetFlags.TARGET_FLAG_PVP_CORPSE))
                 packet.WritePackedUInt64(target.Guid.GetOldGuid());
 
             Send(packet);

@@ -70,8 +70,8 @@ namespace mClient.World.AI.Activity.Quest
                     return;
                 }
 
-                // TODO: We need to make a decision on which items to select for the quest reward
-                PlayerAI.Client.ChooseQuestReward(mQuestGiverGuid, mCompletingQuestId, 0);
+                // Make a decision on which items to select for the quest reward
+                PlayerAI.Client.ChooseQuestReward(mQuestGiverGuid, mCompletingQuestId, PlayerAI.Player.DetermineQuestReward(mQuestRewardOptions));
             }
 
             // if we have received completion of the quest then remove it from our quest log and end this activity

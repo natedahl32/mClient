@@ -39,17 +39,20 @@ namespace mClient.World.Creature
         public override bool Exists(CreatureInfo obj)
         {
             if (obj == null) return false;
-            return mObjects.Any(i => i.CreatureId == obj.CreatureId);
+            lock (mLock)
+                return mObjects.Any(i => i.CreatureId == obj.CreatureId);
         }
 
         public bool Exists(UInt32 creatureId)
         {
-            return mObjects.Any(i => i.CreatureId == creatureId);
+            lock (mLock)
+                return mObjects.Any(i => i.CreatureId == creatureId);
         }
 
         public override CreatureInfo Get(uint id)
         {
-            return mObjects.Where(i => i != null && i.CreatureId == id).SingleOrDefault();
+            lock (mLock)
+                return mObjects.Where(i => i != null && i.CreatureId == id).SingleOrDefault();
         }
 
         #endregion

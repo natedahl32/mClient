@@ -926,6 +926,50 @@ namespace mClient.World
                 mSpellCooldownManager.StartCooldown(spell);
         }
 
+        /// <summary>
+        /// Given a list of quest rewards, return the index of the reward we would like to choose
+        /// </summary>
+        /// <returns></returns>
+        public uint DetermineQuestReward(IList<QuestOfferRewards.RewardItem> rewards)
+        {
+            int choseIndex = -1;
+            for (int i = 0; i < rewards.Count; i++)
+            {
+                var reward = rewards[i];
+
+                // Get the item
+                var item = ItemManager.Instance.Get(reward.ItemId);
+                if (item == null)
+                {
+                    // Oooh... we don't have the item yet, we should have queryied for it when we received the quest
+                    throw new ApplicationException($"Don't have item {reward.ItemId} for quest reward. Need to query for this item when we get the quest!");
+                }
+
+                // First check if the item is usefule
+                if (!IsItemUseful(item)) continue;
+                // If the item is gear, check if it's an upgrade
+                if (item.ItemClass == ItemClass.ITEM_CLASS_WEAPON || item.ItemClass == ItemClass.ITEM_CLASS_ARMOR)
+                    if (!IsItemAnUpgrade(item))
+                        continue;
+
+                // It's useful and it is an upgrade and we haven't chosen an item yet. Choose it
+                if (choseIndex < 0)
+                    choseIndex = i;
+                else
+                {
+                    var chosenItem = ItemManager.Instance.Get(rewards[choseIndex].ItemId);
+                    // Compare it to the item we have already chosen, if it's better than choose it instead
+                    if (ClassLogic.CompareItems(item, chosenItem) > 0)
+                        choseIndex = i;
+                }
+            }
+
+            // If we didn't choose an item because none interested us, then just select the first item
+            if (choseIndex < 0)
+                return 0;
+            return (uint)choseIndex;
+        }
+
         #endregion
 
         #region Private Methods

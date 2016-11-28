@@ -37,17 +37,20 @@ namespace mClient.World.Items
         public override bool Exists(ItemInfo obj)
         {
             if (obj == null) return false;
-            return mObjects.Any(i => i.ItemId == obj.ItemId);
+            lock(mLock)
+                return mObjects.Any(i => i.ItemId == obj.ItemId);
         }
 
         public bool Exists(UInt32 itemId)
         {
-            return mObjects.Any(i => i.ItemId == itemId);
+            lock (mLock)
+                return mObjects.Any(i => i.ItemId == itemId);
         }
 
         public override ItemInfo Get(uint id)
         {
-            return mObjects.Where(i => i != null && i.ItemId == id).SingleOrDefault();
+            lock (mLock)
+                return mObjects.Where(i => i != null && i.ItemId == id).SingleOrDefault();
         }
 
         #endregion
