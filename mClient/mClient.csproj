@@ -102,6 +102,7 @@
     <Compile Include="Clients\WorldServerClient\UpdateBlocks\TransportInfo.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Corpse.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Group.cs" />
+    <Compile Include="Clients\WorldServerClient\WorldServerClient.Guild.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Item.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Player.cs" />
     <Compile Include="Clients\WorldServerClient\WorldServerClient.Auth.cs" />
@@ -230,11 +231,13 @@
     <Compile Include="World\AI\Activity\Train\SetHearthstone.cs" />
     <Compile Include="World\AI\Activity\Train\TrainAvailableSpells.cs" />
     <Compile Include="Pathfinding\Map.cs" />
+    <Compile Include="World\AI\Activity\Train\TrainSkill.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Combat.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Dumps.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Inventory.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Quest.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Set.cs" />
+    <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Skill.cs" />
     <Compile Include="World\AI\PlayerAI.Chat.cs" />
     <Compile Include="World\AI\PlayerAI.Combat.cs" />
     <Compile Include="World\AI\PlayerAI.cs" />
@@ -287,6 +290,7 @@
     <Compile Include="World\GameObject\Trap.cs" />
     <Compile Include="World\Group.cs" />
     <Compile Include="World\GameObject\GameObjectInfo.cs" />
+    <Compile Include="World\Guild.cs" />
     <Compile Include="World\Items\ItemInfo.cs" />
     <Compile Include="World\Items\ItemManager.cs" />
     <Compile Include="World\Items\ItemSpellDamage.cs" />

@@ -7,31 +7,31 @@ namespace mClient.World.AI
 {
     public partial class PlayerChatHandler
     {
-        private const string SET_HEARTHSTONE_COMMAND = "hearthstone";
+        private const string SKILL_LEARN_COMMAND = "learn";
 
-        private List<string> mAllSetCommands = new List<string>() { SET_HEARTHSTONE_COMMAND };
+        private List<string> mAllSkillCommands = new List<string>() { SKILL_LEARN_COMMAND };
 
         /// <summary>
-        /// Handles all set commands
+        /// Handles all skill commands
         /// </summary>
         /// <param name="senderGuid"></param>
         /// <param name="senderName"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        private bool HandleSetCommands(WoWGuid senderGuid, string senderName, string message)
+        private bool HandleSkillCommands(WoWGuid senderGuid, string senderName, string message)
         {
             var split = message.Split(new string[] { " " }, StringSplitOptions.None);
 
             // Make sure this is a set command
-            if (split[0].ToLower() != "set") return false;
+            if (split[0].ToLower() != "skill") return false;
 
             // If no sub command send correct usage
             if (split.Length <= 1)
             {
-                var usageCommands = "set (";
+                var usageCommands = "skill (";
                 // Return the correct usage for a combat command
-                Player.PlayerAI.Client.SendChatMsg(Constants.ChatMsg.Party, Constants.Languages.Universal, "The correct usage for the 'set' command is:");
-                usageCommands += string.Join("|", mAllSetCommands);
+                Player.PlayerAI.Client.SendChatMsg(Constants.ChatMsg.Party, Constants.Languages.Universal, "The correct usage for the 'skill' command is:");
+                usageCommands += string.Join("|", mAllSkillCommands);
                 usageCommands += ")";
                 Player.PlayerAI.Client.SendChatMsg(Constants.ChatMsg.Party, Constants.Languages.Universal, usageCommands);
                 return true;
@@ -45,21 +45,21 @@ namespace mClient.World.AI
             switch (split[1].ToLower())
             {
                 // combat attack - attacks the senders target
-                case SET_HEARTHSTONE_COMMAND:
+                case SKILL_LEARN_COMMAND:
                     // Get the target of the sender
                     var sendersTarget = Player.PlayerAI.Client.objectMgr.getObject(sender.TargetGuid) as Clients.Unit;
                     if (sendersTarget == null)
                         return false;
 
-                    // Make sure the target is an innkeeper
-                    if (!sendersTarget.IsInnkeeper)
+                    // Make sure the target is a trainer
+                    if (!sendersTarget.IsTrainer)
                     {
-                        Player.PlayerAI.Client.SendChatMsg(Constants.ChatMsg.Party, Constants.Languages.Universal, "I can't set my hearthstone, your target is not an Innkeeper.");
+                        Player.PlayerAI.Client.SendChatMsg(Constants.ChatMsg.Party, Constants.Languages.Universal, "I can't learn skill from your target, they are not a trainer.");
                         return true;
                     }
 
-                    // Set our hearthstone bind point using the guid of the unit selected by the sender (must be an INNKEEPER)
-                    Player.PlayerAI.StartActivity(new SetHearthstone(sendersTarget, Player.PlayerAI));
+                    // Learn skills from the senders target
+                    Player.PlayerAI.StartActivity(new TrainSkill(sendersTarget, Player.PlayerAI));
 
                     return true;
             }

@@ -38,7 +38,7 @@ namespace mClient.World.AI
                 var usageCommands = "dump (";
                 // Return the correct usage for a combat command
                 Player.PlayerAI.Client.SendChatMsg(Constants.ChatMsg.Party, Constants.Languages.Universal, "The correct usage for the 'dump' command is:");
-                usageCommands += string.Join("|", mAllCombatCommands);
+                usageCommands += string.Join("|", mAllDumpCommands);
                 usageCommands += ")";
                 Player.PlayerAI.Client.SendChatMsg(Constants.ChatMsg.Party, Constants.Languages.Universal, usageCommands);
                 return true;

@@ -1,6 +1,5 @@
 ﻿using mClient.Clients;
 using mClient.Constants;
-using mClient.DBC;
 using mClient.World.AI.Activity.Messages;
 using mClient.World.Spells;
 using System;
@@ -8,7 +7,7 @@ using System.Collections.Generic;
 
 namespace mClient.World.AI.Activity.Train
 {
-    public class TrainAvailableSpells : BaseActivity
+    public class TrainSkill : BaseActivity
     {
         #region Declarations
 
@@ -20,7 +19,7 @@ namespace mClient.World.AI.Activity.Train
 
         #region Constructors
 
-        public TrainAvailableSpells(Clients.Unit trainer, PlayerAI ai) : base(ai)
+        public TrainSkill(Clients.Unit trainer, PlayerAI ai) : base(ai)
         {
             if (trainer == null) throw new ArgumentNullException("trainer");
             mTrainer = trainer;
@@ -32,27 +31,12 @@ namespace mClient.World.AI.Activity.Train
 
         public override string ActivityName
         {
-            get { return "Train Available Spells"; }
+            get { return "Training Skill"; }
         }
 
         #endregion
 
         #region Public Methods
-
-        public override void Start()
-        {
-            base.Start();
-            PlayerAI.Client.SendChatMsg(ChatMsg.Party, Languages.Universal, "I'm visiting my class trainer to get my new spells.");
-        }
-
-        public override void Complete()
-        {
-            base.Complete();
-
-            // When we are done at a trainer, re-initialize our spells in class logic. We most likely got some upgrades so 
-            // we want to take advantage of that right away.
-            PlayerAI.Player.ClassLogic.InitializeSpells();
-        }
 
         public override void Process()
         {
@@ -88,7 +72,7 @@ namespace mClient.World.AI.Activity.Train
                 return;
             }
 
-            // Get the spell list from the trainer and learn any new spells
+            // Get the skill list from the trainer and learn any new skills available
             PlayerAI.Client.RequestTrainerList(mTrainer.Guid.GetOldGuid());
             mRequestListFromTrainer = true;
         }
@@ -99,30 +83,16 @@ namespace mClient.World.AI.Activity.Train
 
             if (message.MessageType == Constants.WorldServerOpCode.SMSG_TRAINER_LIST)
             {
-                // Get the quest id list returned from this quest giver
+                // Get the list of spells/skills returned from the trainer
                 var trainerListMessage = message as TrainerSpellListMessage;
                 if (trainerListMessage != null)
                 {
                     if (trainerListMessage.TrainerGuid.GetOldGuid() == mTrainer.Guid.GetOldGuid())
                     {
-                        // Use different variable so we don't modify the enumeration in Process while we are getting our data
-                        var learnSpells = trainerListMessage.CanLearnSpells;
-                        // Set the cost of all spells we can learn so we know how much they are in the future and don't keep trying to buy them if we don't have enough Ca$h
-                        foreach (var trainerSpell in learnSpells)
-                        {
-                            var spell = SpellTable.Instance.getSpell(trainerSpell.SpellId);
-                            if (spell != null)
-                            {
-                                // Now get the triggered spell
-                                var triggeredSpell = SpellTable.Instance.getSpell(spell.EffectTriggerSpell[0]);
-                                if (triggeredSpell != null)
-                                    triggeredSpell.MoneyCost = trainerSpell.Cost;
-                            }
-                        }
-                        // Remove all spells that we can't afford
-                        learnSpells.RemoveAll(s => s.Cost > PlayerAI.Player.PlayerObject.Money);
-
-                        mCanLearnSpells = learnSpells;
+                        // Get all spells we can learn from this trainer
+                        mCanLearnSpells = trainerListMessage.CanLearnSpells;
+                        if (mCanLearnSpells.Count == 0)
+                            PlayerAI.Client.SendChatMsg(ChatMsg.Party, Languages.Universal, "There are no skills for me to learn from this trainer.");
                     }
                 }
             }

@@ -30,6 +30,7 @@ namespace mClient.World
         // Group the player is in and group member data for this player
         private Group mGroup = null;
         private GroupMemberData mGroupData = null;
+        private Guild mGuild = null;
 
         // Player AI and Logic
         private PlayerAI mPlayerAI = null;
@@ -118,6 +119,11 @@ namespace mClient.World
         /// Gets the guid for the player
         /// </summary>
         public WoWGuid Guid { get { return PlayerObject.Guid; } }
+
+        /// <summary>
+        /// Gets the guild the player is in
+        /// </summary>
+        public Guild Guild { get { return mGuild; } }
 
         /// <summary>
         /// Gets the position of the player
