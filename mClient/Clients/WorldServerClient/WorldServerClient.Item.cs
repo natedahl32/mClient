@@ -533,10 +533,22 @@ namespace mClient.Clients
 
             var spellCastTargets = new SpellCastTargets();
             spellCastTargets.TargetsMask = SpellTargetFlags.TARGET_FLAG_UNIT;
+            if (target.GetOldGuid() == player.Guid.GetOldGuid())
+                spellCastTargets.TargetsMask |= SpellTargetFlags.TARGET_FLAG_SELF;
             spellCastTargets.UnitTargetGuid = target;
             spellCastTargets.WriteToPacket(ref packet);
 
             Send(packet);
+        }
+
+        /// <summary>
+        /// Uses an item that is currnetly in inventory on ourself
+        /// </summary>
+        /// <param name="bagIndex"></param>
+        /// <param name="slot"></param>
+        public void UseItemInInventoryOnSelf(byte bagIndex, byte slot)
+        {
+            UseItemInInventoryOnTarget(bagIndex, slot, player.Guid);
         }
 
         /// <summary>

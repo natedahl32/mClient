@@ -247,6 +247,10 @@ namespace mClient.Clients
 
         public void SendMovementPacket(WorldServerOpCode movementOpCode, UInt32 time = 0)
         {
+            // Send a stand packet for any movement we do
+            if (player.PlayerObject.StandState != UnitStandStateType.UNIT_STAND_STATE_STAND)
+                Stand();
+
             PacketOut packet = new PacketOut(movementOpCode);
             packet.Write(movementMgr.Flag.MoveFlags);
             //packet.Write((byte)0);
@@ -265,6 +269,16 @@ namespace mClient.Clients
             packet.Write(z);
             packet.Write(o);
             packet.Write((UInt32)0);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Sends a packet telling server we are standing
+        /// </summary>
+        public void Stand()
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_STANDSTATECHANGE);
+            packet.Write((uint)UnitStandStateType.UNIT_STAND_STATE_STAND);
             Send(packet);
         }
 

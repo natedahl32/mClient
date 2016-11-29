@@ -216,6 +216,45 @@ namespace mClient.World
             return (item1Score - item2Score) + baseScore;
         }
 
+        /// <summary>
+        /// Gets the item score for a spell (stat mod only)
+        /// </summary>
+        /// <param name="spell"></param>
+        /// <returns></returns>
+        public float GetSpellScore(SpellEntry spell)
+        {
+            float score = 0f;
+            for (uint effIndex = 0; effIndex < SpellConstants.MAX_EFFECT_INDEX; effIndex++)
+            {
+                if (spell.EffectApplyAuraName[effIndex] == (int)AuraType.SPELL_AURA_MOD_STAT)
+                {
+                    var value = spell.CalculateSimpleValue((SpellEffectIndex)effIndex);
+
+                    switch (spell.EffectMiscValue[effIndex])
+                    {
+                        case (int)Stats.STAT_STRENGTH:
+                            score += (value * mStatWeights[ItemModType.ITEM_MOD_STRENGTH]);
+                            break;
+                        case (int)Stats.STAT_AGILITY:
+                            score += (value * mStatWeights[ItemModType.ITEM_MOD_AGILITY]);
+                            break;
+                        case (int)Stats.STAT_STAMINA:
+                            score += (value * mStatWeights[ItemModType.ITEM_MOD_STAMINA]);
+                            break;
+                        case (int)Stats.STAT_INTELLECT:
+                            score += (value * mStatWeights[ItemModType.ITEM_MOD_INTELLECT]);
+                            break;
+                        case (int)Stats.STAT_SPIRIT:
+                            score += (value * mStatWeights[ItemModType.ITEM_MOD_SPIRIT]);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            return score;
+        }
+
         #endregion
 
         #region Private Methods
@@ -404,34 +443,7 @@ namespace mClient.World
                     var spell = SpellTable.Instance.getSpell(spellId);
                     if (spell != null)
                     {
-                        for (uint effIndex = 0; effIndex < SpellConstants.MAX_EFFECT_INDEX; effIndex++)
-                        {
-                            if (spell.EffectApplyAuraName[effIndex] == (int)AuraType.SPELL_AURA_MOD_STAT)
-                            {
-                                var value = spell.CalculateSimpleValue((SpellEffectIndex)effIndex);
-
-                                switch (spell.EffectMiscValue[effIndex])
-                                {
-                                    case (int)Stats.STAT_STRENGTH:
-                                        score += (value * mStatWeights[ItemModType.ITEM_MOD_STRENGTH]);
-                                        break;
-                                    case (int)Stats.STAT_AGILITY:
-                                        score += (value * mStatWeights[ItemModType.ITEM_MOD_AGILITY]);
-                                        break;
-                                    case (int)Stats.STAT_STAMINA:
-                                        score += (value * mStatWeights[ItemModType.ITEM_MOD_STAMINA]);
-                                        break;
-                                    case (int)Stats.STAT_INTELLECT:
-                                        score += (value * mStatWeights[ItemModType.ITEM_MOD_INTELLECT]);
-                                        break;
-                                    case (int)Stats.STAT_SPIRIT:
-                                        score += (value * mStatWeights[ItemModType.ITEM_MOD_SPIRIT]);
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }
-                        }
+                        score += GetSpellScore(spell);
                     }
                 }
 

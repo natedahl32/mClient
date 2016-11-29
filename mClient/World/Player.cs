@@ -295,6 +295,20 @@ namespace mClient.World
             get { return mSpellList; }
         }
 
+        /// <summary>
+        /// Gets whether or not this player has a well fed buff
+        /// </summary>
+        public bool IsWellFed
+        {
+            get
+            {
+                foreach (var aura in PlayerObject.Auras)
+                    if (aura.AttributesEx2.HasFlag(SpellAttributesEx2.SPELL_ATTR_EX2_FOOD_BUFF))
+                        return true;
+                return false;
+            }
+        }
+
         #endregion
 
         #region Public Methods 
@@ -982,6 +996,55 @@ namespace mClient.World
             if (choseIndex < 0)
                 return 0;
             return (uint)choseIndex;
+        }
+
+        /// <summary>
+        /// Finds a consumable item in inventory that provides the well fed buff. Will return the item that provides the best stats
+        /// </summary>
+        /// <returns></returns>
+        public InventoryItemSlot FindWellFedConsumable()
+        {
+            InventoryItemSlot chosenItem = null;
+            SpellEntry wellFedSpell = null;
+
+            foreach (var item in PlayerObject.InventoryItems)
+            {
+                // Make sure the item is a consumable
+                if (item.Item.BaseInfo.ItemClass != ItemClass.ITEM_CLASS_CONSUMABLE)
+                    continue;
+
+                // Check spell effects, does it provide an aura that gives "Well Fed"
+                foreach (var se in item.Item.BaseInfo.SpellEffects)
+                {
+                    if (se.SpellId > 0)
+                    {
+                        var spell = SpellTable.Instance.getSpell(se.SpellId);
+                        if (spell.AttributesEx2.HasFlag(SpellAttributesEx2.SPELL_ATTR_EX2_FOOD_BUFF))
+                        {
+                            if (chosenItem == null)
+                            {
+                                chosenItem = item;
+                                wellFedSpell = spell;
+                                break;
+                            }
+                            else
+                            {
+                                // Gets score of stats being modified
+                                var currentScore = ClassLogic.GetSpellScore(wellFedSpell);
+                                var newScore = ClassLogic.GetSpellScore(spell);
+                                if (newScore > currentScore)
+                                {
+                                    chosenItem = item;
+                                    wellFedSpell = spell;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return chosenItem;
         }
 
         #endregion

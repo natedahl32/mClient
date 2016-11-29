@@ -195,7 +195,9 @@
     <Compile Include="World\AI\Activity\Death\ReleaseSpirit.cs" />
     <Compile Include="World\AI\Activity\Death\Repop.cs" />
     <Compile Include="World\AI\Activity\Item\AutoEquipItemFromInventory.cs" />
+    <Compile Include="World\AI\Activity\Item\GetWellFed.cs" />
     <Compile Include="World\AI\Activity\Item\RepairAllItems.cs" />
+    <Compile Include="World\AI\Activity\Item\UseInventoryItem.cs" />
     <Compile Include="World\AI\Activity\Loot\LootGameObject.cs" />
     <Compile Include="World\AI\Activity\Loot\LootItemFromObject.cs" />
     <Compile Include="World\AI\Activity\Loot\LootObject.cs" />

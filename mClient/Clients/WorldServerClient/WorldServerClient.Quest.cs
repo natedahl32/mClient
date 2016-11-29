@@ -159,13 +159,30 @@ namespace mClient.Clients
             // Quest rewards
             for (int i = 0; i < 4; i++)
             {
+                // Need to check for items and if we don't have them query for them
+                var rewardId = packet.ReadUInt32();
                 packet.ReadUInt32();
-                packet.ReadUInt32();
+
+                if (rewardId > 0)
+                {
+                    var item = ItemManager.Instance.Get(rewardId);
+                    if (item == null)
+                        QueryItemPrototype(rewardId);
+                }
+                    
             }
             for (int i = 0; i < 6; i++)
             {
+                // Need to check for items and if we don't have them query for them
+                var rewardId = packet.ReadUInt32();
                 packet.ReadUInt32();
-                packet.ReadUInt32();
+
+                if (rewardId > 0)
+                {
+                    var item = ItemManager.Instance.Get(rewardId);
+                    if (item == null)
+                        QueryItemPrototype(rewardId);
+                }
             }
 
             var questPointMapId = packet.ReadUInt32();
@@ -349,6 +366,10 @@ namespace mClient.Clients
                 var itemCount = packet.ReadUInt32();
                 packet.ReadUInt32();    // Display Info
                 rewardItems.Add(new QuestOfferRewards.RewardItem() { ItemId = itemId, ItemCount = itemCount, ItemChoiceIndex = i });
+
+                var item = ItemManager.Instance.Get(itemId);
+                if (item == null)
+                    QueryItemPrototype(itemId);
             }
 
             // Send a message with the reward items to the activities

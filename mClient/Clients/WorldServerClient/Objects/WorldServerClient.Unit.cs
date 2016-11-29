@@ -313,6 +313,20 @@ namespace mClient.Clients
             get { return mMovementSpeedModifier; }
         }
 
+        /// <summary>
+        /// Gets the stand state of the unit
+        /// </summary>
+        public UnitStandStateType StandState
+        {
+            get
+            {
+                var val = GetFieldValue((int)UnitFields.UNIT_FIELD_BYTES_1);
+                // Stand state is the first byte of this field
+                var bytes = BitConverter.GetBytes(val);
+                return (UnitStandStateType)bytes[0];
+            }
+        }
+
         #endregion
 
         #region Public Methods

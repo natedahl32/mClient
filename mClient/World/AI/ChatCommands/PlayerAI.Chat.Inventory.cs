@@ -1,5 +1,7 @@
 ﻿using mClient.Clients;
+using mClient.Constants;
 using mClient.Shared;
+using mClient.World.AI.Activity.Item;
 using mClient.World.AI.Activity.Quest;
 using mClient.World.AI.Activity.Trade;
 using mClient.World.Items;
@@ -17,8 +19,9 @@ namespace mClient.World.AI
         private const string INV_DESTROY_COMMAND = "destroy";
         private const string INV_TRADE_COMMAND = "trade";
         private const string INV_USE_ITEM_COMMAND = "useitem";
+        private const string INV_WELLFED_COMMAND = "wellfed";
 
-        private List<string> mAllInvCommands = new List<string>() { INV_LIST_COMMAND, INV_DESTROY_COMMAND, INV_TRADE_COMMAND, INV_USE_ITEM_COMMAND };
+        private List<string> mAllInvCommands = new List<string>() { INV_LIST_COMMAND, INV_DESTROY_COMMAND, INV_TRADE_COMMAND, INV_USE_ITEM_COMMAND, INV_WELLFED_COMMAND };
 
         /// <summary>
         /// Handles all quest commands
@@ -111,10 +114,25 @@ namespace mClient.World.AI
                     // Get the target of the sender
                     var sendersTarget = Player.PlayerAI.Client.objectMgr.getObject(sender.TargetGuid) as Clients.Unit;
                     if (sendersTarget == null)
-                        return false;
+                    {
+                        // If no target, use the item on ourself
+                        Player.PlayerAI.StartActivity(new UseInventoryItem(itemId, Player.PlayerAI));
+                        return true;
+                    }
 
                     // Use the item on the senders target
                     Player.PlayerAI.StartActivity(new UseInventoryItemOnGO(itemId, sendersTarget, Player.PlayerAI));
+
+                    return true;
+
+                // inv wellfed
+                case INV_WELLFED_COMMAND:
+                    // Find an item in inventory that provides the well fed buff
+                    var wellFedItem = Player.FindWellFedConsumable();
+                    if (wellFedItem != null)
+                        Player.PlayerAI.StartActivity(new GetWellFed(wellFedItem, Player.PlayerAI));
+                    else
+                        Player.PlayerAI.Client.SendChatMsg(ChatMsg.Party, Languages.Universal, "I don't have any buff food in my inventory.");
 
                     return true;
             }
