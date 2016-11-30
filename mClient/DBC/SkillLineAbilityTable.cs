@@ -3,6 +3,7 @@ using mClient.Shared;
 using mClient.World;
 using System.Collections.Generic;
 using System.Linq;
+using MoreLinq;
 
 namespace mClient.DBC
 {
@@ -63,6 +64,32 @@ namespace mClient.DBC
             foreach (var skillLineAbility in mSkillLineAbilityEntries.Values.Where(s => s.SpellId == spellId))
                 entries.Add(skillLineAbility);
             return entries;
+        }
+
+        /// <summary>
+        /// Gets all spells in the line for this ability/spell
+        /// </summary>
+        /// <param name="spelldId"></param>
+        /// <returns></returns>
+        public IEnumerable<SkillLineAbilityEntry> getAllSpellsInLine(uint spellId)
+        {
+            var entries = new List<SkillLineAbilityEntry>();
+
+            // Get the first spell in the line and add it
+            var firstSpell = getFirstSpellInChain(spellId);
+            entries.Add(firstSpell);
+
+            // Get the parent for the first spell and keep getting the parent until we don't have any more
+            var parent = getParentForSpell(firstSpell.SpellId);
+            while (parent != 0)
+            {
+                var parents = getForSpell(parent);
+                entries.AddRange(parents);
+                parent = getParentForSpell(parent);
+            }
+
+            // Remove any duplicates we might have
+            return entries.DistinctBy(s => s.SpellId);
         }
 
         /// <summary>

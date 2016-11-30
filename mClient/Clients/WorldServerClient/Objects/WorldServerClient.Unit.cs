@@ -17,6 +17,7 @@ namespace mClient.Clients
         private const float DEFAULT_MOVEMENT_SPEED_MODIFIER = 1.0f;
 
         private float mMovementSpeedModifier;
+        private List<uint> mTrainerSpellsAvailable;
 
         #endregion
 
@@ -327,6 +328,17 @@ namespace mClient.Clients
             }
         }
 
+        /// <summary>
+        /// Gets all spells that are available from this trainer. If null is returned we have not yet received spells that are available from this trainer
+        /// </summary>
+        public IEnumerable<uint> TrainerSpellsAvailable
+        {
+            get
+            {
+                return mTrainerSpellsAvailable;
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -421,6 +433,16 @@ namespace mClient.Clients
         public uint GetAttackTime(WeaponAttackType att)
         {
             return (uint)(GetFieldValueAsFloat((int)UnitFields.UNIT_FIELD_BASEATTACKTIME + (int)att) / 1.0f); // modAttackSpeedPct is same for all weapon attack types
+        }
+
+        /// <summary>
+        /// Adds spells that are available from a trainer to this trainer. This unit must be a trainer in order to use this method
+        /// </summary>
+        /// <param name="spellsAvailable">List of spell ids that are available</param>
+        public void AddTrainerSpellsAvailable(IList<uint> spellsAvailable)
+        {
+            if (!IsTrainer) throw new ApplicationException($"Unable to add spells available to unit with entry {ObjectFieldEntry} because the unit is not a trainer.");
+            mTrainerSpellsAvailable = spellsAvailable.ToList();
         }
 
         #endregion

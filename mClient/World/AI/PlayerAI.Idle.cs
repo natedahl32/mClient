@@ -118,6 +118,10 @@ namespace mClient.World.AI
                 var myTrainerSubName = Player.ClassLogic.ClassName + " Trainer";
                 if (u.BaseCreatureInfo != null && u.BaseCreatureInfo.SubName != myTrainerSubName) continue;
 
+                // Does the trainer have any spells that we need?
+                if (u.TrainerSpellsAvailable != null && !Player.AvailableSpellsToLearn.Any(s => u.TrainerSpellsAvailable.Contains(s.SpellId)))
+                    continue;
+
                 // Right kind of class trainer, check the distance on them
                 var distance = Client.movementMgr.CalculateDistance(u.Position);
                 if (distance < closestDistance && distance < MAX_TRAINER_DISTANCE)

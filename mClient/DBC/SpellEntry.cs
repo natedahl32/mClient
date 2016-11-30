@@ -93,6 +93,19 @@ namespace mClient.DBC
         public float[] DamageMultiplier { get; set; }
 
         /// <summary>
+        /// Gets the rank value of the spell
+        /// </summary>
+        public int RankValue
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Rank))
+                    return 1;
+                return Convert.ToInt32(Rank.Substring(Rank.Trim().Length - 1, 1));
+            }
+        }
+
+        /// <summary>
         /// Gets the cast time of this spell based on cast time index field
         /// </summary>
         public int CastTime

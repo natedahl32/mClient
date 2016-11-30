@@ -416,8 +416,8 @@ namespace mClient.World
         public void UpdateAvailableSpells()
         {
             mAvailableSpells = SkillLineAbilityTable.Instance.getAvailableSpellsForPlayer(this).ToList();
-            // Remove all spells that we have
-            mAvailableSpells.RemoveAll(s => mSpellList.Contains((ushort)s.SpellId));
+            // Remove all spells that we have (or if we have better spells, melee spells don't retain older ranks like caster spells do)
+            mAvailableSpells.RemoveAll(s => HasSpellOrBetter((ushort)s.SpellId));
             // Remove all spells that class logic says we should ignore for learning
             if (ClassLogic != null)
                 mAvailableSpells.RemoveAll(s => ClassLogic.IgnoreLearningSpells.Contains(s.SpellId));
@@ -531,13 +531,61 @@ namespace mClient.World
         }
 
         /// <summary>
-        /// Gets whether or not the player has a spell
+        /// Gets whether or not the player has a specific spell
         /// </summary>
         /// <param name="spellId"></param>
         /// <returns></returns>
         public bool HasSpell(ushort spellId)
         {
             return mSpellList.Contains(spellId);
+        }
+
+        /// <summary>
+        /// Gets whether or not the player has either this specific spell or the same spell but a better rank
+        /// </summary>
+        /// <param name="spellId"></param>
+        /// <returns></returns>
+        public bool HasSpellOrBetter(ushort spellId)
+        {
+            // Check for specific spell
+            if (HasSpell(spellId))
+                return true;
+
+            // Get this spell
+            var thisSpell = SpellTable.Instance.getSpell(spellId);
+
+            // Check the spell line of this spell for a better spell
+            var spellsInLine = SkillLineAbilityTable.Instance.getAllSpellsInLine(spellId);
+            foreach (var spellLine in spellsInLine)
+            {
+                var spell = SpellTable.Instance.getSpell(spellLine.SpellId);
+                if (spell != null)
+                {
+                    // If the rank is better
+                    if (spell.RankValue > thisSpell.RankValue)
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Gets whether or not the player has this spell or any spell in the spell line
+        /// </summary>
+        /// <param name="spellId"></param>
+        /// <returns></returns>
+        public bool HasSpellLine(ushort spellId)
+        {
+            if (mSpellList.Contains(spellId))
+                return true;
+
+            // Check spell line
+            var spellsInLine = SkillLineAbilityTable.Instance.getAllSpellsInLine(spellId);
+            if (spellsInLine.Any(s => s.SpellId == spellId))
+                return true;
+
+            return false;
         }
 
         /// <summary>

@@ -4,6 +4,7 @@ using mClient.Network;
 using mClient.Shared;
 using mClient.World.AI.Activity.Messages;
 using mClient.World.Spells;
+using System.Collections.Generic;
 
 namespace mClient.Clients
 {
@@ -122,10 +123,12 @@ namespace mClient.Clients
             message.TrainerGuid = new WoWGuid(trainerGuid);
 
             var spellCount = packet.ReadUInt32();
+            var availableSpells = new List<uint>();
             for (int i = 0; i < spellCount; i++)
             {
                 var spellData = new TrainerSpellData();
                 spellData.SpellId = packet.ReadUInt32();
+                availableSpells.Add(spellData.SpellId);
                 spellData.State = packet.ReadByte();
                 spellData.Cost = packet.ReadUInt32();
                 packet.ReadUInt32();  // something to do with primary profession first rank
@@ -144,6 +147,16 @@ namespace mClient.Clients
                 // I believe GRAY status means already purchased. We will ignore those spells.
             }
 
+            // Get the trainer and update all spells that are available from them
+            var trainer = objectMgr.getObject(message.TrainerGuid);
+            if (trainer != null)
+            {
+                var unit = trainer as Unit;
+                if (unit != null)
+                    unit.AddTrainerSpellsAvailable(availableSpells);
+            }
+
+            // Send message
             var title = packet.ReadString();
             player.PlayerAI.SendMessageToAllActivities(message);
         }
