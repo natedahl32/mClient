@@ -13,6 +13,7 @@ using mClient.World.Spells;
 using mClient.World.Items;
 using mClient.World.Guild;
 using mClient.World.GameObject;
+using System.Collections.Concurrent;
 
 namespace mClient.World
 {
@@ -56,6 +57,9 @@ namespace mClient.World
 
         // Loot
         private List<WoWGuid> mLootable = new List<WoWGuid>();
+
+        // Item management
+        private ConcurrentDictionary<uint, RequiredItemData> mRequiredItems = new ConcurrentDictionary<uint, RequiredItemData>();
 
         #endregion
 
@@ -310,6 +314,14 @@ namespace mClient.World
             }
         }
 
+        /// <summary>
+        /// Gets all items that we have deemed required based on spells we have
+        /// </summary>
+        public IEnumerable<RequiredItemData> RequiredItems
+        {
+            get { return mRequiredItems.Values; }
+        }
+
         #endregion
 
         #region Public Methods 
@@ -404,6 +416,10 @@ namespace mClient.World
             if (!mSpellList.Contains(spellId))
             {
                 mSpellList.Add(spellId);
+                // Check this spell for required items
+                var spell = SpellTable.Instance.getSpell(spellId);
+                if (spell != null)
+                    CheckSpellForRequiredItems(spell);
             }
 
             // Remove the spell from available spells
@@ -634,6 +650,10 @@ namespace mClient.World
             if (item.StartsQuestId > 0)
                 return true;
 
+            // If the item is in our required items list then it is useful
+            if (RequiredItems.Any(i => i.ItemId == item.ItemId))
+                return true;
+
             switch (item.ItemClass)
             {
                 case ItemClass.ITEM_CLASS_QUEST:
@@ -666,8 +686,8 @@ namespace mClient.World
                     return true;
 
                 case ItemClass.ITEM_CLASS_REAGENT:
-                    // TODO: Most likely useful depending on class
-                    return true;
+                    // Reagents are stored in our required items list which is checked before we get to this point. If it's a reagent that is not required it is not useful.
+                    return false;
 
                 case ItemClass.ITEM_CLASS_RECIPE:
                     // If we have the spells for this item already than it is not useful
@@ -1197,6 +1217,32 @@ namespace mClient.World
         private void RemoveAvailableSpellToLearn(uint spellId)
         {
             mAvailableSpells.RemoveAll(s => s.SpellId == spellId);
+        }
+
+        /// <summary>
+        /// Checks a spell for any items that are required to cast it. We add these items to our required items list so we can purchase them if needed and not sell them.
+        /// </summary>
+        /// <param name="spell"></param>
+        private void CheckSpellForRequiredItems(SpellEntry spell)
+        {
+            // The totem fields for any spell are items that are required in inventory to cast the spell.
+            for (int i = 0; i <= spell.Totem.GetUpperBound(0); i++)
+            {
+                if (spell.Totem[i] > 0 && !mRequiredItems.ContainsKey(spell.Totem[i]))
+                    mRequiredItems.TryAdd(spell.Totem[i], new RequiredItemData { ItemId = spell.Totem[i], ItemCount = 1 });
+            }
+
+            // Tradeskill spells have reagents but we don't add those to required items until we are actually doing tradeskill type things. Otherwise our inventory would fill up very quickly
+            // if we just carry these things around.
+            if (spell.Attributes.HasFlag(SpellAttributes.SPELL_ATTR_TRADESPELL))
+                return;
+
+            // Check reagents for a sepll. Add any reagents as required items.
+            for (int i = 0; i <= spell.Reagents.GetUpperBound(0); i++)
+            {
+                if (spell.Reagents[i] > 0 && spell.ReagentsCount[i] > 0 && !mRequiredItems.ContainsKey((uint)spell.Reagents[i]))
+                    mRequiredItems.TryAdd((uint)spell.Reagents[i], new RequiredItemData { ItemId = (uint)spell.Reagents[i], ItemCount = spell.ReagentsCount[i] * 40 });
+            }
         }
 
         #endregion
