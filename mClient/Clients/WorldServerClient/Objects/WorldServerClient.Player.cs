@@ -172,7 +172,7 @@ namespace mClient.Clients
                     var value = GetFieldValue(i + 1);
                     var bonus = GetFieldValue(i + 2);
                     if (skill > 0)
-                        skills.Add(new SkillData((SkillType)skill, value, bonus));
+                        skills.Add(new SkillData(skill, value, bonus));
                 }
                 return skills;
             }
@@ -259,6 +259,32 @@ namespace mClient.Clients
         public uint GuildRank
         {
             get { return GetFieldValue((int)PlayerFields.PLAYER_GUILDRANK); }
+        }
+
+        /// <summary>
+        /// Gets all profession skill this player has
+        /// </summary>
+        public IEnumerable<SkillType> ProfessionSkills
+        {
+            get
+            {
+                var skills = new List<SkillType>();
+                foreach (var s in Skills)
+                    if (s.Skill == SkillType.SKILL_ALCHEMY ||
+                        s.Skill == SkillType.SKILL_HERBALISM ||
+                        s.Skill == SkillType.SKILL_BLACKSMITHING ||
+                        s.Skill == SkillType.SKILL_MINING ||
+                        s.Skill == SkillType.SKILL_LEATHERWORKING ||
+                        s.Skill == SkillType.SKILL_SKINNING ||
+                        s.Skill == SkillType.SKILL_ENCHANTING ||
+                        s.Skill == SkillType.SKILL_TAILORING ||
+                        s.Skill == SkillType.SKILL_ENGINEERING ||
+                        s.Skill == SkillType.SKILL_FISHING ||
+                        s.Skill == SkillType.SKILL_COOKING ||
+                        s.Skill == SkillType.SKILL_FIRST_AID)
+                        skills.Add(s.Skill);
+                return skills;
+            }
         }
 
         #endregion

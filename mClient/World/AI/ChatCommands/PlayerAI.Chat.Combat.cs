@@ -16,7 +16,7 @@ namespace mClient.World.AI
         private List<string> mAllCombatCommands = new List<string>() { COMBAT_ATTACK_COMMAND, COMBAT_RELEASE_COMMAND };
 
         /// <summary>
-        /// Handles all quest commands
+        /// Handles all combat commands
         /// </summary>
         /// <param name="senderGuid"></param>
         /// <param name="senderName"></param>

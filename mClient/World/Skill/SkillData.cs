@@ -12,9 +12,10 @@ namespace mClient.World.Skill
     {
         #region Constructors
 
-        public SkillData(SkillType skill, uint value, uint bonus)
+        public SkillData(uint skill, uint value, uint bonus)
         {
-            Skill = skill;
+            Skill = (SkillType)skill.LoPart();
+            Step = skill.HiPart();
             SkillValue = value.LoPart();
             SkillMaxValue = value.HiPart();
             TempBonus = bonus.LoPart();
@@ -29,6 +30,11 @@ namespace mClient.World.Skill
         /// Gets the skill this data is for
         /// </summary>
         public SkillType Skill { get; private set; }
+
+        /// <summary>
+        /// Gets the step for this skill (??? not quite sure what this is)
+        /// </summary>
+        public uint Step { get; private set; }
 
         /// <summary>
         /// Gets the skill value not including bonuses
