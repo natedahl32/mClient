@@ -38,15 +38,72 @@ namespace mClient.Clients
             var member = player.CurrentGroup.GetPlayer(guid);
             if (member != null && member.PlayerObject != null)
             {
-                //byte[] tempX = new byte[4];
-                //Array.Copy(xBytes, 0, tempX, 2, 2);
-                //byte[] tempY = new byte[4];
-                //Array.Copy(yBytes, 0, tempY, 2, 2);
-                //float x = BitConverter.ToSingle(tempX, 0);
-                //float y = BitConverter.ToSingle(tempY, 0);
                 member.PlayerObject.Update(currentHP, maxHP, level, currentPower, maxPower);
                 member.PlayerObject.Position = new Coordinate(x, y, 0f);
             }
+        }
+
+        /// <summary>
+        /// Handles an update to a party members status.
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_PARTY_MEMBER_STATS)]
+        public void HandlePartyMemberStats(PacketIn packet)
+        {
+            // These first two are always sent
+            var playerGuid = packet.ReadPackedGuidToWoWGuid();
+            var mask = (GroupUpdateFlags)packet.ReadUInt32();
+
+            // If we are not in a group ignore this packet
+            if (player.CurrentGroup == null) return;
+
+            // If the player cannot be found in our group, ignore this packet
+            var partyMember = player.CurrentGroup.GetGroupMember(playerGuid.GetOldGuid());
+            if (partyMember == null)
+                return;
+
+            // Status of group member (offline, afk, etc.)
+            if (mask.HasFlag(GroupUpdateFlags.GROUP_UPDATE_FLAG_STATUS))
+                packet.ReadByte();
+
+            // Current HP
+            if (mask.HasFlag(GroupUpdateFlags.GROUP_UPDATE_FLAG_CUR_HP))
+                packet.ReadUInt16();
+
+            // Max HP
+            if (mask.HasFlag(GroupUpdateFlags.GROUP_UPDATE_FLAG_MAX_HP))
+                packet.ReadUInt16();
+
+            // Power type
+            if (mask.HasFlag(GroupUpdateFlags.GROUP_UPDATE_FLAG_POWER_TYPE))
+                packet.ReadByte();
+
+            // Current Power
+            if (mask.HasFlag(GroupUpdateFlags.GROUP_UPDATE_FLAG_CUR_POWER))
+                packet.ReadUInt16();
+
+            // Max Power
+            if (mask.HasFlag(GroupUpdateFlags.GROUP_UPDATE_FLAG_MAX_POWER))
+                packet.ReadUInt16();
+
+            // Level
+            if (mask.HasFlag(GroupUpdateFlags.GROUP_UPDATE_FLAG_LEVEL))
+                packet.ReadUInt16();
+
+            // Zone ID
+            if (mask.HasFlag(GroupUpdateFlags.GROUP_UPDATE_FLAG_ZONE))
+                packet.ReadUInt16();
+
+            // Position
+            if (mask.HasFlag(GroupUpdateFlags.GROUP_UPDATE_FLAG_POSITION))
+            {
+                var x = packet.ReadInt16();
+                var y = packet.ReadInt16();
+                partyMember.PlayerObject.Position = new Coordinate(x, y, partyMember.PlayerObject.Position.Z);
+            }
+
+            // TODO: Update other information for our player
+            // TODO: Auras and pet info we can still get
         }
 
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_GROUP_INVITE)]
