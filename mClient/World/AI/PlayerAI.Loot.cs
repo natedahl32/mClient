@@ -63,6 +63,10 @@ namespace mClient.World.AI
             // Check for chests that we haven't looted yet and can interact with
             foreach (var chest in gameObjects.Where(o => o.BaseInfo != null && o.BaseInfo.GameObjectType == Constants.GameObjectType.Chest && !o.HasBeenLooted && o.CanInteract))
             {
+                // We can interact with this chest, but can we open it?
+                if (!Player.CanOpenChest(chest))
+                    continue;
+
                 // If the chest has not been looted yet and it is within distance for us to loot
                 var chestGO = chest as Clients.GameObject;
                 if (TerrainMgr.CalculateDistance(Player.Position, chest.Position) <= MAX_DISTANCE_FOR_CHEST)

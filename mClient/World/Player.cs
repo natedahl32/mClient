@@ -12,6 +12,7 @@ using mClient.World.AI.Activity.Messages;
 using mClient.World.Spells;
 using mClient.World.Items;
 using mClient.World.Guild;
+using mClient.World.GameObject;
 
 namespace mClient.World
 {
@@ -1095,9 +1096,74 @@ namespace mClient.World
             return chosenItem;
         }
 
+        /// <summary>
+        /// Determines if we can open a chest based on it's lock type. Do we have the required items and/or skill
+        /// </summary>
+        /// <param name="chest"></param>
+        /// <returns></returns>
+        public bool CanOpenChest(Clients.GameObject go)
+        {
+            // If this isn't a chest we can't open it
+            if (go.BaseInfo.GameObjectType != GameObjectType.Chest) return false;
+            var chest = go.BaseInfo as Chest;
+            if (chest == null) return false;
+
+            // If there is not lock id for this chest we can open it
+            if (chest.LockId == 0) return true;
+
+            // Get the lock type for this chest and check all types to make sure we can open
+            LockEntry lockEntry = LockTable.Instance.getById(chest.LockId);
+            for (int i = 0; i < LockEntry.MAX_LOCK_CASE; i++)
+            {
+                switch (lockEntry.Type[i])
+                {
+                    case LockKeyType.LOCK_KEY_ITEM:
+                        // Have the item or key required?
+                        if (lockEntry.LockTypeIndex[i] > 0 && !PlayerObject.HasItemInInventory(lockEntry.LockTypeIndex[i]))
+                            return false;
+                        break;
+                    case LockKeyType.LOCK_KEY_SKILL:
+                        if (lockEntry.LockTypeIndex[i] > 0)
+                        {
+                            // Have the skill and the required skill level?
+                            var lockType = (LockType)lockEntry.LockTypeIndex[i];
+                            var skillType = SkillByLockType(lockType);
+                            if (skillType == SkillType.SKILL_NONE)
+                                continue;
+
+                            var requiredSkillValue = lockEntry.RequiredSkillValue[i];
+                            if (requiredSkillValue > PlayerObject.SkillValue(skillType))
+                                return false;
+                        }
+                        return false;
+                    default:
+                        break;
+                }
+            }
+
+            return true;
+        }
+
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// Gets the required skill by lock type
+        /// </summary>
+        /// <param name="lockType"></param>
+        /// <returns></returns>
+        private SkillType SkillByLockType(LockType lockType)
+        {
+            switch (lockType)
+            {
+                case LockType.LOCKTYPE_PICKLOCK: return SkillType.SKILL_LOCKPICKING;
+                case LockType.LOCKTYPE_HERBALISM: return SkillType.SKILL_HERBALISM;
+                case LockType.LOCKTYPE_MINING: return SkillType.SKILL_MINING;
+                case LockType.LOCKTYPE_FISHING: return SkillType.SKILL_FISHING;
+            }
+            return SkillType.SKILL_NONE;
+        }
 
         /// <summary>
         /// Removes a spell that is available to learn from the list.

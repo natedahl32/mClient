@@ -1,9 +1,4 @@
 ﻿using mClient.Constants;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace mClient.World.GameObject
 {
@@ -11,6 +6,14 @@ namespace mClient.World.GameObject
     {
         public Chest(uint id, GameObjectType type, string name, int[] data) : base(id, type, name, data)
         {
+        }
+
+        /// <summary>
+        /// Gets the lock id for this chest
+        /// </summary>
+        public uint LockId
+        {
+            get { return (uint)Data[0]; }
         }
     }
 }

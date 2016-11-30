@@ -277,6 +277,19 @@ namespace mClient.Clients
         }
 
         /// <summary>
+        /// Gets the current value of the skill for the player
+        /// </summary>
+        /// <param name="skill"></param>
+        /// <returns></returns>
+        public uint SkillValue(SkillType skill)
+        {
+            var skillData = Skills.Where(s => s.Skill == skill).SingleOrDefault();
+            if (skillData != null)
+                return skillData.TotalValue;
+            return 0;
+        }
+
+        /// <summary>
         /// Gets the item currently equipped in the given slot
         /// </summary>
         /// <param name="slot"></param>
@@ -593,7 +606,6 @@ namespace mClient.Clients
                     }
                 }
             }
-            
 
             // Call base to actually perform the set
             base.SetField(client, x, value);
@@ -707,6 +719,22 @@ namespace mClient.Clients
             RemoveInventoryItemSlot(invSlot);
         }
 
+        /// <summary>
+        /// Checks if we have this item in inventory, equipped, or on our keyring
+        /// </summary>
+        /// <param name="itemId"></param>
+        /// <returns></returns>
+        public bool HasItemInInventory(uint itemId)
+        {
+            // Check inventory items
+            if (InventoryItems.Any(i => i.Item != null && i.Item.ObjectFieldEntry == itemId))
+                return true;
+            // Check equipped items
+            if (EquippedItems.Any(i => i != null && i.ObjectFieldEntry == itemId))
+                return true;
+            return false;
+        }
+
         #endregion
 
         #region Private Methods
@@ -775,7 +803,26 @@ namespace mClient.Clients
                         mInventory.TryAdd(inventorySlot, item);
                 }
             }
-            // TOOD: Need to add bank bags, bank slots, and keyring to this as well
+            // Bank slots
+            else if (slot < (int)PlayerFields.PLAYER_FIELD_BANKBAG_SLOT_1)
+            {
+                // TODO: Handle bank slots
+            }
+            // Bank bag slots
+            else if (slot < (int)PlayerFields.PLAYER_FIELD_VENDORBUYBACK_SLOT_1)
+            {
+
+            }
+            // Vendor buyback slot
+            else if (slot < (int)PlayerFields.PLAYER_FIELD_KEYRING_SLOT_1)
+            {
+                // Not sure we really care about this, mabye a TODO?
+            }
+            // Keyring
+            else
+            {
+                // TODO: Handle keys
+            }
         }
 
         #endregion
