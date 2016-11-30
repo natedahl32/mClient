@@ -225,15 +225,15 @@ namespace mClient.DBC
             }
 
             // Damage Multiplier
-            for (int i = 0; i < DamageMultiplier.GetUpperBound(0); i++)
+            for (int i = 0; i <= DamageMultiplier.GetUpperBound(0); i++)
                 dump += string.Format("Damage Multiplier {0}: {1} {2}", i, DamageMultiplier[i], Environment.NewLine);
 
             // Totem
-            for (int i = 0; i < Totem.GetUpperBound(0); i++)
+            for (int i = 0; i <= Totem.GetUpperBound(0); i++)
                 dump += string.Format("Totem {0}: {1} {2}", i, Totem[i], Environment.NewLine);
 
             // Reagents
-            for (int i = 0; i < Reagents.GetUpperBound(0); i++)
+            for (int i = 0; i <= Reagents.GetUpperBound(0); i++)
             {
                 dump += string.Format("Reagent {0}: {1} {2}", i, Reagents[i], Environment.NewLine);
                 dump += string.Format("Reagent Count {0}: {1} {2}", i, ReagentsCount[i], Environment.NewLine);
