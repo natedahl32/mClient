@@ -17,7 +17,7 @@ namespace mClient.Constants
         /// <summary>
         /// The maximum distance a bot will travel to turn in a quest
         /// </summary>
-        public const float MAX_TURNIN_DISTANCE = 100.0f;
+        public const float MAX_TURNIN_DISTANCE = 50.0f;
     }
 
     public enum QuestSlotOffsets
