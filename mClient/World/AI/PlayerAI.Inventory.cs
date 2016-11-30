@@ -126,7 +126,7 @@ namespace mClient.World.AI
         private BehaviourTreeStatus HasForSellItemsInInventory()
         {
             // Simply checks for non-useful items in inventory that have a sell price
-            if (Player.PlayerObject.InventoryItems.Any(i => i.Item != null && !Player.IsItemUseful(i.Item) && i.Item.BaseInfo.SellPrice > 0))
+            if (Player.PlayerObject.InventoryItems.Any(i => i.Item != null && Player.ShouldSellItem(i.Item)))
                 return BehaviourTreeStatus.Success;
 
             return BehaviourTreeStatus.Failure;

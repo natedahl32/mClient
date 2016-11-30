@@ -760,7 +760,7 @@ namespace mClient.World
                         default:
                             break;
                     }
-                    return true;
+                    break;
 
                 case ItemClass.ITEM_CLASS_QUIVER:
                     // TODO: Most likely useful depending on our class
@@ -886,6 +886,31 @@ namespace mClient.World
             }
 
             return isUpgrade;
+        }
+
+        /// <summary>
+        /// Gets whether or not the player should sell the item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool ShouldSellItem(Item item)
+        {
+            // No item info on the item, don't sell it yet
+            if (item.BaseInfo == null) return false;
+
+            // If there is no sell price we can't sell it
+            if (item.BaseInfo.SellPrice <= 0) return false;
+
+            // If it is not useful we should sell it
+            if (!IsItemUseful(item)) return true;
+
+            // If the item is useful but it is gear that is not an upgrade then sell it
+            if (item.BaseInfo.ItemClass == ItemClass.ITEM_CLASS_ARMOR || item.BaseInfo.ItemClass == ItemClass.ITEM_CLASS_WEAPON)
+                if (!IsItemAnUpgrade(item))
+                    return true;
+
+            // Don't sell it
+            return false;
         }
 
         /// <summary>

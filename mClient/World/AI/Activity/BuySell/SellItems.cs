@@ -45,7 +45,7 @@ namespace mClient.World.AI.Activity.BuySell
             base.Start();
 
             // Find items we want to sell
-            mItemsToSell = PlayerAI.Player.PlayerObject.InventoryItems.Where(i => i.Item != null && !PlayerAI.Player.IsItemUseful(i.Item) && i.Item.BaseInfo.SellPrice > 0).Select(i => i.Item).ToList();
+            mItemsToSell = PlayerAI.Player.PlayerObject.InventoryItems.Where(i => i.Item != null && PlayerAI.Player.ShouldSellItem(i.Item)).Select(i => i.Item).ToList();
             if (mItemsToSell.Count <= 0)
                 mCancelSell = true;
             else
