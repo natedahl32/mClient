@@ -25,16 +25,31 @@ namespace mClient.Clients
             var vendorGuid = packet.ReadUInt64();
             var itemCount = packet.ReadByte();
 
-            if (itemCount > 0)
+            var vendorItems = new List<VendorItem>();
+            for (int i = 0; i < itemCount; i++)
             {
-                var itemIndex = packet.ReadUInt32(); // index in the inventory list, looks like this is 1-based
-                var itemId = packet.ReadUInt32();
+                var vendorItem = new VendorItem();
+                vendorItem.ItemIndex = packet.ReadUInt32(); // index in the inventory list, looks like this is 1-based
+                vendorItem.ItemId = packet.ReadUInt32();
                 packet.ReadUInt32();    // Display ID
-                var currentVendorCount = packet.ReadUInt32();
-                var price = packet.ReadUInt32();
+                vendorItem.CurrentVendorCount = packet.ReadUInt32();
+                vendorItem.Price = packet.ReadUInt32();
                 var maxDurability = packet.ReadUInt32();
-                var buyCount = packet.ReadUInt32();
+                vendorItem.BuyCount = packet.ReadUInt32();
+
+                // Make sure we have this item cached
+                var item = ItemManager.Instance.Get(vendorItem.ItemId);
+                if (item == null)
+                    QueryItemPrototype(vendorItem.ItemId);
+
+                vendorItems.Add(vendorItem);
             }
+
+            // Assign these items to the vendor
+            var vendor = objectMgr.getObject(new WoWGuid(vendorGuid)) as Unit;
+            if (vendor != null)
+                vendor.UpdateVendorItems(vendorItems);
+
 
             message.ItemCount = itemCount;
             player.PlayerAI.SendMessageToAllActivities(message);
@@ -515,6 +530,22 @@ namespace mClient.Clients
             packet.Write(vendorGuid);
             packet.Write(itemGuid);
             packet.Write(count);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Buys from a vendor
+        /// </summary>
+        /// <param name="vendorGuid">Guid of vendor to buy from</param>
+        /// <param name="itemId">Id of item to buy</param>
+        /// <param name="count">Number of items to buy</param>
+        public void BuyItem(ulong vendorGuid, uint itemId, byte count)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_BUY_ITEM);
+            packet.Write(vendorGuid);
+            packet.Write(itemId);
+            packet.Write(count);
+            packet.Write((byte)0);
             Send(packet);
         }
 

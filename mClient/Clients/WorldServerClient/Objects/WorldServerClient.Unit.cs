@@ -3,6 +3,7 @@ using mClient.DBC;
 using mClient.Shared;
 using mClient.World;
 using mClient.World.Creature;
+using mClient.World.Items;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,8 @@ namespace mClient.Clients
 
         private float mMovementSpeedModifier;
         private List<uint> mTrainerSpellsAvailable;
+        private List<VendorItem> mVendorItemsAvailable;
+        private System.Object mVendorItemsLock = new System.Object();
 
         #endregion
 
@@ -339,6 +342,14 @@ namespace mClient.Clients
             }
         }
 
+        /// <summary>
+        /// Gets all vendor items available from this vendor. If null, that means we have not received a list from this vendor yet for their items OR this unit is not a vendor.
+        /// </summary>
+        public IEnumerable<VendorItem> VendorItemsAvailable
+        {
+            get { return mVendorItemsAvailable; }
+        }
+
         #endregion
 
         #region Public Methods
@@ -443,6 +454,17 @@ namespace mClient.Clients
         {
             if (!IsTrainer) throw new ApplicationException($"Unable to add spells available to unit with entry {ObjectFieldEntry} because the unit is not a trainer.");
             mTrainerSpellsAvailable = spellsAvailable.ToList();
+        }
+
+        /// <summary>
+        /// Updates the vendor items available from this vendor (unit must be a vendor or an error will be thrown)
+        /// </summary>
+        /// <param name="items"></param>
+        public void UpdateVendorItems(IList<VendorItem> items)
+        {
+            if (!IsVendor) throw new ApplicationException("Trying to update vendor items for non-vendor Unit!");
+            lock (mVendorItemsLock)
+                mVendorItemsAvailable = items.ToList();
         }
 
         #endregion

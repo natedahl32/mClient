@@ -44,8 +44,45 @@ namespace mClient.World.AI
                         .Do("Is Near Vendor", t => NearVendor())
                         .Do("Sell Items", t => SellToVendor())
                     .End()
+                    .Sequence("Buy Required Items")
+                        .Do("Has Required Items", t => HasRequiredItems())
+                        .Do("Has Vendor In Range With Items", t => IsVendorInRangeWithRequiredItems())
+                    .End()
                  .End()
                  .Build();
+        }
+
+        /// <summary>
+        /// Does the player have any items that are required but not in inventory
+        /// </summary>
+        /// <returns></returns>
+        private BehaviourTreeStatus HasRequiredItems()
+        {
+            if (Player.RequiredItemsThatAreNeeded.Count() > 0)
+                return BehaviourTreeStatus.Success;
+            return BehaviourTreeStatus.Failure;
+        }
+
+        /// <summary>
+        /// Checks for a vendor that is in range that has our required items in inventory
+        /// </summary>
+        /// <returns></returns>
+        private BehaviourTreeStatus IsVendorInRangeWithRequiredItems()
+        {
+            foreach (var unit in Client.objectMgr.GetAllUnits())
+            {
+                if (unit.IsVendor && TerrainMgr.CalculateDistance(Player.Position, unit.Position) <= MAX_VENDOR_DISTANCE)
+                {
+                    // If we don't have this vendors inventory list we will visit them just in case OR they have items that we need
+                    if (unit.VendorItemsAvailable == null || unit.VendorItemsAvailable.Any(vi => Player.RequiredItemsThatAreNeeded.Any(ri => ri.ItemId == vi.ItemId)))
+                    {
+                        StartActivity(new BuyRequiredItemsFromVendor(unit, this));
+                        return BehaviourTreeStatus.Success;
+                    }
+                }
+            }
+
+            return BehaviourTreeStatus.Failure;
         }
 
         /// <summary>

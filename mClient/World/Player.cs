@@ -322,6 +322,48 @@ namespace mClient.World
             get { return mRequiredItems.Values; }
         }
 
+        /// <summary>
+        /// Gets all required items that are still needed
+        /// </summary>
+        public IEnumerable<RequiredItemData> RequiredItemsThatAreNeeded
+        {
+            get
+            {
+                var stillNeeded = new List<RequiredItemData>();
+                // If no requires items nothing to report
+                if (mRequiredItems.Count == 0)
+                    return stillNeeded;
+
+                // Go through all required items and if any are not in inventory we return true
+                foreach (var requiredItem in mRequiredItems.Values)
+                {
+                    var inventoryItem = PlayerObject.GetInventoryItem(requiredItem.ItemId);
+                    // Doesn't have the item at all
+                    if (inventoryItem == null || inventoryItem.Item == null)
+                    {
+                        // Check equipped items, we may have it equipped as well
+                        var equipped = PlayerObject.EquippedItems.Where(i => i.BaseInfo.ItemId == requiredItem.ItemId).SingleOrDefault();
+                        if (equipped != null)
+                        {
+                            // Equipped but is one enough?
+                            if (requiredItem.ItemCount > 1)
+                                stillNeeded.Add(requiredItem);
+                        }
+                        else
+                        {
+                            // Not equipped either
+                            stillNeeded.Add(requiredItem);
+                        }
+                    }
+                    // Doens't have the correct quantity
+                    else if (inventoryItem.Item.StackCount < requiredItem.ItemCount)
+                        stillNeeded.Add(requiredItem);
+                }
+
+                return stillNeeded;
+            }
+        }
+
         #endregion
 
         #region Public Methods 
@@ -930,6 +972,22 @@ namespace mClient.World
 
             // If there is no sell price we can't sell it
             if (item.BaseInfo.SellPrice <= 0) return false;
+
+            // If this is a required item, never sell it UNLESS we have more than we need
+            RequiredItemData requiredItem = null;
+            mRequiredItems.TryGetValue(item.BaseInfo.ItemId, out requiredItem);
+            if (requiredItem != null)
+            {
+                // If we have more than we need in inventory than (or equipped) then we can sell one
+                var inInventory = PlayerObject.GetInventoryItem(item.BaseInfo.ItemId);
+                var equipped = PlayerObject.EquippedItems.Where(i => i.BaseInfo.ItemId == item.BaseInfo.ItemId).SingleOrDefault();
+                var count = (inInventory != null ? inInventory.Item.StackCount : 0);
+                count += (equipped != null ? (uint)1 : (uint)0);
+                if (count <= requiredItem.ItemCount)
+                    return false;
+                else
+                    return true;
+            }
 
             // If it is not useful we should sell it
             if (!IsItemUseful(item)) return true;

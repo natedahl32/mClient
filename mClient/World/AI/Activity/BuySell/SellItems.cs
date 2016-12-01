@@ -91,6 +91,7 @@ namespace mClient.World.AI.Activity.BuySell
 
                 // Remove the item from our inventory
                 PlayerAI.Player.PlayerObject.RemoveItemFromInventory(item);
+                return;
             }
 
             // Get the inventory of the vendor
