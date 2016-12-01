@@ -416,10 +416,20 @@ namespace mClient.World
             if (!mSpellList.Contains(spellId))
             {
                 mSpellList.Add(spellId);
-                // Check this spell for required items
+                // Check this spell for required items. 
                 var spell = SpellTable.Instance.getSpell(spellId);
                 if (spell != null)
+                {
                     CheckSpellForRequiredItems(spell);
+                    // Check if this spell creates any items and query for them if needed
+                    var createsItemId = spell.CreatesItemId;
+                    if (createsItemId > 0)
+                    {
+                        var item = ItemManager.Instance.Get(createsItemId);
+                        if (item == null)
+                            PlayerAI.Client.QueryItemPrototype(createsItemId);
+                    }
+                }
             }
 
             // Remove the spell from available spells
@@ -1187,6 +1197,51 @@ namespace mClient.World
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Gets a list of all spells for a profession skill
+        /// </summary>
+        /// <param name="skill"></param>
+        /// <returns></returns>
+        public IEnumerable<SkillLineAbilityEntry> GetProfessionSpellsForSkill(SkillType skill)
+        {
+            var spells = new List<SkillLineAbilityEntry>();
+            foreach (var spellId in Spells)
+            {
+                var spell = SpellTable.Instance.getSpell(spellId);
+                if (spell != null)
+                {
+                    // If this isn't a tradespell keep looping
+                    if (!spell.Attributes.HasFlag(SpellAttributes.SPELL_ATTR_TRADESPELL))
+                        continue;
+
+                    // Get skill line ability for this spell
+                    var skillLineAbilities = SkillLineAbilityTable.Instance.getForSpell(spell.SpellId);
+                    if (skillLineAbilities.Any(a => a.Skill == skill))
+                        spells.Add(skillLineAbilities.Where(a => a.Skill == skill).First());
+                }
+            }
+            return spells;
+        }
+
+        /// <summary>
+        /// Gets the recipe skill level for a profession spell/ability (Grey, Green, Yellow, or Orange)
+        /// </summary>
+        /// <param name="ability"></param>
+        /// <returns></returns>
+        public ProfessionRecipeSkillLevel GetProfessionRecipeSkillLevel(SkillLineAbilityEntry ability)
+        {
+            // First get the value for this skill
+            var value = PlayerObject.SkillValue(ability.Skill);
+
+            if (value < ability.SkillYellowLevel)
+                return ProfessionRecipeSkillLevel.RECIPE_SKILL_LEVEL_ORANGE;
+            if (value < ability.SkillGreenLevel)
+                return ProfessionRecipeSkillLevel.RECIPE_SKILL_LEVEL_YELLOW;
+            if (value < ability.SkillGreyLevel)
+                return ProfessionRecipeSkillLevel.RECIPE_SKILL_LEVEL_GREEN;
+            return ProfessionRecipeSkillLevel.RECIPE_SKILL_LEVEL_GREY;
         }
 
         #endregion

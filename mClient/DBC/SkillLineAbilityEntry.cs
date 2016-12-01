@@ -1,4 +1,5 @@
-﻿using System;
+﻿using mClient.Constants;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,6 +22,26 @@ namespace mClient.DBC
         public uint SkillGreyLevel { get; set; }
         public uint SkillYellowLevel { get; set; }
         public uint RequiredTrainPoints { get; set; }
+
+        public uint SkillGreenLevel
+        {
+            get { return (SkillGreyLevel + SkillYellowLevel) / 2; }
+        }
+
+        public SpellEntry Spell
+        {
+            get { return SpellTable.Instance.getSpell(SpellId); }
+        }
+
+        public SpellEntry ParentSpell
+        {
+            get { return SpellTable.Instance.getSpell(ParentSpellId); }
+        }
+
+        public SkillType Skill
+        {
+            get { return (SkillType)SkillLineId; }
+        }
 
         #endregion
     }

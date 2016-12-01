@@ -1,5 +1,7 @@
 ﻿using mClient.Constants;
+using mClient.DBC;
 using mClient.Shared;
+using mClient.World.Items;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +13,22 @@ namespace mClient.World.AI
     public partial class PlayerChatHandler
     {
         private const string PROFESSION_LIST_COMMAND = "list";
+        private const string PROFESSION_ALCHEMY_COMMAND = "alchemy";
+        private const string PROFESSION_BLACKSMITHING_COMMAND = "blacksmithing";
+        private const string PROFESSION_LEATHERWORKING_COMMAND = "leatherworking";
+        private const string PROFESSION_ENCHANTING_COMMAND = "enchanting";
+        private const string PROFESSION_TAILORING_COMMAND = "tailoring";
+        private const string PROFESSION_COOKING_COMMAND = "cooking";
+        private const string PROFESSION_FIRST_AID_COMMAND = "firstaid";
 
-        private List<string> mAllProfessionCommands = new List<string>() { PROFESSION_LIST_COMMAND };
+        private List<string> mAllProfessionCommands = new List<string>() { PROFESSION_LIST_COMMAND,
+                                                                           PROFESSION_ALCHEMY_COMMAND,
+                                                                           PROFESSION_BLACKSMITHING_COMMAND,
+                                                                           PROFESSION_COOKING_COMMAND,
+                                                                           PROFESSION_ENCHANTING_COMMAND,
+                                                                           PROFESSION_FIRST_AID_COMMAND,
+                                                                           PROFESSION_LEATHERWORKING_COMMAND,
+                                                                           PROFESSION_TAILORING_COMMAND};
 
         /// <summary>
         /// Handles all profession commands
@@ -42,7 +58,7 @@ namespace mClient.World.AI
 
             switch (split[1].ToLower())
             {
-                // combat attack - attacks the senders target
+                // prof list - sends list of professions and skill values in chat
                 case PROFESSION_LIST_COMMAND:
                     // Get all profession skills for this player
                     var professionSkills = Player.PlayerObject.ProfessionSkills;
@@ -53,10 +69,72 @@ namespace mClient.World.AI
                         Player.PlayerAI.Client.SendChatMsg(Constants.ChatMsg.Party, Constants.Languages.Universal, string.Format("{0} ({1})", GetProfessionSkillName(prof), Player.PlayerObject.SkillValue(prof)));
 
                     return true;
+
+                case PROFESSION_ALCHEMY_COMMAND:
+                case PROFESSION_BLACKSMITHING_COMMAND:
+                case PROFESSION_COOKING_COMMAND:
+                case PROFESSION_ENCHANTING_COMMAND:
+                case PROFESSION_FIRST_AID_COMMAND:
+                case PROFESSION_LEATHERWORKING_COMMAND:
+                case PROFESSION_TAILORING_COMMAND:
+
+                    // Get the skill type
+                    var skill = GetSkillFromSubCommand(split[1].ToLower());
+                    if (skill == 0)
+                        return true;
+
+                    // Get all tradespells for this skill
+                    var professionSpells = Player.GetProfessionSpellsForSkill(skill);
+                    if (professionSpells.Count() == 0)
+                        Player.PlayerAI.Client.SendChatMsg(Constants.ChatMsg.Party, Constants.Languages.Universal, string.Format("I have no recipes for {0}", GetProfessionSkillName(skill)));
+                    else
+                    {
+                        Player.PlayerAI.Client.SendChatMsg(Constants.ChatMsg.Party, Constants.Languages.Universal, string.Format("I have the following {0} recipes:", GetProfessionSkillName(skill)));
+                        foreach (var s in professionSpells)
+                            Player.PlayerAI.Client.SendChatMsg(Constants.ChatMsg.Party, Constants.Languages.Universal, BuildChatMessageForRecipe(s));
+                    }
+
+                    return true;
             }
 
             // No command found
             return false;
+        }
+
+        /// <summary>
+        /// Builds a chat message to send back for a profession recipe
+        /// </summary>
+        /// <param name="ability"></param>
+        /// <returns></returns>
+        private string BuildChatMessageForRecipe(SkillLineAbilityEntry ability)
+        {
+            var recipeSkillLevel = GetRecipeSkillColor(Player.GetProfessionRecipeSkillLevel(ability));
+            var spell = SpellTable.Instance.getSpell(ability.SpellId);
+            var createsItem = spell.CreatesItem;
+            if (createsItem != null)
+                return $"{ability.Spell.SpellName} [{recipeSkillLevel}] --> {createsItem.ItemGameLink}";
+            else
+                return $"{ability.Spell.SpellName} [{recipeSkillLevel}]";
+        }
+
+        /// <summary>
+        /// Gets the color value
+        /// </summary>
+        /// <param name="recipeSkillLevel"></param>
+        /// <returns></returns>
+        private string GetRecipeSkillColor(ProfessionRecipeSkillLevel recipeSkillLevel)
+        {
+            switch(recipeSkillLevel)
+            {
+                case ProfessionRecipeSkillLevel.RECIPE_SKILL_LEVEL_ORANGE:
+                    return "ORANGE";
+                case ProfessionRecipeSkillLevel.RECIPE_SKILL_LEVEL_YELLOW:
+                    return "YELLOW";
+                case ProfessionRecipeSkillLevel.RECIPE_SKILL_LEVEL_GREEN:
+                    return "GREEN";
+                default:
+                    return "GREY";
+            }
         }
 
         /// <summary>
@@ -88,6 +166,33 @@ namespace mClient.World.AI
             if (skill == SkillType.SKILL_FIRST_AID)
                 return "First Aid";
             return string.Empty;
+        }
+
+        /// <summary>
+        /// Returns the skill type associated with the passed subcommand
+        /// </summary>
+        /// <param name="subcommand"></param>
+        /// <returns></returns>
+        private SkillType GetSkillFromSubCommand(string subcommand)
+        {
+            switch (subcommand)
+            {
+                case PROFESSION_ALCHEMY_COMMAND:
+                    return SkillType.SKILL_ALCHEMY;
+                case PROFESSION_BLACKSMITHING_COMMAND:
+                    return SkillType.SKILL_BLACKSMITHING;
+                case PROFESSION_COOKING_COMMAND:
+                    return SkillType.SKILL_COOKING;
+                case PROFESSION_ENCHANTING_COMMAND:
+                    return SkillType.SKILL_ENCHANTING;
+                case PROFESSION_FIRST_AID_COMMAND:
+                    return SkillType.SKILL_FIRST_AID;
+                case PROFESSION_LEATHERWORKING_COMMAND:
+                    return SkillType.SKILL_LEATHERWORKING;
+                case PROFESSION_TAILORING_COMMAND:
+                    return SkillType.SKILL_TAILORING;
+            }
+            return 0;
         }
     }
 }

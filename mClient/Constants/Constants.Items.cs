@@ -633,4 +633,12 @@ namespace mClient.Constants
         LOCKTYPE_SLOW_CLOSE = 18,
         LOCKTYPE_FISHING = 19
     }
+
+    public enum ProfessionRecipeSkillLevel
+    {
+        RECIPE_SKILL_LEVEL_GREY,
+        RECIPE_SKILL_LEVEL_GREEN,
+        RECIPE_SKILL_LEVEL_YELLOW,
+        RECIPE_SKILL_LEVEL_ORANGE
+    }
 }

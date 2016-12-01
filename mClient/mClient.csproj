@@ -154,6 +154,7 @@
     <Compile Include="DBC\MapTable.cs" />
     <Compile Include="DBC\SkillLineAbilityEntry.cs" />
     <Compile Include="DBC\SkillLineAbilityTable.cs" />
+    <Compile Include="DBC\SkillLineEntry.cs" />
     <Compile Include="DBC\SkillRaceClassInfoEntry.cs" />
     <Compile Include="DBC\SkillRaceClassInfoTable.cs" />
     <Compile Include="DBC\SpellCastTimeEntry.cs" />
@@ -161,6 +162,7 @@
     <Compile Include="DBC\SpellEntry.cs" />
     <Compile Include="DBC\SpellItemEnchantmentEntry.cs" />
     <Compile Include="DBC\SpellItemEnchantmentTable.cs" />
+    <Compile Include="DBC\SkillLineTable.cs" />
     <Compile Include="DBC\SpellRangeEntry.cs" />
     <Compile Include="DBC\SpellRangeTable.cs" />
     <Compile Include="DBC\SpellTable.cs" />

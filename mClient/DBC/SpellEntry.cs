@@ -1,4 +1,5 @@
 ﻿using mClient.Constants;
+using mClient.World.Items;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -150,6 +151,42 @@ namespace mClient.DBC
         /// Gets or sets the money cost of the spell as received from a trainer. Stored so we know how much spells cost.
         /// </summary>
         public uint MoneyCost { get; set; }
+
+        /// <summary>
+        /// For profession spells this property returns the item created from the spell
+        /// </summary>
+        public ItemInfo CreatesItem
+        {
+            get
+            {
+                for (int i = 0; i < SpellConstants.MAX_EFFECT_INDEX; i++)
+                {
+                    if (Effect[i] == SpellEffects.SPELL_EFFECT_CREATE_ITEM)
+                    {
+                        return ItemManager.Instance.Get(EffectItemType[i]);
+                    }
+                }
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// For profession spells this property returns the item id that is created from the spell
+        /// </summary>
+        public uint CreatesItemId
+        {
+            get
+            {
+                for (int i = 0; i < SpellConstants.MAX_EFFECT_INDEX; i++)
+                {
+                    if (Effect[i] == SpellEffects.SPELL_EFFECT_CREATE_ITEM)
+                    {
+                        return EffectItemType[i];
+                    }
+                }
+                return 0;
+            }
+        }
 
         #endregion
 
