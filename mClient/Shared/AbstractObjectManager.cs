@@ -94,6 +94,7 @@ namespace mClient.Shared
             var data = File.ReadAllText(FilePath);
             if (string.IsNullOrEmpty(data) || string.IsNullOrEmpty(data.Trim())) return;
             mObjects = JsonConvert.DeserializeObject<List<T>>(data);
+            ObjectsLoaded();
         }
 
         /// <summary>
@@ -127,6 +128,18 @@ namespace mClient.Shared
                 if (addedSinceSerialize >= ItemsToSerialize)
                     Serialize();
             }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Called after objects have been loaded from file
+        /// </summary>
+        protected virtual void ObjectsLoaded()
+        {
+
         }
 
         #endregion

@@ -73,5 +73,20 @@ namespace mClient.World.GameObject
         }
 
         #endregion
+
+        #region Private Methods
+
+        protected override void ObjectsLoaded()
+        {
+            // We need to recast our items to their appropriate types
+            var GOs = mObjects.ToList();
+            mObjects.Clear();
+
+            // Loop through all the GameObjects loaded from file and recast them to their appropriate types
+            foreach (var go in GOs)
+                mObjects.Add(GameObjectInfo.Create(go.GameObjectId, go.GameObjectType, go.Name, go.Data));
+        }
+
+        #endregion
     }
 }

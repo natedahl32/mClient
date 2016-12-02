@@ -1291,7 +1291,7 @@ namespace mClient.World
                             if (requiredSkillValue > PlayerObject.SkillValue(skillType))
                                 return false;
                         }
-                        return false;
+                        break;
                     default:
                         break;
                 }
