@@ -40,5 +40,12 @@ namespace mClient.DBC
                 mTalentTabEntries.Add(entry.TalentTabId, entry);
             }
         }
+
+        public TalentTabEntry getById(uint id)
+        {
+            if (mTalentTabEntries.ContainsKey(id))
+                return mTalentTabEntries[id];
+            return null;
+        }
     }
 }

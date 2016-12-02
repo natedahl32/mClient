@@ -95,6 +95,7 @@ namespace mClient.World.AI
             if (HandleInventoryCommands(senderGuid, senderName, message)) return;
             if (HandleSkillCommands(senderGuid, senderName, message)) return;
             if (HandleProfessionCommands(senderGuid, senderName, message)) return;
+            if (HandleTalentCommands(senderGuid, senderName, message)) return;
             if (HandleSetCommands(senderGuid, senderName, message)) return;
         }
 
@@ -116,6 +117,7 @@ namespace mClient.World.AI
             if (HandleInventoryCommands(senderGuid, senderName, message)) return;
             if (HandleSkillCommands(senderGuid, senderName, message)) return;
             if (HandleProfessionCommands(senderGuid, senderName, message)) return;
+            if (HandleTalentCommands(senderGuid, senderName, message)) return;
             if (HandleSetCommands(senderGuid, senderName, message)) return;
         }
 

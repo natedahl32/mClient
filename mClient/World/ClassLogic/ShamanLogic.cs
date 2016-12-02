@@ -246,7 +246,7 @@ namespace mClient.World.ClassLogic
             float item2Score = 0f;
 
             // Compare DPS of a weapon for druids in feral spec
-            if (Spec == MainSpec.SHAMAN_SPEC_ENHANCEMENT)
+            if (Player.TalentSpec == MainSpec.SHAMAN_SPEC_ENHANCEMENT)
             {
                 if (item1.ItemClass == ItemClass.ITEM_CLASS_WEAPON && item2.ItemClass == ItemClass.ITEM_CLASS_WEAPON)
                 {
@@ -275,7 +275,7 @@ namespace mClient.World.ClassLogic
         {
             base.SetStatWeights();
 
-            if (Spec == MainSpec.SHAMAN_SPEC_ELEMENTAL)
+            if (Player.TalentSpec == MainSpec.SHAMAN_SPEC_ELEMENTAL)
             {
                 mStatWeights[ItemModType.ITEM_MOD_STAMINA] = 0.45f;
                 mStatWeights[ItemModType.ITEM_MOD_SPIRIT] = 0.1f;
@@ -285,7 +285,7 @@ namespace mClient.World.ClassLogic
                 mStatWeights[ItemModType.ITEM_MOD_MANA] = 0.6f;
                 mStatWeights[ItemModType.ITEM_MOD_HEALTH] = 0.5f;
             }
-            else if (Spec == MainSpec.SHAMAN_SPEC_ENHANCEMENT)
+            else if (Player.TalentSpec == MainSpec.SHAMAN_SPEC_ENHANCEMENT)
             {
                 mStatWeights[ItemModType.ITEM_MOD_STAMINA] = 0.45f;
                 mStatWeights[ItemModType.ITEM_MOD_SPIRIT] = 0.01f;
@@ -295,7 +295,7 @@ namespace mClient.World.ClassLogic
                 mStatWeights[ItemModType.ITEM_MOD_MANA] = 0.35f;
                 mStatWeights[ItemModType.ITEM_MOD_HEALTH] = 0.5f;
             }
-            else if (Spec == MainSpec.SHAMAN_SPEC_RESTORATION)
+            else if (Player.TalentSpec == MainSpec.SHAMAN_SPEC_RESTORATION)
             {
                 mStatWeights[ItemModType.ITEM_MOD_STAMINA] = 0.65f;
                 mStatWeights[ItemModType.ITEM_MOD_SPIRIT] = 0.2f;

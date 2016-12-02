@@ -35,6 +35,11 @@ namespace mClient.Shared
         private string FilePath { get { return @"data\" + SerializeToFile; } }
 
         /// <summary>
+        /// Gets the number of items to be added before we serialize
+        /// </summary>
+        protected virtual int ItemsToSerialize { get { return ITEMS_ADDED_TO_SERIALIZE; } }
+
+        /// <summary>
         /// Default serializer implementation
         /// </summary>
         protected virtual JsonSerializer Serializer
@@ -119,7 +124,7 @@ namespace mClient.Shared
                     addedSinceSerialize++;
                 }
 
-                if (addedSinceSerialize >= ITEMS_ADDED_TO_SERIALIZE)
+                if (addedSinceSerialize >= ItemsToSerialize)
                     Serialize();
             }
         }

@@ -250,6 +250,7 @@
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Quest.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Set.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Skill.cs" />
+    <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Talent.cs" />
     <Compile Include="World\AI\PlayerAI.Chat.cs" />
     <Compile Include="World\AI\PlayerAI.Combat.cs" />
     <Compile Include="World\AI\PlayerAI.cs" />
@@ -318,6 +319,7 @@
     <Compile Include="World\Player.cs" />
     <Compile Include="World\Player.Proficiency.cs" />
     <Compile Include="World\PlayerClassLogic.cs" />
+    <Compile Include="World\PlayerSettings.cs" />
     <Compile Include="World\Quest\QuestGiver.cs" />
     <Compile Include="World\Quest\QuestInfo.cs" />
     <Compile Include="World\Quest\QuestLogItem.cs" />
@@ -328,6 +330,8 @@
     <Compile Include="World\Spells\SpellCooldown.cs" />
     <Compile Include="World\Spells\SpellCooldownManager.cs" />
     <Compile Include="World\Spells\TrainerSpellData.cs" />
+    <Compile Include="World\Talents\Spec.cs" />
+    <Compile Include="World\Talents\SpecManager.cs" />
     <Compile Include="World\TerrainManager.cs" />
     <Compile Include="World\Terrain\ADTProcessor.cs" />
     <Compile Include="World\Terrain\BlizChunkHeader.cs" />

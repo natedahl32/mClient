@@ -232,7 +232,7 @@ namespace mClient.World.ClassLogic
         {
             base.SetStatWeights();
 
-            if (Spec == MainSpec.PRIEST_SPEC_DISCIPLINE || Spec == MainSpec.PRIEST_SPEC_HOLY)
+            if (Player.TalentSpec == MainSpec.PRIEST_SPEC_DISCIPLINE || Player.TalentSpec == MainSpec.PRIEST_SPEC_HOLY)
             {
                 mStatWeights[ItemModType.ITEM_MOD_STAMINA] = 0.45f;
                 mStatWeights[ItemModType.ITEM_MOD_SPIRIT] = 0.6f;
@@ -242,7 +242,7 @@ namespace mClient.World.ClassLogic
                 mStatWeights[ItemModType.ITEM_MOD_MANA] = 0.85f;
                 mStatWeights[ItemModType.ITEM_MOD_HEALTH] = 0.5f;
             }
-            else if (Spec == MainSpec.PRIEST_SPEC_SHADOW)
+            else if (Player.TalentSpec == MainSpec.PRIEST_SPEC_SHADOW)
             {
                 mStatWeights[ItemModType.ITEM_MOD_STAMINA] = 0.45f;
                 mStatWeights[ItemModType.ITEM_MOD_SPIRIT] = 0.35f;

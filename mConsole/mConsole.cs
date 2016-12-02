@@ -13,6 +13,8 @@ using mClient.World.Quest;
 using mClient.World.Items;
 using mClient.World.Creature;
 using mClient.World.GameObject;
+using mClient.World.Guild;
+using mClient.World.Talents;
 
 namespace mConsole
 {
@@ -42,6 +44,11 @@ namespace mConsole
             GameObjectManager.Instance.Load();
             QuestManager.Instance.Load();
             ItemManager.Instance.Load();
+            GuildManager.Instance.Load();
+            SpecManager.Instance.Load();
+
+            // For testing purposes we can create a spec programmatically
+            //CreateSpec();
 
             while (true)
             {
@@ -49,8 +56,6 @@ namespace mConsole
                 string command = Console.ReadLine();
                 CommandHandler.HandleCommand(command);
             }
-        
-            
         }
 
         static bool ConsoleEventCallback(int eventType)
@@ -62,8 +67,69 @@ namespace mConsole
                 GameObjectManager.Instance.Serialize();
                 QuestManager.Instance.Serialize();
                 ItemManager.Instance.Serialize();
+                GuildManager.Instance.Serialize();
+                SpecManager.Instance.Serialize();
             }
             return false;
+        }
+
+        static void CreateSpec()
+        {
+            var spec = new Spec("Protection Warrior Off-Tank & Group Spec");
+            spec.Description = "Talent spec for end game group and off-tank raid content";
+            spec.ForClass = Classname.Warrior;
+            spec.Talents[0] = 12320;
+            spec.Talents[1] = 12852;
+            spec.Talents[2] = 12853;
+            spec.Talents[3] = 12855;
+            spec.Talents[4] = 12856;
+            spec.Talents[5] = 16462;
+            spec.Talents[6] = 16463;
+            spec.Talents[7] = 16464;
+            spec.Talents[8] = 16465;
+            spec.Talents[9] = 16466;
+            spec.Talents[10] = 12298;
+            spec.Talents[11] = 12724;
+            spec.Talents[12] = 12725;
+            spec.Talents[13] = 12726;
+            spec.Talents[14] = 12727;
+            spec.Talents[15] = 12299;
+            spec.Talents[16] = 12761;
+            spec.Talents[17] = 12762;
+            spec.Talents[18] = 12763;
+            spec.Talents[19] = 12764;
+            spec.Talents[20] = 12303;
+            spec.Talents[21] = 12788;
+            spec.Talents[22] = 12789;
+            spec.Talents[23] = 12791;
+            spec.Talents[24] = 12792;
+            spec.Talents[25] = 12945;
+            spec.Talents[26] = 12301;
+            spec.Talents[27] = 12818;
+            spec.Talents[29] = 12975;
+            spec.Talents[30] = 12297;
+            spec.Talents[31] = 12809;
+            spec.Talents[32] = 12312;
+            spec.Talents[33] = 12803;
+            spec.Talents[34] = 12750;
+            spec.Talents[35] = 12751;
+            spec.Talents[36] = 12752;
+            spec.Talents[37] = 12753;
+            spec.Talents[38] = 16538;
+            spec.Talents[39] = 16539;
+            spec.Talents[40] = 16540;
+            spec.Talents[41] = 16541;
+            spec.Talents[42] = 16542;
+            spec.Talents[43] = 23922;
+            spec.Talents[44] = 12324;
+            spec.Talents[45] = 12876;
+            spec.Talents[46] = 12877;
+            spec.Talents[47] = 12878;
+            spec.Talents[48] = 12879;
+            spec.Talents[49] = 12323;
+            spec.Talents[50] = 12295;
+            spec.Talents[51] = 12676;
+            SpecManager.Instance.Add(spec);
         }
 
         public static void HandleRealmlist(Realm[] rlist)

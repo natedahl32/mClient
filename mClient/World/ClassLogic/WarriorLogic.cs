@@ -260,7 +260,7 @@ namespace mClient.World.ClassLogic
             }
 
             // Armor calculations
-            if (Spec == MainSpec.WARRIOR_SPEC_PROTECTION)
+            if (Player.TalentSpec == MainSpec.WARRIOR_SPEC_PROTECTION)
             {
                 // Reduce armor score so it isn't overvalued. There can be a lot on items
                 float item1Armor = item1.Resistances[SpellSchools.SPELL_SCHOOL_NORMAL] / 20f;
@@ -292,7 +292,7 @@ namespace mClient.World.ClassLogic
         {
             base.SetStatWeights();
 
-            if (Spec == MainSpec.WARRIOR_SPEC_ARMS || Spec == MainSpec.WARRIOR_SPEC_FURY)
+            if (Player.TalentSpec == MainSpec.WARRIOR_SPEC_ARMS || Player.TalentSpec == MainSpec.WARRIOR_SPEC_FURY)
             {
                 mStatWeights[ItemModType.ITEM_MOD_STAMINA] = 0.55f;
                 mStatWeights[ItemModType.ITEM_MOD_SPIRIT] = 0.01f;
@@ -302,7 +302,7 @@ namespace mClient.World.ClassLogic
                 mStatWeights[ItemModType.ITEM_MOD_MANA] = 0.01f;
                 mStatWeights[ItemModType.ITEM_MOD_HEALTH] = 0.55f;
             }
-            else if (Spec == MainSpec.WARRIOR_SPEC_PROTECTION)
+            else if (Player.TalentSpec == MainSpec.WARRIOR_SPEC_PROTECTION)
             {
                 mStatWeights[ItemModType.ITEM_MOD_STAMINA] = 0.55f;
                 mStatWeights[ItemModType.ITEM_MOD_SPIRIT] = 0.01f;

@@ -287,6 +287,14 @@ namespace mClient.Clients
             }
         }
 
+        /// <summary>
+        /// Gets the number of free talent points the player has available
+        /// </summary>
+        public uint FreeTalentPoints
+        {
+            get { return GetFieldValue((int)PlayerFields.PLAYER_CHARACTER_POINTS1); }
+        }
+
         #endregion
 
         #region Public Methods

@@ -221,7 +221,7 @@ namespace mClient.World.ClassLogic
             float item2Score = 0f;
 
             // Weapon DPS
-            if (Spec == MainSpec.PALADIN_SPEC_PROTECTION || Spec == MainSpec.PALADIN_SPEC_RETRIBUTION)
+            if (Player.TalentSpec == MainSpec.PALADIN_SPEC_PROTECTION || Player.TalentSpec == MainSpec.PALADIN_SPEC_RETRIBUTION)
             {
                 if (item1.ItemClass == ItemClass.ITEM_CLASS_WEAPON && item2.ItemClass == ItemClass.ITEM_CLASS_WEAPON)
                 {
@@ -231,7 +231,7 @@ namespace mClient.World.ClassLogic
             }
             
             // Armor calculations
-            if (Spec == MainSpec.PALADIN_SPEC_PROTECTION)
+            if (Player.TalentSpec == MainSpec.PALADIN_SPEC_PROTECTION)
             {
                 // Reduce armor score so it isn't overvalued. There can be a lot on items
                 float item1Armor = item1.Resistances[SpellSchools.SPELL_SCHOOL_NORMAL] / 20f;
@@ -262,7 +262,7 @@ namespace mClient.World.ClassLogic
         {
             base.SetStatWeights();
 
-            if (Spec == MainSpec.PALADIN_SPEC_HOLY)
+            if (Player.TalentSpec == MainSpec.PALADIN_SPEC_HOLY)
             {
                 mStatWeights[ItemModType.ITEM_MOD_STAMINA] = 0.45f;
                 mStatWeights[ItemModType.ITEM_MOD_SPIRIT] = 0.15f;
@@ -272,7 +272,7 @@ namespace mClient.World.ClassLogic
                 mStatWeights[ItemModType.ITEM_MOD_MANA] = 0.85f;
                 mStatWeights[ItemModType.ITEM_MOD_HEALTH] = 0.5f;
             }
-            else if (Spec == MainSpec.PALADIN_SPEC_RETRIBUTION)
+            else if (Player.TalentSpec == MainSpec.PALADIN_SPEC_RETRIBUTION)
             {
                 mStatWeights[ItemModType.ITEM_MOD_STAMINA] = 0.6f;
                 mStatWeights[ItemModType.ITEM_MOD_SPIRIT] = 0.01f;
@@ -282,7 +282,7 @@ namespace mClient.World.ClassLogic
                 mStatWeights[ItemModType.ITEM_MOD_MANA] = 0.25f;
                 mStatWeights[ItemModType.ITEM_MOD_HEALTH] = 0.6f;
             }
-            else if (Spec == MainSpec.PALADIN_SPEC_PROTECTION)
+            else if (Player.TalentSpec == MainSpec.PALADIN_SPEC_PROTECTION)
             {
                 mStatWeights[ItemModType.ITEM_MOD_STAMINA] = 0.8f;
                 mStatWeights[ItemModType.ITEM_MOD_SPIRIT] = 0.01f;

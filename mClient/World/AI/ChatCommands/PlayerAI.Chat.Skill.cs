@@ -22,7 +22,7 @@ namespace mClient.World.AI
         {
             var split = message.Split(new string[] { " " }, StringSplitOptions.None);
 
-            // Make sure this is a set command
+            // Make sure this is a skill command
             if (split[0].ToLower() != "skill") return false;
 
             // If no sub command send correct usage

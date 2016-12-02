@@ -30,9 +30,6 @@ namespace mClient.World
         // stat weights, used for determining gear upgrades
         protected readonly Dictionary<ItemModType, float> mStatWeights = new Dictionary<ItemModType, float>();
 
-        // player spec
-        private MainSpec mAssignedSpec;
-
         #endregion
 
         #region Constructors
@@ -41,7 +38,9 @@ namespace mClient.World
         {
             if (player == null) throw new ArgumentNullException("player");
             mPlayer = player;
-            mAssignedSpec = MainSpec.NONE;
+
+            // Subscribe to player events
+            mPlayer.SpecChangedEvent += Player_SpecChangedEvent;
 
             // Add empty stat weights for each stat
             mStatWeights.Add(ItemModType.ITEM_MOD_AGILITY, 0f);
@@ -91,21 +90,6 @@ namespace mClient.World
         /// Ignores spells that we think we should learn. These are generally broken spells in the DBC files that we can't weed out using normal methods
         /// </summary>
         public abstract IEnumerable<uint> IgnoreLearningSpells { get; }
-
-        /// <summary>
-        /// Gets the assigned spec of the player
-        /// </summary>
-        public MainSpec Spec
-        {
-            get { return mAssignedSpec; }
-            protected set
-            {
-                var oldSpec = mAssignedSpec;
-                mAssignedSpec = value;
-                if (oldSpec != mAssignedSpec)
-                    SetStatWeights();
-            }
-        }
 
         #endregion
 
@@ -264,7 +248,7 @@ namespace mClient.World
         /// </summary>
         protected virtual void SetStatWeights()
         {
-            if (Spec == MainSpec.NONE)
+            if (Player.TalentSpec == MainSpec.NONE)
             {
                 mStatWeights[ItemModType.ITEM_MOD_STAMINA] = 0.75f;
                 mStatWeights[ItemModType.ITEM_MOD_HEALTH] = 0.8f;
@@ -482,6 +466,17 @@ namespace mClient.World
             return score;
         }
 
+        /// <summary>
+        /// Handles the player spec change event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Player_SpecChangedEvent(object sender, Player.SpecChangedEventArgs e)
+        {
+            // Set stat weights for the new spec
+            SetStatWeights();
+        }
+
         #endregion
 
         #region Static Methods
@@ -517,6 +512,66 @@ namespace mClient.World
                     break;
             }
             return null;
+        }
+
+        /// <summary>
+        /// Gets the spec associated with the talent tab for a class
+        /// </summary>
+        /// <param name="class"></param>
+        /// <param name="tab"></param>
+        /// <returns></returns>
+        public static MainSpec GetSpecFromTalentTab(Classname @class, uint tab)
+        {
+            switch (@class)
+            {
+                case Classname.Druid:
+                    if (tab == 0) return MainSpec.DRUID_SPEC_BALANCE;
+                    if (tab == 1) return MainSpec.DRUID_SPEC_FERAL;
+                    if (tab == 2) return MainSpec.DRUID_SPEC_RESTORATION;
+                    break;
+                case Classname.Hunter:
+                    if (tab == 0) return MainSpec.HUNTER_SPEC_BEASTMASTERY;
+                    if (tab == 1) return MainSpec.HUNTER_SPEC_MARKSMANSHIP;
+                    if (tab == 2) return MainSpec.HUNTER_SPEC_SURVIVAL;
+                    break;
+                case Classname.Mage:
+                    if (tab == 0) return MainSpec.MAGE_SPEC_ARCANE;
+                    if (tab == 1) return MainSpec.MAGE_SPEC_FIRE;
+                    if (tab == 2) return MainSpec.MAGE_SPEC_FROST;
+                    break;
+                case Classname.Paladin:
+                    if (tab == 0) return MainSpec.PALADIN_SPEC_HOLY;
+                    if (tab == 1) return MainSpec.PALADIN_SPEC_PROTECTION;
+                    if (tab == 2) return MainSpec.PALADIN_SPEC_RETRIBUTION;
+                    break;
+                case Classname.Priest:
+                    if (tab == 0) return MainSpec.PRIEST_SPEC_DISCIPLINE;
+                    if (tab == 1) return MainSpec.PRIEST_SPEC_HOLY;
+                    if (tab == 2) return MainSpec.PRIEST_SPEC_SHADOW;
+                    break;
+                case Classname.Rogue:
+                    if (tab == 0) return MainSpec.ROGUE_SPEC_ASSASSINATION;
+                    if (tab == 1) return MainSpec.ROGUE_SPEC_COMBAT;
+                    if (tab == 2) return MainSpec.ROGUE_SPEC_SUBTELTY;
+                    break;
+                case Classname.Shaman:
+                    if (tab == 0) return MainSpec.SHAMAN_SPEC_ELEMENTAL;
+                    if (tab == 1) return MainSpec.SHAMAN_SPEC_ENHANCEMENT;
+                    if (tab == 2) return MainSpec.SHAMAN_SPEC_RESTORATION;
+                    break;
+                case Classname.Warlock:
+                    if (tab == 0) return MainSpec.WARLOCK_SPEC_AFFLICTION;
+                    if (tab == 1) return MainSpec.WARLOCK_SPEC_DEMONOLOGY;
+                    if (tab == 2) return MainSpec.WARLOCK_SPEC_DESTRUCTION;
+                    break;
+                case Classname.Warrior:
+                    if (tab == 0) return MainSpec.WARRIOR_SPEC_ARMS;
+                    if (tab == 1) return MainSpec.WARRIOR_SPEC_FURY;
+                    if (tab == 2) return MainSpec.WARRIOR_SPEC_PROTECTION;
+                    break;
+            }
+
+            return MainSpec.NONE;
         }
 
         #endregion

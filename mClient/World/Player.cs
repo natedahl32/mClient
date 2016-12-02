@@ -14,6 +14,7 @@ using mClient.World.Items;
 using mClient.World.Guild;
 using mClient.World.GameObject;
 using System.Collections.Concurrent;
+using mClient.World.Talents;
 
 namespace mClient.World
 {
@@ -61,6 +62,12 @@ namespace mClient.World
         // Item management
         private ConcurrentDictionary<uint, RequiredItemData> mRequiredItems = new ConcurrentDictionary<uint, RequiredItemData>();
 
+        // Player settings
+        private PlayerSettings mPlayerSettings;
+
+        // Events
+        public event EventHandler<SpecChangedEventArgs> SpecChangedEvent;
+
         #endregion
 
         #region Constructors
@@ -100,6 +107,7 @@ namespace mClient.World
             this.mClassLogic = PlayerClassLogic.CreateClassLogic((Classname)pClass, this);
             this.mGCD = new GlobalCooldown(this);
             this.mSpellCooldownManager = new SpellCooldownManager(this);
+            this.mPlayerSettings = PlayerSettings.Load(playerObject.Name);
 
             this.Race = race;
             this.Class = pClass;
@@ -361,6 +369,19 @@ namespace mClient.World
                 }
 
                 return stillNeeded;
+            }
+        }
+
+        /// <summary>
+        /// Gets the talent spec assigned to this player
+        /// </summary>
+        public MainSpec TalentSpec
+        {
+            get
+            {
+                if (mPlayerSettings.Spec != null)
+                    return mPlayerSettings.Spec.TalentSpec;
+                return MainSpec.NONE;
             }
         }
 
@@ -1302,6 +1323,22 @@ namespace mClient.World
             return ProfessionRecipeSkillLevel.RECIPE_SKILL_LEVEL_GREY;
         }
 
+        /// <summary>
+        /// Sets the talent spec for this player to the spec that has the passed id
+        /// </summary>
+        /// <param name="specId"></param>
+        public void SetTalentSpec(uint specId)
+        {
+            var newSpec = SpecManager.Instance.Get(specId);
+            if (newSpec != null)
+            {
+                var oldSpec = TalentSpec;
+                mPlayerSettings.SpecId = (int)specId;
+                if (SpecChangedEvent != null)
+                    SpecChangedEvent(this, new SpecChangedEventArgs(oldSpec));
+            }
+        }
+
         #endregion
 
         #region Private Methods
@@ -1374,6 +1411,25 @@ namespace mClient.World
             // if the server handles that. Judging by how the bot seems to start with the charge I assume the server handles it.
 
 
+        }
+
+        #endregion
+
+        #region Event Arguments
+
+        public class SpecChangedEventArgs : EventArgs
+        {
+            private MainSpec mOldSpec;
+
+            public SpecChangedEventArgs(MainSpec oldSpec)
+            {
+                mOldSpec = oldSpec;
+            }
+
+            /// <summary>
+            /// Gets the spec that was changed from
+            /// </summary>
+            public MainSpec OldSpec { get { return mOldSpec; } }
         }
 
         #endregion
