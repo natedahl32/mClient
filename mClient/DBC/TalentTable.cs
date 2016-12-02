@@ -44,7 +44,7 @@ namespace mClient.DBC
                 entry.DependsOnTalentRank = getFieldAsUint32(i, 16);
                 entry.DependsOnSpell = getFieldAsUint32(i, 20);
 
-                mTalentEntries.Add(entry.TalentTabId, entry);
+                mTalentEntries.Add(entry.TalentId, entry);
             }
         }
 

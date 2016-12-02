@@ -32,12 +32,32 @@ namespace mClient.World.AI
                         .Do("Need to Repair?", t => NeedToRepair())
                         .Do("Find Repair Man", t => FindRepairMan())
                     .End()
+                    .Do("Apply Talent Points", t => ApplyFreeTalentPoints())
                     .Do("Buff Group", t => BuffUp())
                     .Do("Should I stay?", t => Stay())
                     .Do("Should I follow?", t => Follow())
                     .Do("Do I have a move command?", t => NoMoveCommand())
                  .End()
                  .Build();
+        }
+
+        /// <summary>
+        /// Applies free talent points using our current spec
+        /// </summary>
+        /// <returns></returns>
+        private BehaviourTreeStatus ApplyFreeTalentPoints()
+        {
+            // Check if we have free talent points available
+            if (Player.PlayerObject.FreeTalentPoints == 0)
+                return BehaviourTreeStatus.Failure;
+
+            // Check if we have a spec applied to us
+            if (Player.TalentSpec == Constants.MainSpec.NONE)
+                return BehaviourTreeStatus.Failure;
+
+            // Apply talent points for our current spec
+            StartActivity(new TrainFreeTalentPointsForSpec(this));
+            return BehaviourTreeStatus.Success;
         }
 
         /// <summary>

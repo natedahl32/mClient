@@ -385,6 +385,28 @@ namespace mClient.World
             }
         }
 
+        /// <summary>
+        /// Gets the spell id of the next talent we want to purchase based on our current spec
+        /// </summary>
+        public uint NextTalentToPurchase
+        {
+            get
+            {
+                // If we don't have a spec assigned to us
+                if (mPlayerSettings.Spec == null) return 0;
+
+                // Otherwise loop through all our talents and send back the first one we don't have yet
+                foreach (var t in mPlayerSettings.Spec.Talents)
+                {
+                    if (!HasSpell((ushort)t))
+                        return t;
+                }
+
+                // We have them all
+                return 0;
+            }
+        }
+
         #endregion
 
         #region Public Methods 

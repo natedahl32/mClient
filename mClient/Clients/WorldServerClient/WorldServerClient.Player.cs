@@ -227,6 +227,19 @@ namespace mClient.Clients
             Send(packet);
         }
 
+        /// <summary>
+        /// Learns a new talent
+        /// </summary>
+        /// <param name="talentId"></param>
+        /// <param name="rank"></param>
+        public void LearnTalent(uint talentId, uint rank)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_LEARN_TALENT);
+            packet.Write(talentId);
+            packet.Write(rank);
+            Send(packet);
+        }
+
         #endregion
     }
 }

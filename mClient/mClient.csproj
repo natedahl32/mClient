@@ -242,6 +242,7 @@
     <Compile Include="World\AI\Activity\Train\SetHearthstone.cs" />
     <Compile Include="World\AI\Activity\Train\TrainAvailableSpells.cs" />
     <Compile Include="Pathfinding\Map.cs" />
+    <Compile Include="World\AI\Activity\Train\TrainFreeTalentPointsForSpec.cs" />
     <Compile Include="World\AI\Activity\Train\TrainSkill.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Combat.cs" />
     <Compile Include="World\AI\ChatCommands\PlayerAI.Chat.Dumps.cs" />
