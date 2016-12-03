@@ -1,4 +1,5 @@
-﻿using mClient.Shared;
+﻿using mClient.Clients;
+using mClient.Shared;
 using mClient.World.AI.Activity.Messages;
 using mClient.World.AI.Activity.Movement;
 
@@ -55,6 +56,18 @@ namespace mClient.World.AI.Activity.Death
                 PlayerAI.CompleteActivity();
                 return;
             }
+            else
+            {
+                // We technically don't need the corpse object, so if we are close to the position just set the corpse object
+                if (PlayerAI.Client.movementMgr.CalculateDistance(mCorpseLocation) <= MovementMgr.MINIMUM_FOLLOW_DISTANCE)
+                {
+                    var corpse = new Clients.Corpse(PlayerAI.Player.Guid) { Position = mCorpseLocation };
+                    PlayerAI.Player.ObjectAdded(corpse);
+
+                    PlayerAI.CompleteActivity();
+                    return;
+                }
+            }
 
             // if we have a corpse location and we have not teleported to it yet, go to it
             if (mCorpseLocation != null && !mHasTeleportedToCorpse)
@@ -77,6 +90,7 @@ namespace mClient.World.AI.Activity.Death
                 // Push a new activity that allows us to teleport to our corpse
                 mCorpseMap = corpseMessage.MapId;
                 mCorpseLocation = corpseMessage.Location;
+                mHasTeleportedToCorpse = false;
             }
         }
 

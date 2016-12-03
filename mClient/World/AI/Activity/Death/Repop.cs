@@ -39,6 +39,13 @@ namespace mClient.World.AI.Activity.Death
             // If our expectation elapses send the repop request again
             if (ExpectationHasElapsed) mRepopped = false;
 
+            // If we are no longer dead, complete
+            if (!PlayerAI.Player.PlayerObject.IsDead)
+            {
+                PlayerAI.CompleteActivity();
+                return;
+            }
+
             // If we are a ghost that means we have repopped
             if (PlayerAI.Player.PlayerObject.PlayerFlag.HasFlag(PlayerFlags.PLAYER_FLAGS_GHOST))
             {

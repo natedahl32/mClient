@@ -99,7 +99,7 @@ namespace mClient.Clients
             {
                 var x = packet.ReadInt16();
                 var y = packet.ReadInt16();
-                partyMember.PlayerObject.Position = new Coordinate(x, y, partyMember.PlayerObject.Position.Z);
+                partyMember.PlayerObject.Position = new Coordinate(x, y, (partyMember.PlayerObject.Position != null ? partyMember.PlayerObject.Position.Z : 0f));
             }
 
             // TODO: Update other information for our player

@@ -395,10 +395,10 @@ namespace mClient.World
                 // If we don't have a spec assigned to us
                 if (mPlayerSettings.Spec == null) return 0;
 
-                // Otherwise loop through all our talents and send back the first one we don't have yet
+                // Otherwise loop through all our talents and send back the first one we don't have yet (talent ranks replace each other and don't have spell lines, so we need to check the HasTalentOrBetter method)
                 foreach (var t in mPlayerSettings.Spec.Talents)
                 {
-                    if (!HasSpell((ushort)t))
+                    if (!HasTalentOrBetter((ushort)t))
                         return t;
                 }
 
@@ -678,6 +678,33 @@ namespace mClient.World
                         return true;
                 }
             }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Gets whether or not the player has either this specific talent or the same talent but a better rank
+        /// </summary>
+        /// <param name="spellId"></param>
+        /// <returns></returns>
+        public bool HasTalentOrBetter(ushort spellId)
+        {
+            // Check for specific talent
+            if (HasSpell(spellId))
+                return true;
+
+            // Get the talent
+            var talent = TalentTable.Instance.getBySpell(spellId);
+
+            // Get the rank for this spell
+            var rank = talent.GetRankForSpell(spellId);
+            if (rank < 0)
+                return false;
+
+            // Check each rank that is better than this one
+            for (int i = rank + 1; i < SpellConstants.MAX_TALENT_RANK; i++)
+                if (HasSpell((ushort)talent.RankID[i]))
+                    return true;
 
             return false;
         }

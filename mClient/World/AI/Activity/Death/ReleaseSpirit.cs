@@ -32,7 +32,7 @@ namespace mClient.World.AI.Activity.Death
 
         public override void Process()
         {
-            if (!PlayerAI.Player.PlayerObject.IsDead)
+            if (!PlayerAI.Player.PlayerObject.IsDead || ExpectationHasElapsed)
             {
                 PlayerAI.CompleteActivity();
                 return;
@@ -50,6 +50,8 @@ namespace mClient.World.AI.Activity.Death
                 {
                     PlayerAI.Client.ReclaimCorpse();
                     mReclaimed = true;
+                    // Expect that we are no longer dead within two seconds
+                    Expect(() => !PlayerAI.Player.PlayerObject.IsDead);
                 }
                 // Wait to come back alive
             }

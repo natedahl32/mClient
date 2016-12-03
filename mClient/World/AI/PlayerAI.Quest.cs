@@ -129,12 +129,15 @@ namespace mClient.World.AI
         /// <returns></returns>
         private BehaviourTreeStatus HasQuestsAvailableToGet()
         {
+            // If our quest log is full, don't even try to get quests
+            if (Player.PlayerObject.IsQuestLogFull)
+                return BehaviourTreeStatus.Failure;
+
             // See if we have any quests available to accept
             mHasAvailableQuestsGivers = Player.QuestGivers.Where(q => q.Status == Constants.QuestGiverStatus.DIALOG_STATUS_AVAILABLE).ToList();
             if (mHasAvailableQuestsGivers.Count > 0)
                 return BehaviourTreeStatus.Success;
 
-            //if (gameObjects.Any(go => go.))
             return BehaviourTreeStatus.Failure;
         }
 
