@@ -2,6 +2,7 @@
 using mClient.Clients;
 using mClient.Constants;
 using Newtonsoft.Json;
+using System;
 
 namespace mClient.BotServer
 {
@@ -14,27 +15,31 @@ namespace mClient.BotServer
 
         // Flag that determines whether or not we are logged in to the game
         private bool mLoggedIn = false;
+        private Guid mClientId;
+
+        // Event handlers for bot accounts that let server respond to events for a client
+        internal protected event EventHandler<BotAccountUpdateEventArgs> BotAccountUpdate;
 
         #endregion
 
         #region Constructors
 
         [JsonConstructor]
-        public BotAccount() { }
+        public BotAccount()
+        {
+            mClientId = Guid.NewGuid();
+        }
 
         /// <summary>
         /// Constructor used for existing accounts that have a character already created
         /// </summary>
         /// <param name="accountName"></param>
         /// <param name="password"></param>
-        public BotAccount(string accountName, string password)
+        public BotAccount(string accountName, string password) : this()
         {
             this.AccountName = accountName;
             this.Password = password;
-
-            mLogonClient = new LogonServerClient(ServerInfo.Instance.Host, this.AccountName, this.Password);
-            mLogonClient.ReceivedRealmList += HandleRealmListEvent;
-            mLogonClient.Disconnected += LoginDisconnectedHandler;
+            this.InitializeLoginServer();
         }
 
         /// <summary>
@@ -59,15 +64,7 @@ namespace mClient.BotServer
         [JsonIgnore]
         public System.Guid ClientId
         {
-            get
-            {
-                if (mWorldClient != null && mWorldClient.Connected)
-                    return mWorldClient.Id;
-                if (mLogonClient != null)
-                    return mLogonClient.Id;
-                
-                return System.Guid.Empty;
-            }
+            get { return mClientId; }
         }
 
         /// <summary>
@@ -80,7 +77,9 @@ namespace mClient.BotServer
             {
                 if (mWorldClient != null)
                     return mWorldClient.Connected;
-                return mLogonClient.Connected;
+                if (mLogonClient != null)
+                    return mLogonClient.Connected;
+                return false;
             }
         }
 
@@ -92,6 +91,12 @@ namespace mClient.BotServer
         {
             get { return mLoggedIn; }
         }
+
+        /// <summary>
+        /// Gets the current activity of the bot
+        /// </summary>
+        [JsonIgnore]
+        public string CurrentActivity { get; private set; }
 
         /// <summary>
         /// Gets or sets the bots account name
@@ -118,6 +123,11 @@ namespace mClient.BotServer
         /// </summary>
         public Race CharacterRace { get; set; }
 
+        /// <summary>
+        /// Gets or sets the level of the character
+        /// </summary>
+        public byte CharacterLevel { get; set; }
+
         #endregion
 
         #region Public Methods
@@ -127,6 +137,14 @@ namespace mClient.BotServer
         /// </summary>
         public void Login()
         {
+            // If login client is null create it now
+            if (mLogonClient == null)
+            {
+                mLogonClient = new LogonServerClient(ServerInfo.Instance.Host, this.AccountName, this.Password);
+                mLogonClient.ReceivedRealmList += HandleRealmListEvent;
+                mLogonClient.Disconnected += LoginDisconnectedHandler;
+            }
+
             // Don't login if we already are
             if (IsLoggedIn) return;
 
@@ -159,7 +177,19 @@ namespace mClient.BotServer
             mWorldClient.ReceivedCharacterList += WorldClient_ReceivedCharacterList;
             mWorldClient.Disconnected += WorldClient_Disconnected;
             mWorldClient.LoggedIn += WorldClient_LoggedIn;
+            mWorldClient.ActivityChange += WorldClient_ActivityChange;
             mWorldClient.Connect();
+        }
+
+        /// <summary>
+        /// Handles an activity change for the bot account
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void WorldClient_ActivityChange(object sender, string e)
+        {
+            CurrentActivity = e;
+            BotAccountUpdated();
         }
 
         /// <summary>
@@ -170,6 +200,7 @@ namespace mClient.BotServer
         private void WorldClient_LoggedIn(object sender, WorldServerClient.LoginEventArgs e)
         {
             mLoggedIn = true;
+            BotAccountUpdated();
         }
 
         /// <summary>
@@ -181,6 +212,7 @@ namespace mClient.BotServer
         {
             mLoggedIn = false;
             mWorldClient = null;
+            BotAccountUpdated();
         }
 
         /// <summary>
@@ -196,6 +228,14 @@ namespace mClient.BotServer
                 return;
             }
 
+            // Update character data for the bot account
+            var character = e.Characters[0];
+            CharacterName = character.Name;
+            CharacterClass = (Classname)character.Class;
+            CharacterRace = (Race)character.Race;
+            CharacterLevel = character.Level;
+            BotAccountUpdated();
+
             // Login the first character in the list
             mWorldClient.LoginPlayer(e.Characters[0]);
         }
@@ -203,6 +243,36 @@ namespace mClient.BotServer
         private void LoginDisconnectedHandler(object sender, System.EventArgs e)
         {
             // TODO: What should we do on disconnect?
+            mLoggedIn = false;
+            BotAccountUpdated();
+        }
+
+        private void BotAccountUpdated()
+        {
+            BotAccountUpdate?.Invoke(this, new BotAccountUpdateEventArgs(this.ClientId));
+        }
+
+        internal protected void InitializeLoginServer()
+        {
+            mLogonClient = new LogonServerClient(ServerInfo.Instance.Host, this.AccountName, this.Password);
+            mLogonClient.ReceivedRealmList += HandleRealmListEvent;
+            mLogonClient.Disconnected += LoginDisconnectedHandler;
+        }
+
+        #endregion
+
+        #region Event Arguments
+
+        internal protected class BotAccountUpdateEventArgs : System.EventArgs
+        {
+            private Guid mClientId;
+
+            public BotAccountUpdateEventArgs(Guid clientId)
+            {
+                mClientId = clientId;
+            }
+
+            public Guid ClientId { get { return mClientId; } }
         }
 
         #endregion

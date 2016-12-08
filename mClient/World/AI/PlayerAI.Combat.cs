@@ -50,6 +50,16 @@ namespace mClient.World.AI
         {
             // TODO: Select a target more intelligently
             // Set our target
+            if (TargetSelection != null && TargetSelection.IsDead)
+            {
+                // Remove enemy and clear target
+                Player.RemoveEnemy(TargetSelection.Guid.GetOldGuid());
+                SetTargetSelection(null);
+                // We may no longer be in combat
+                if (!Player.IsInCombat)
+                    return BehaviourTreeStatus.Failure;
+            }
+                
             if (TargetSelection == null)
                 SetTargetSelection(Client.objectMgr.getObject(Player.EnemyList.FirstOrDefault()));
             return BehaviourTreeStatus.Success;

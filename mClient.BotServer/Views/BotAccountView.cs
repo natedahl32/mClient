@@ -13,6 +13,7 @@ namespace mClient.BotServer.Views
         private readonly string mClientId;
         private bool mIsConnected = false;
         private bool mIsLoggedIn = false;
+        private string mCurrentActivity = string.Empty;
 
         #endregion
 
@@ -25,6 +26,8 @@ namespace mClient.BotServer.Views
             mIsLoggedIn = account.IsLoggedIn;
             AccountName = account.AccountName;
             CharacterName = account.CharacterName;
+            CharacterLevel = account.CharacterLevel;
+            CurrentActivity = account.CurrentActivity;
         }
 
         #endregion
@@ -49,7 +52,7 @@ namespace mClient.BotServer.Views
                 if (!mIsConnected) return "Not Connected";
                 if (mIsConnected && !mIsLoggedIn) return "Connected";
                 if (mIsConnected && mIsLoggedIn) return "Logged In";
-                return "Uknown";
+                return "Unknown";
             }
         }
 
@@ -77,6 +80,20 @@ namespace mClient.BotServer.Views
         /// Gets or sets the level of the character
         /// </summary>
         public int CharacterLevel { get; set; }
+
+        /// <summary>
+        /// Gets or sets the current activity of the bot
+        /// </summary>
+        public string CurrentActivity
+        {
+            get { return mCurrentActivity; }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                    mCurrentActivity = string.Empty;
+                else mCurrentActivity = value;
+            }
+        }
 
         #endregion
     }

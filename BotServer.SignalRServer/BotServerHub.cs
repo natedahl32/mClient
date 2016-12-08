@@ -1,4 +1,5 @@
 ﻿using mClient.BotServer;
+using mClient.BotServer.Views;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using System.Linq;
@@ -13,6 +14,16 @@ namespace BotServer.SignalRServer
 
         // Hub context used in server pushes
         private readonly static IHubContext mHubContext = GlobalHost.ConnectionManager.GetHubContext<BotServerHub>();
+
+        #region Constructors
+
+        public BotServerHub() : base()
+        {
+            // Subscribe to server events
+            Server.BotAccountViewChange += Server_BotAccountViewChange;
+        }
+
+        #endregion
 
         #region Client Methods
 
@@ -36,6 +47,14 @@ namespace BotServer.SignalRServer
             SendExistingBotAccounts(Context.ConnectionId);
         }
 
+        /// <summary>
+        /// Connect all clients to the world server
+        /// </summary>
+        public void ConnectAllClients()
+        {
+            Server.LogInAllClients();
+        }
+
         #endregion
 
         #region Server Methods
@@ -48,6 +67,29 @@ namespace BotServer.SignalRServer
         {
             var accounts = Server.BotAccounts.ToList();
             mHubContext.Clients.Client(connectionId).existingBotAccounts(accounts);
+        }
+
+        /// <summary>
+        /// Sends an update for a bot account to all clients
+        /// </summary>
+        /// <param name="account"></param>
+        public static void SendBotAccountUpdate(BotAccountView account)
+        {
+            mHubContext.Clients.All.botAccountUpdate(account);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Event handler for bot account changes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void Server_BotAccountViewChange(object sender, mClient.BotServer.EventArgs.BotAccountViewChangeEventArgs e)
+        {
+            SendBotAccountUpdate(e.BotAccount);
         }
 
         #endregion

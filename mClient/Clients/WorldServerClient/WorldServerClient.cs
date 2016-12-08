@@ -70,6 +70,7 @@ namespace mClient.Clients
         public event EventHandler<CharacterListEventArgs> ReceivedCharacterList;
         public event EventHandler<LoginEventArgs> LoggedIn;
         public event EventHandler Disconnected;
+        public event EventHandler<string> ActivityChange;
 
         public WorldServerClient(string user, Realm rl, byte[] key)
         {
@@ -237,6 +238,19 @@ namespace mClient.Clients
                 pLoop.Stop();
             Connected = false;
         }
+
+        #region Event Invocations
+
+        /// <summary>
+        /// Broadcasts an event with the new activity name
+        /// </summary>
+        /// <param name="activityName"></param>
+        public void ActivityChanged(string activityName)
+        {
+            ActivityChange?.Invoke(this, activityName);
+        }
+
+        #endregion
 
         ~WorldServerClient()
         {

@@ -48,6 +48,7 @@
     <Compile Include="BotAccount.cs" />
     <Compile Include="BotServer.cs" />
     <Compile Include="Data\ServerInfo.cs" />
+    <Compile Include="EventArgs\BotAccountViewChangeEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Views\BotAccountView.cs" />
   </ItemGroup>

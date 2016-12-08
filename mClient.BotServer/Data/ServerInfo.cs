@@ -26,7 +26,7 @@ namespace mClient.BotServer.Data
 
         #region Declarations
 
-        private string mServerHost = "localhost";
+        private string mServerHost = "127.0.0.1";
         private int mPort = 3724;
 
         #endregion

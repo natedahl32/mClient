@@ -180,6 +180,9 @@ namespace mClient.World.AI
             activity.Start();
             lock (mActivityStackLock)
                 mActivityStack.Push(activity);
+
+            // Fire an event for the activity change
+            Client.ActivityChanged(activity.ActivityName);
         }
 
         /// <summary>
@@ -195,7 +198,17 @@ namespace mClient.World.AI
             }
 
             // Peek the next activity in the list and resume it
-            mActivityStack.Peek().Resume();
+            if (mActivityStack.Count > 0)
+            {
+                mActivityStack.Peek().Resume();
+                // Fire an event for the activity change
+                Client.ActivityChanged(mActivityStack.Peek().ActivityName);
+            }
+            else
+            {
+                // Fire an event for the activity change
+                Client.ActivityChanged(string.Empty);
+            }
         }
 
         /// <summary>

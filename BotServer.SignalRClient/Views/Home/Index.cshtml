@@ -21,9 +21,15 @@
 
                 // go through all accounts and add data to the table
                 $.each(accounts, function (index, value) {
-                    var row = $("<tr id='" + value.ClientId + "'><td>" + value.AccountName + "</td><td>" + value.CharacterName + "</td><td></td><td>" + value.ConnectionStatus + "</td><td></td></tr>")
+                    var row = $("<tr id='" + value.ClientId + "'><td>" + value.AccountName + "</td><td>" + value.CharacterName + "</td><td>" + value.CharacterLevel + "</td><td>" + value.ConnectionStatus + "</td><td></td><td></td></tr>")
                     $("#botAccounts tbody").append(row);
                 });
+            });
+            botServerHubProxy.on('botAccountUpdate', function (account) {
+                // Get the row for this bot account
+                var row = $("#botAccounts tbody").find("#" + account.ClientId);
+                // Update the row html for this bot account
+                $(row).html("<td>" + account.AccountName + "</td><td>" + account.CharacterName + "</td><td>" + account.CharacterLevel + "</td><td>" + account.ConnectionStatus + "</td><td>" + account.CurrentActivity + "</td><td></td>");
             });
 
             // Start the connection
@@ -43,6 +49,11 @@
                 botServerHubProxy.invoke('addExistingBotAccount', accountName, password);
                 $('#addExistingAccount').modal('hide')
             });
+
+            // connect all clients handler
+            $("#connectAll").click(function () {
+                botServerHubProxy.invoke('connectAllClients');
+            });
         });
         // This optional function html-encodes messages for display in the page.
         function htmlEncode(value) {
@@ -52,6 +63,12 @@
     </script>
 }
 
+<div style="margin-top: 20px;"></div>
+<div class="row">
+    <div class="col-md-12">
+        <button type="button" class="btn btn-primary" id="connectAll">Login All Clients</button>
+    </div>
+</div>
 <div class="row">
     <div class="col-md-12">
         <h3>Bot Accounts</h3>
@@ -62,6 +79,7 @@
                     <th>Character Name</th>
                     <th>Level</th>
                     <th>Status</th>
+                    <th>Activity</th>
                     <th>&nbsp;</th>
                 </tr>
             </thead>

@@ -12,3 +12,8 @@
 /packages
 /UpgradeLog.htm
 /mClient.BotServer/bin/Debug
+/BotServer.SignalRClient/bin
+/BotServer.SignalRClient/obj/Debug
+/BotServer.SignalRServer/bin/Debug
+/BotServer.SignalRServer/obj/Debug
+/.vs/config/applicationhost.config

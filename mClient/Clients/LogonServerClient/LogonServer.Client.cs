@@ -93,7 +93,7 @@ namespace mClient.Clients
         public LogonServerClient(string username, string password)
         {
             mId = Guid.NewGuid();
-            mHost = "localhost";
+            mHost = "127.0.0.1";
             mPort = 3724;
             mUsername = username.ToUpper();
             mPassword = password.ToUpper();
