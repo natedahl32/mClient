@@ -144,6 +144,8 @@
     <Compile Include="Crypt\Sha1Warden.cs" />
     <Compile Include="Crypt\Srp6.cs" />
     <Compile Include="Crypt\WoWCrypt.cs" />
+    <Compile Include="DBC\AreaEntry.cs" />
+    <Compile Include="DBC\AreaTable.cs" />
     <Compile Include="DBC\ChrClassEntry.cs" />
     <Compile Include="DBC\ChrClassesTable.cs" />
     <Compile Include="DBC\DBCReader.cs" />

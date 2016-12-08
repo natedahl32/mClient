@@ -1,4 +1,5 @@
 ﻿using mClient.Constants;
+using mClient.DBC;
 using mClient.Network;
 using mClient.Shared;
 using mClient.World;
@@ -38,6 +39,7 @@ namespace mClient.Clients
             var member = player.CurrentGroup.GetPlayer(guid);
             if (member != null && member.PlayerObject != null)
             {
+                member.ZoneID = zoneId;
                 member.PlayerObject.Update(currentHP, maxHP, level, currentPower, maxPower);
                 member.PlayerObject.Position = new Coordinate(x, y, 0f);
             }
@@ -92,7 +94,7 @@ namespace mClient.Clients
 
             // Zone ID
             if (mask.HasFlag(GroupUpdateFlags.GROUP_UPDATE_FLAG_ZONE))
-                packet.ReadUInt16();
+                partyMember.ZoneID = packet.ReadUInt16(); ;
 
             // Position
             if (mask.HasFlag(GroupUpdateFlags.GROUP_UPDATE_FLAG_POSITION))

@@ -392,6 +392,7 @@ namespace mClient.Clients
                     equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_OFFHAND);
                     break;
                 case InventoryType.INVTYPE_RANGED:
+                case InventoryType.INVTYPE_THROWN:
                     equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_RANGED);
                     break;
                 case InventoryType.INVTYPE_CLOAK:

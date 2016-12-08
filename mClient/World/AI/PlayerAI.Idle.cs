@@ -217,10 +217,17 @@ namespace mClient.World.AI
                     return BehaviourTreeStatus.Failure;
                 }
 
+                // Must be in party (TODO: Or Raid)
+                if (Player.CurrentGroup == null)
+                    return BehaviourTreeStatus.Failure;
+                var partyMember = Player.CurrentGroup.GetGroupMember(Player.IssuedMoveCommand.Guid.GetOldGuid());
+                if (partyMember == null)
+                    return BehaviourTreeStatus.Failure;
+
                 // If we are not close to them, teleport to them. Null position from the issuer probably means we are too far away.
-                if (Client.movementMgr.CalculateDistance(Player.IssuedMoveCommand.Position) >= MovementMgr.MAXIMUM_FOLLOW_DISTANCE)
+                if (Client.movementMgr.CalculateDistance(Player.IssuedMoveCommand.Position) >= MovementMgr.MAXIMUM_FOLLOW_DISTANCE || partyMember.MapID != Player.MapID)
                 {
-                    StartActivity(new TeleportToCoordinate(Player.MapID, Player.IssuedMoveCommand.Position, this));
+                    StartActivity(new TeleportToCoordinate(partyMember.MapID, Player.IssuedMoveCommand.Position, this));
                     return BehaviourTreeStatus.Success;
                 }
 

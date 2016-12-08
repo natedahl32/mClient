@@ -28,6 +28,7 @@ namespace mClient.World
         private IList<Proficiency> mProficiencies = new List<Proficiency>();
         private PlayerObj mPlayerObject = null;
         private Corpse mPlayerCorpse = null;
+        private uint mZoneId = 0;
 
         // Group the player is in and group member data for this player
         private Group mGroup = null;
@@ -174,7 +175,30 @@ namespace mClient.World
         /// <summary>
         /// Gets the ID of the map of the player
         /// </summary>
-        public UInt32 MapID { get; set; }
+        public UInt32 MapID
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets the Zone of the player
+        /// </summary>
+        public uint ZoneID
+        {
+            get { return mZoneId; }
+            set
+            {
+                // when zone id changes, update the map also
+                if (value != mZoneId)
+                {
+                    var area = AreaTable.Instance.getByZoneId(value);
+                    if (area != null)
+                        MapID = area.MapID;
+                }
+                mZoneId = value;
+            }
+        }
 
         /// <summary>
         /// Gets the instance ID the player is in

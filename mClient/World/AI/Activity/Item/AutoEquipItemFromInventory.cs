@@ -55,7 +55,7 @@ namespace mClient.World.AI.Activity.Item
         }
         public override void Process()
         {
-            // Check for expectation elapsed
+            // Check for expectation elapsed. This is generally the case when equipping to an empty slot. We don't get a response back from the server.
             if (ExpectationHasElapsed)
             {
                 PlayerAI.CompleteActivity();
