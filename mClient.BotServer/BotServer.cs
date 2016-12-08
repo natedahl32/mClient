@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using mClient.BotServer.Views;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace mClient.BotServer
 
         // Holds all bot accounts currently registered with the server
         private List<BotAccount> mBotAccounts = new List<BotAccount>();
+        private Object mLock = new Object();
 
         #endregion
 
@@ -24,6 +26,17 @@ namespace mClient.BotServer
         /// Gets the file path the information in this class is saved to
         /// </summary>
         private string FilePath { get { return @"botaccounts.json"; } }
+
+        /// <summary>
+        /// Gets IEnumerable of all bot accounts available on 
+        /// </summary>
+        public IEnumerable<BotAccountView> BotAccounts
+        {
+            get
+            {
+                return mBotAccounts.Select(a => new BotAccountView(a));
+            }
+        }
 
         #endregion
 
@@ -63,10 +76,15 @@ namespace mClient.BotServer
         {
             if (mBotAccounts.Any(a => a.AccountName == botAccount.AccountName))
                 throw new ApplicationException(string.Format("Cannot add a duplicate bot account with account name {0}", botAccount.AccountName));
-            if (mBotAccounts.Any(a => a.CharacterName == botAccount.CharacterName))
+            // Only check character name if it was supplied, otherwise we get it when the character logs in
+            if (!string.IsNullOrEmpty(botAccount.CharacterName) && mBotAccounts.Any(a => a.CharacterName == botAccount.CharacterName))
                 throw new ApplicationException(string.Format("Cannot add a duplicate bot account with character name {0}", botAccount.CharacterName));
 
-            mBotAccounts.Add(botAccount);
+            lock(mLock)
+            {
+                mBotAccounts.Add(botAccount);
+                Serialize();
+            }
         }
 
         #endregion

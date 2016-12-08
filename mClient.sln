@@ -1,17 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mClient", "mClient\mClient.csproj", "{DB251B29-AA50-4D17-9699-F00685A9A93F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mConsole", "mConsole\mConsole.csproj", "{71AA911F-6EFD-44CC-9555-AFB2CB9DFB6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotServer", "BotServer\BotServer.csproj", "{08203FD9-2D8A-4A0E-8CB8-FEE3DDFF4324}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotServer.Winforms", "BotServer\BotServer.Winforms.csproj", "{08203FD9-2D8A-4A0E-8CB8-FEE3DDFF4324}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mClient.BotServer", "mClient.BotServer\mClient.BotServer.csproj", "{F2304967-F882-41A9-A134-F20AF7FF0A36}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mClient.Maps", "mClient.Maps\mClient.Maps.csproj", "{8A268721-27CA-460F-A87D-FD5618AC8D4A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Servers", "Servers", "{3751E06D-DF0C-4FCF-A5C3-1A396182159B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotServer.SignalRServer", "BotServer.SignalRServer\BotServer.SignalRServer.csproj", "{B79F27AA-BEE7-42C5-8C95-5A3C7183349B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotServer.SignalRClient", "BotServer.SignalRClient\BotServer.SignalRClient.csproj", "{43EB6366-8C12-4E0B-98EC-279CF1B7CFF8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,8 +45,21 @@ Global
 		{8A268721-27CA-460F-A87D-FD5618AC8D4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A268721-27CA-460F-A87D-FD5618AC8D4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A268721-27CA-460F-A87D-FD5618AC8D4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B79F27AA-BEE7-42C5-8C95-5A3C7183349B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B79F27AA-BEE7-42C5-8C95-5A3C7183349B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B79F27AA-BEE7-42C5-8C95-5A3C7183349B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B79F27AA-BEE7-42C5-8C95-5A3C7183349B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43EB6366-8C12-4E0B-98EC-279CF1B7CFF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43EB6366-8C12-4E0B-98EC-279CF1B7CFF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43EB6366-8C12-4E0B-98EC-279CF1B7CFF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43EB6366-8C12-4E0B-98EC-279CF1B7CFF8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{08203FD9-2D8A-4A0E-8CB8-FEE3DDFF4324} = {3751E06D-DF0C-4FCF-A5C3-1A396182159B}
+		{B79F27AA-BEE7-42C5-8C95-5A3C7183349B} = {3751E06D-DF0C-4FCF-A5C3-1A396182159B}
+		{43EB6366-8C12-4E0B-98EC-279CF1B7CFF8} = {3751E06D-DF0C-4FCF-A5C3-1A396182159B}
 	EndGlobalSection
 EndGlobal

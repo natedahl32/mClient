@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+@section scripts {
+    <!--SignalR script to update the chat page and send messages.-->
+    <script>
+        var tryingToReconnect = false;
+        var shouldAutoReconnect = true;
+
+        $(function () {
+
+            var connection = $.hubConnection();
+            connection.url = 'http://localhost:8080/signalr';
+            var botServerHubProxy = connection.createHubProxy('BotServerHub');
+
+            // Custom server message handlers
+            botServerHubProxy.on('existingBotAccounts', function (accounts) {
+                // clear all table rows
+                $("#botAccounts tbody tr").remove();
+
+                // go through all accounts and add data to the table
+                $.each(accounts, function (index, value) {
+                    var row = $("<tr id='" + value.ClientId + "'><td>" + value.AccountName + "</td><td>" + value.CharacterName + "</td><td></td><td>" + value.ConnectionStatus + "</td><td></td></tr>")
+                    $("#botAccounts tbody").append(row);
+                });
+            });
+
+            // Start the connection
+            // connection.logging = true; // turns on client side logging
+            connection.start()
+                .done(function () {
+                    console.log('Now connected, connection ID=' + connection.id);
+                    // Request the existing bot accounts on the server
+                    botServerHubProxy.invoke('requestExistingBotAccounts');
+                })
+                .fail(function () { console.log('Could not Connection!'); });
+
+            // add existing account handler
+            $("#addExistingAccountSave").click(function () {
+                var accountName = $("#addExistingAccountForm input#accountName").val();
+                var password = $("#addExistingAccountForm input#accountPassword").val();
+                botServerHubProxy.invoke('addExistingBotAccount', accountName, password);
+                $('#addExistingAccount').modal('hide')
+            });
+        });
+        // This optional function html-encodes messages for display in the page.
+        function htmlEncode(value) {
+            var encodedValue = $('<div />').text(value).html();
+            return encodedValue;
+        }
+    </script>
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>Bot Accounts</h3>
+        <table id="botAccounts" class="table table-bordered table-striped table-responsive">
+            <thead>
+                <tr>
+                    <th>Account Name</th>
+                    <th>Character Name</th>
+                    <th>Level</th>
+                    <th>Status</th>
+                    <th>&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+@Html.Partial("AddExistingAccount")

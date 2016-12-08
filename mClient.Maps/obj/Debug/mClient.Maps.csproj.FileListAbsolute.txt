@@ -3,3 +3,8 @@ D:\Repos\mClient\mClient.Maps\bin\Debug\mClient.Maps.pdb
 D:\Repos\mClient\mClient.Maps\obj\Debug\mClient.Maps.csprojResolveAssemblyReference.cache
 D:\Repos\mClient\mClient.Maps\obj\Debug\mClient.Maps.dll
 D:\Repos\mClient\mClient.Maps\obj\Debug\mClient.Maps.pdb
+C:\Repos\mClient\mClient.Maps\bin\Debug\mClient.Maps.dll
+C:\Repos\mClient\mClient.Maps\bin\Debug\mClient.Maps.pdb
+C:\Repos\mClient\mClient.Maps\obj\Debug\mClient.Maps.csprojResolveAssemblyReference.cache
+C:\Repos\mClient\mClient.Maps\obj\Debug\mClient.Maps.dll
+C:\Repos\mClient\mClient.Maps\obj\Debug\mClient.Maps.pdb

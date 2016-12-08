@@ -19,6 +19,9 @@ namespace mClient.BotServer
 
         #region Constructors
 
+        [JsonConstructor]
+        public BotAccount() { }
+
         /// <summary>
         /// Constructor used for existing accounts that have a character already created
         /// </summary>
