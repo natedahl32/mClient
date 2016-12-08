@@ -45,7 +45,7 @@ namespace mClient.World.AI
         private BehaviourTreeStatus LootableChests()
         {
             // Are there any game objects near us that we can loot?
-            var gameObjects = Client.objectMgr.GetAllGameObjects();
+            var gameObjects = Client.objectMgr.GetAllGameObjects().ToList();
             if (gameObjects.Any(o => o.BaseInfo != null && o.BaseInfo.GameObjectType == Constants.GameObjectType.Chest && !o.HasBeenLooted && o.CanInteract))
                 return BehaviourTreeStatus.Success;
 

@@ -77,7 +77,7 @@ namespace mClient.Clients
             mId = Guid.NewGuid();
             mUsername = user.ToUpper();
             objectMgr = new ObjectMgr();
-            terrainMgr = new TerrainMgr();
+            terrainMgr = TerrainMgr.Instance;
             movementMgr = new MovementMgr(this);
             realm = rl;
             mKey = key;
@@ -89,7 +89,7 @@ namespace mClient.Clients
             mUsername = Config.Login.ToUpper();
             objectMgr = new ObjectMgr();
             movementMgr = new MovementMgr(this);
-            terrainMgr = new TerrainMgr();
+            terrainMgr = TerrainMgr.Instance;
             realm = rl;
             mKey = key;
         }

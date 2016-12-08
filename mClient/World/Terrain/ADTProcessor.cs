@@ -25,197 +25,194 @@ namespace mClient.Terrain
         public ADT(String mapname, int x, int z)
         {
             string filename = String.Format(@"ADT\{0}\{0}_{1}_{2}.adt", mapname, x, z);
-            adtStream = new FileStream(filename, FileMode.Open);
-            parseFile();
+            using (adtStream = new FileStream(filename, FileMode.Open))
+                parseFile();
         }
 
         private void parseFile()
         {
-            FileStream ms = adtStream;
-            if (ms == null)
-            {
+            if (adtStream == null)
                 throw new Exception("Stream null!");
-            }
-            BinaryReader bin = new BinaryReader(ms);
-
-            BlizChunkHeader tempHeader;
-            long pos = 0;
-
-            // Read bytes from the stream until we run out
-            while (pos < ms.Length)
-            {
-                // Advance to the next Chunk
-                ms.Position = pos;
-
-                // Read in Chunk Header Name
-                tempHeader = new BlizChunkHeader(bin.ReadChars(4), bin.ReadUInt32());
-                tempHeader.Flip();
-
-                // Set pos to the location of the next Chunk
-                pos = ms.Position + tempHeader.Size;
-
-                if (tempHeader.Is("MVER"))   // ADT File Version
-                {
-                    mver = new MVER();
-                    mver.version = bin.ReadUInt32();
-
-                    continue;
-                }
-
-                if (tempHeader.Is("MHDR"))  // ADT File Header
-                {
-                    mhdr = new MHDR();
-                    mhdr.pad = bin.ReadUInt32();
-                    mhdr.offsInfo = bin.ReadUInt32();
-                    mhdr.offsTex = bin.ReadUInt32();
-                    mhdr.offsModels = bin.ReadUInt32();
-                    mhdr.offsModelsIds = bin.ReadUInt32();
-                    mhdr.offsMapObejcts = bin.ReadUInt32();
-                    mhdr.offsMapObejctsIds = bin.ReadUInt32();
-                    mhdr.offsDoodsDef = bin.ReadUInt32();
-                    mhdr.offsObjectsDef = bin.ReadUInt32();
-                    mhdr.pad1 = bin.ReadUInt32();
-                    mhdr.pad2 = bin.ReadUInt32();
-                    mhdr.pad3 = bin.ReadUInt32();
-                    mhdr.pad4 = bin.ReadUInt32();
-                    mhdr.pad5 = bin.ReadUInt32();
-                    mhdr.pad6 = bin.ReadUInt32();
-                    mhdr.pad7 = bin.ReadUInt32();
-
-                    continue;
-                }
-
-                if (tempHeader.Is("MCIN"))  // Index for MCNK chunks.
-                {
-                    if (tempHeader.Size != 256 * 16)
-                        throw new Exception("MCIN Chunk is short??");
-
-                    mcin_array = new MCIN[256];
-
-                    // Read in the 256 records
-                    for (int i = 0; i < 256; i++)
-                    {
-                        mcin_array[i].MCNK_offset = bin.ReadUInt32();
-                        mcin_array[i].MCNK_size = bin.ReadUInt32();
-                        mcin_array[i].flags = bin.ReadUInt32();
-                        mcin_array[i].asyncID = bin.ReadUInt32();
-                    }
-
-                    continue;
-                }
-
-                if (tempHeader.Is("MTEX"))  // List of texture filenames used by the terrain in this map tile.
-                {
-                    // Not needed.
-                    continue;
-                }
-
-                if (tempHeader.Is("MMDX")) // List of filenames for M2 models that appear in this map tile.
-                {
-                    // Not needed.
-                    continue;
-                }
-
-                if (tempHeader.Is("MMID"))  // Lists the relative offsets of string beginnings in the above MMDX chunk. 
-                {
-                    // Not needed.
-                    continue;
-                }
-
-                if (tempHeader.Is("MWMO"))  // List of filenames for WMOs (world map objects) that appear in this map tile.
-                {
-                    byte[] wmoFilesChunk = bin.ReadBytes((int)tempHeader.Size);
-
-                    wmoFiles = new List<String>();
-
-                    StringBuilder str = new StringBuilder();
-
-                    // Convert szString's to a List<String>.
-                    for (int i = 0; i < wmoFilesChunk.Length; i++)
-                    {
-                        if (wmoFilesChunk[i] == '\0')
-                        {
-                            if (str.Length > 1)
-                                wmoFiles.Add(str.ToString());
-                            str = new StringBuilder();
-                        }
-                        else
-                            str.Append((char)wmoFilesChunk[i]);
-                    }
-
-                    continue;
-                }
-
-                if (tempHeader.Is("MWID"))  // Lists the relative offsets of string beginnings in the above MWWO chunk.
-                {
-                    // Not needed.
-                    continue;
-                }
-
-                if (tempHeader.Is("MDDF"))  // Placement information for doodads (M2 models). 
-                {
-                    uint num = tempHeader.Size / 32;
-
-                    doodadLocations = new MDDF[num];
-
-                    for (int i = 0; i < num; i++)
-                    {
-                        doodadLocations[i].nameId = bin.ReadUInt32();
-                        doodadLocations[i].uniqueId = bin.ReadUInt32();
-                        doodadLocations[i].coord = new Coordinate(bin.ReadSingle(), bin.ReadSingle(), bin.ReadSingle());
-                    }
-
-                    continue;
-                }
-
-                if (tempHeader.Is("MODF"))  // Placement information for WMOs.
-                {
-                    uint num = tempHeader.Size / 64;
-
-                    wmoLocations = new MODF[num];
-
-                    for (int i = 0; i < num; i++)
-                    {
-                        wmoLocations[i].nameId = bin.ReadUInt32();
-                        wmoLocations[i].uniqueId = bin.ReadUInt32();
-                        wmoLocations[i].coord = new Coordinate(bin.ReadSingle(), bin.ReadSingle(), bin.ReadSingle());
-                        wmoLocations[i].orientation = new Vect3D(bin.ReadSingle(), bin.ReadSingle(), bin.ReadSingle());
-                        wmoLocations[i].coord2 = new Coordinate(bin.ReadSingle(), bin.ReadSingle(), bin.ReadSingle());
-                        wmoLocations[i].coord3 = new Coordinate(bin.ReadSingle(), bin.ReadSingle(), bin.ReadSingle());
-                        wmoLocations[i].flags = bin.ReadUInt32();
-                        wmoLocations[i].doodadSet = bin.ReadUInt16();
-                        wmoLocations[i].nameSet = bin.ReadUInt16();
-                    }
-
-                    continue;
-                }
-
-                if (tempHeader.Is("MCNK")) // || tempHeader.Is("MCVT") || tempHeader.Is("MCNR") || tempHeader.Is("MCLY") || tempHeader.Is("MCRF") || tempHeader.Is("MCSH") || tempHeader.Is("MCAL") || tempHeader.Is("MCLQ") || tempHeader.Is("MCSE"))
-                {
-                    // Skip these. They are read in afterwards.
-                    continue;
-                }
-
-                // If we're still down here, we got a problem
-                throw new Exception(String.Format("ADTFile: Woah. Got a header of {0}. Don't know how to deal with this, bailing out.", tempHeader.ToString()));
-            }
-
-            // Read in Map Chunks
-            mapChunkTable = new MCNK[16][];
-
-            for (int i = 0; i < 16; i++)
-            {
-                mapChunkTable[i] = new MCNK[16];
-
-                for (int j = 0; j < 16; j++)
-                {
-                    int index = i * 16 + j;
-                    Log.WriteLine(LogType.Terrain,  "Parsing MCNK Chunk #{0} [{1}, {2}]", index, i, j);
-                    mapChunkTable[i][j] = parseMapChunk(ms, mcin_array[index].MCNK_offset, mcin_array[index].MCNK_size);
-                }
-            }
-
             
+            using (BinaryReader bin = new BinaryReader(adtStream))
+            {
+                BlizChunkHeader tempHeader;
+                long pos = 0;
+
+                // Read bytes from the stream until we run out
+                while (pos < adtStream.Length)
+                {
+                    // Advance to the next Chunk
+                    adtStream.Position = pos;
+
+                    // Read in Chunk Header Name
+                    tempHeader = new BlizChunkHeader(bin.ReadChars(4), bin.ReadUInt32());
+                    tempHeader.Flip();
+
+                    // Set pos to the location of the next Chunk
+                    pos = adtStream.Position + tempHeader.Size;
+
+                    if (tempHeader.Is("MVER"))   // ADT File Version
+                    {
+                        mver = new MVER();
+                        mver.version = bin.ReadUInt32();
+
+                        continue;
+                    }
+
+                    if (tempHeader.Is("MHDR"))  // ADT File Header
+                    {
+                        mhdr = new MHDR();
+                        mhdr.pad = bin.ReadUInt32();
+                        mhdr.offsInfo = bin.ReadUInt32();
+                        mhdr.offsTex = bin.ReadUInt32();
+                        mhdr.offsModels = bin.ReadUInt32();
+                        mhdr.offsModelsIds = bin.ReadUInt32();
+                        mhdr.offsMapObejcts = bin.ReadUInt32();
+                        mhdr.offsMapObejctsIds = bin.ReadUInt32();
+                        mhdr.offsDoodsDef = bin.ReadUInt32();
+                        mhdr.offsObjectsDef = bin.ReadUInt32();
+                        mhdr.pad1 = bin.ReadUInt32();
+                        mhdr.pad2 = bin.ReadUInt32();
+                        mhdr.pad3 = bin.ReadUInt32();
+                        mhdr.pad4 = bin.ReadUInt32();
+                        mhdr.pad5 = bin.ReadUInt32();
+                        mhdr.pad6 = bin.ReadUInt32();
+                        mhdr.pad7 = bin.ReadUInt32();
+
+                        continue;
+                    }
+
+                    if (tempHeader.Is("MCIN"))  // Index for MCNK chunks.
+                    {
+                        if (tempHeader.Size != 256 * 16)
+                            throw new Exception("MCIN Chunk is short??");
+
+                        mcin_array = new MCIN[256];
+
+                        // Read in the 256 records
+                        for (int i = 0; i < 256; i++)
+                        {
+                            mcin_array[i].MCNK_offset = bin.ReadUInt32();
+                            mcin_array[i].MCNK_size = bin.ReadUInt32();
+                            mcin_array[i].flags = bin.ReadUInt32();
+                            mcin_array[i].asyncID = bin.ReadUInt32();
+                        }
+
+                        continue;
+                    }
+
+                    if (tempHeader.Is("MTEX"))  // List of texture filenames used by the terrain in this map tile.
+                    {
+                        // Not needed.
+                        continue;
+                    }
+
+                    if (tempHeader.Is("MMDX")) // List of filenames for M2 models that appear in this map tile.
+                    {
+                        // Not needed.
+                        continue;
+                    }
+
+                    if (tempHeader.Is("MMID"))  // Lists the relative offsets of string beginnings in the above MMDX chunk. 
+                    {
+                        // Not needed.
+                        continue;
+                    }
+
+                    if (tempHeader.Is("MWMO"))  // List of filenames for WMOs (world map objects) that appear in this map tile.
+                    {
+                        byte[] wmoFilesChunk = bin.ReadBytes((int)tempHeader.Size);
+
+                        wmoFiles = new List<String>();
+
+                        StringBuilder str = new StringBuilder();
+
+                        // Convert szString's to a List<String>.
+                        for (int i = 0; i < wmoFilesChunk.Length; i++)
+                        {
+                            if (wmoFilesChunk[i] == '\0')
+                            {
+                                if (str.Length > 1)
+                                    wmoFiles.Add(str.ToString());
+                                str = new StringBuilder();
+                            }
+                            else
+                                str.Append((char)wmoFilesChunk[i]);
+                        }
+
+                        continue;
+                    }
+
+                    if (tempHeader.Is("MWID"))  // Lists the relative offsets of string beginnings in the above MWWO chunk.
+                    {
+                        // Not needed.
+                        continue;
+                    }
+
+                    if (tempHeader.Is("MDDF"))  // Placement information for doodads (M2 models). 
+                    {
+                        uint num = tempHeader.Size / 32;
+
+                        doodadLocations = new MDDF[num];
+
+                        for (int i = 0; i < num; i++)
+                        {
+                            doodadLocations[i].nameId = bin.ReadUInt32();
+                            doodadLocations[i].uniqueId = bin.ReadUInt32();
+                            doodadLocations[i].coord = new Coordinate(bin.ReadSingle(), bin.ReadSingle(), bin.ReadSingle());
+                        }
+
+                        continue;
+                    }
+
+                    if (tempHeader.Is("MODF"))  // Placement information for WMOs.
+                    {
+                        uint num = tempHeader.Size / 64;
+
+                        wmoLocations = new MODF[num];
+
+                        for (int i = 0; i < num; i++)
+                        {
+                            wmoLocations[i].nameId = bin.ReadUInt32();
+                            wmoLocations[i].uniqueId = bin.ReadUInt32();
+                            wmoLocations[i].coord = new Coordinate(bin.ReadSingle(), bin.ReadSingle(), bin.ReadSingle());
+                            wmoLocations[i].orientation = new Vect3D(bin.ReadSingle(), bin.ReadSingle(), bin.ReadSingle());
+                            wmoLocations[i].coord2 = new Coordinate(bin.ReadSingle(), bin.ReadSingle(), bin.ReadSingle());
+                            wmoLocations[i].coord3 = new Coordinate(bin.ReadSingle(), bin.ReadSingle(), bin.ReadSingle());
+                            wmoLocations[i].flags = bin.ReadUInt32();
+                            wmoLocations[i].doodadSet = bin.ReadUInt16();
+                            wmoLocations[i].nameSet = bin.ReadUInt16();
+                        }
+
+                        continue;
+                    }
+
+                    if (tempHeader.Is("MCNK")) // || tempHeader.Is("MCVT") || tempHeader.Is("MCNR") || tempHeader.Is("MCLY") || tempHeader.Is("MCRF") || tempHeader.Is("MCSH") || tempHeader.Is("MCAL") || tempHeader.Is("MCLQ") || tempHeader.Is("MCSE"))
+                    {
+                        // Skip these. They are read in afterwards.
+                        continue;
+                    }
+
+                    // If we're still down here, we got a problem
+                    throw new Exception(String.Format("ADTFile: Woah. Got a header of {0}. Don't know how to deal with this, bailing out.", tempHeader.ToString()));
+                }
+
+                // Read in Map Chunks
+                mapChunkTable = new MCNK[16][];
+
+                for (int i = 0; i < 16; i++)
+                {
+                    mapChunkTable[i] = new MCNK[16];
+
+                    for (int j = 0; j < 16; j++)
+                    {
+                        int index = i * 16 + j;
+                        Log.WriteLine(LogType.Terrain, "Parsing MCNK Chunk #{0} [{1}, {2}]", index, i, j);
+                        mapChunkTable[i][j] = parseMapChunk(adtStream, mcin_array[index].MCNK_offset, mcin_array[index].MCNK_size);
+                    }
+                }
+            }
         }
 
         // Read in an MCNK chunk at supplied offset.

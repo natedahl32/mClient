@@ -50,25 +50,31 @@ namespace mClient.World.GameObject
         public override bool Exists(GameObjectInfo obj)
         {
             if (obj == null) return false;
-            return mObjects.Any(i => i.GameObjectId == obj.GameObjectId);
+            lock (mLock)
+                return mObjects.Any(i => i.GameObjectId == obj.GameObjectId);
         }
 
         public bool Exists(UInt32 gameObjectId)
         {
-            return mObjects.Any(i => i.GameObjectId == gameObjectId);
+            lock (mLock)
+                return mObjects.Any(i => i.GameObjectId == gameObjectId);
         }
 
         public override GameObjectInfo Get(uint id)
         {
-            return mObjects.Where(i => i != null && i.GameObjectId == id).SingleOrDefault();
+            lock (mLock)
+                return mObjects.Where(i => i != null && i.GameObjectId == id).SingleOrDefault();
         }
 
         public T GetSpecific<T>(uint id) 
             where T : GameObjectInfo
         {
-            var obj = mObjects.Where(i => i != null && i.GameObjectId == id).SingleOrDefault();
-            if (obj != null)
-                return obj as T;
+            lock (mLock)
+            {
+                var obj = mObjects.Where(i => i != null && i.GameObjectId == id).SingleOrDefault();
+                if (obj != null)
+                    return obj as T;
+            }
             return null;
         }
 
@@ -79,12 +85,15 @@ namespace mClient.World.GameObject
         protected override void ObjectsLoaded()
         {
             // We need to recast our items to their appropriate types
-            var GOs = mObjects.ToList();
-            mObjects.Clear();
+            lock (mLock)
+            {
+                var GOs = mObjects.ToList();
+                mObjects.Clear();
 
-            // Loop through all the GameObjects loaded from file and recast them to their appropriate types
-            foreach (var go in GOs)
-                mObjects.Add(GameObjectInfo.Create(go.GameObjectId, go.GameObjectType, go.Name, go.Data));
+                // Loop through all the GameObjects loaded from file and recast them to their appropriate types
+                foreach (var go in GOs)
+                    mObjects.Add(GameObjectInfo.Create(go.GameObjectId, go.GameObjectType, go.Name, go.Data));
+            }
         }
 
         #endregion

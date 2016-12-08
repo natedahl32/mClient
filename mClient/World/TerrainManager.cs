@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 using mClient.Shared;
 
@@ -9,17 +10,26 @@ namespace mClient.Terrain
     /// <summary>Manages Terrain Data. Provides numerous useful methods to query terrain data, and does so by looking up (and if nessessary, loading in) the appropriate maptile.</summary>
     public class TerrainMgr
     {
-        private List<MapTile> mapTiles;
+        private List<MapTile> mapTiles = new List<MapTile>();
+        private Object mMapTileLock = new object();
+
+        #region Singleton
+
+        static readonly TerrainMgr instance = new TerrainMgr();
+
+        static TerrainMgr() { }
+
+        TerrainMgr()
+        { }
+
+        public static TerrainMgr Instance { get { return instance; } }
+
+        #endregion
 
 
         static float TILESIZE = 533.33333f;
         static float ZEROPOINT = 32.0f * TILESIZE;
         private UInt32 MapId;
-
-        public TerrainMgr()
-        {
-            mapTiles = new List<MapTile>();
-        }
 
         public void ChangeMap(UInt32 mapId)
         {
@@ -119,9 +129,10 @@ namespace mClient.Terrain
         // Finds Maptile x,z on the list
         private MapTile findTile(int x, int z)
         {
-            foreach (MapTile mapTile in mapTiles)
+            lock (mMapTileLock)
             {
-                if (mapTile.X == x && mapTile.Z == z)
+                var mapTile = mapTiles.Where(t => t.X == x && t.Z == z).SingleOrDefault();
+                if (mapTile != null)
                     return mapTile;
             }
 
@@ -137,7 +148,11 @@ namespace mClient.Terrain
 
             string mapname = map.getMapName(MapId);
             MapTile tile = new MapTile(mapname, x, z);
-            mapTiles.Add(tile);
+            lock (mMapTileLock)
+            {
+                if (!mapTiles.Any(t => t.X == tile.X && t.Z == tile.Z))
+                    mapTiles.Add(tile);
+            }
             return tile;
         }
 
@@ -147,14 +162,16 @@ namespace mClient.Terrain
             // Delete all maptiles off the list
             if (flush)
             {
-                mapTiles = new List<MapTile>();
+                lock (mMapTileLock)
+                    mapTiles = new List<MapTile>();
             }
 
             // If the list is getting long
             if (mapTiles.Count > 100)
             {
                 // Prune it.
-                mapTiles = new List<MapTile>();
+                lock (mMapTileLock)
+                    mapTiles = new List<MapTile>();
             }
         }
 
