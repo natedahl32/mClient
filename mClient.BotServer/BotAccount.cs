@@ -173,7 +173,7 @@ namespace mClient.BotServer
             }
 
             mLogonClient.HardDisconnect();
-            mWorldClient = new WorldServerClient(Config.Login, e.Realms[0], mLogonClient.mKey);
+            mWorldClient = new WorldServerClient(AccountName, e.Realms[0], mLogonClient.mKey);
             mWorldClient.ReceivedCharacterList += WorldClient_ReceivedCharacterList;
             mWorldClient.Disconnected += WorldClient_Disconnected;
             mWorldClient.LoggedIn += WorldClient_LoggedIn;
@@ -212,6 +212,7 @@ namespace mClient.BotServer
         {
             mLoggedIn = false;
             mWorldClient = null;
+            InitializeLoginServer();
             BotAccountUpdated();
         }
 

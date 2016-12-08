@@ -21,7 +21,7 @@
 
                 // go through all accounts and add data to the table
                 $.each(accounts, function (index, value) {
-                    var row = $("<tr id='" + value.ClientId + "'><td>" + value.AccountName + "</td><td>" + value.CharacterName + "</td><td>" + value.CharacterLevel + "</td><td>" + value.ConnectionStatus + "</td><td></td><td></td></tr>")
+                    var row = $("<tr id='" + value.ClientId + "'><td>" + value.AccountName + "</td><td>" + value.CharacterName + "</td><td>" + value.CharacterLevel + "</td><td>" + value.ConnectionStatus + "</td><td></td><td>" + buildAccountDropdown() + "</td></tr>")
                     $("#botAccounts tbody").append(row);
                 });
             });
@@ -29,7 +29,7 @@
                 // Get the row for this bot account
                 var row = $("#botAccounts tbody").find("#" + account.ClientId);
                 // Update the row html for this bot account
-                $(row).html("<td>" + account.AccountName + "</td><td>" + account.CharacterName + "</td><td>" + account.CharacterLevel + "</td><td>" + account.ConnectionStatus + "</td><td>" + account.CurrentActivity + "</td><td></td>");
+                $(row).html("<td>" + account.AccountName + "</td><td>" + account.CharacterName + "</td><td>" + account.CharacterLevel + "</td><td>" + account.ConnectionStatus + "</td><td>" + account.CurrentActivity + "</td><td>" + buildAccountDropdown() + "</td>");
             });
 
             // Start the connection
@@ -54,11 +54,23 @@
             $("#connectAll").click(function () {
                 botServerHubProxy.invoke('connectAllClients');
             });
+
+            // login a specific account
+            $(document).on("click", "a#loginAccount", function () {
+                var id = $(this).closest("tr").attr("id");
+                botServerHubProxy.invoke('ConnectAccount', id);
+            });
         });
         // This optional function html-encodes messages for display in the page.
         function htmlEncode(value) {
             var encodedValue = $('<div />').text(value).html();
             return encodedValue;
+        }
+        // Builds the dropdown action menu for bot accounts
+        function buildAccountDropdown() {
+            return '<div class="dropdown">' +
+                    '<button class="btn btn-default dropdown-toggle" type="button" id="actionMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Actions<span class="caret"></span></button>' +
+                    '<ul class="dropdown-menu" aria-labelledby="dropdownMenu1"><li><a href="#" id="loginAccount">Login</a></li><li><a href="#" id="logoutAccount">Logout</a></li></ul></div>';
         }
     </script>
 }

@@ -55,6 +55,15 @@ namespace BotServer.SignalRServer
             Server.LogInAllClients();
         }
 
+        /// <summary>
+        /// Connects and logins a specific account
+        /// </summary>
+        /// <param name="id"></param>
+        public void ConnectAccount(string id)
+        {
+            Server.LogInClient(id);
+        }
+
         #endregion
 
         #region Server Methods
