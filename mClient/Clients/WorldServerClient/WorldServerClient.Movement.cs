@@ -52,13 +52,20 @@ namespace mClient.Clients
             Object obj = objectMgr.getObject(guid);
             if (obj != null)
             {
-                packet.ReadUInt32();    // MoveFlags
-                packet.ReadUInt32();    // Time
-                var x = packet.ReadFloat();
-                var y = packet.ReadFloat();
-                var z = packet.ReadFloat();
-                var o = packet.ReadFloat();
-                obj.Position= new Coordinate(x, y, z, o);
+                var movementInfo = MovementInfo.Read(packet);
+                obj.Position = new Coordinate(movementInfo.Position.X, movementInfo.Position.Y, movementInfo.Position.Z, movementInfo.Facing);
+                
+                if (player.CurrentGroup != null && player.CurrentGroup.IsInGroup(guid.GetOldGuid()))
+                {
+                    var i = 0;
+                }
+                //packet.ReadUInt32();    // MoveFlags
+                //packet.ReadUInt32();    // Time
+                //var x = packet.ReadFloat();
+                //var y = packet.ReadFloat();
+                //var z = packet.ReadFloat();
+                //var o = packet.ReadFloat();
+                //obj.Position= new Coordinate(x, y, z, o);
             }
         }
 

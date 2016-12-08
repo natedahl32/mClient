@@ -191,6 +191,9 @@ namespace mClient.World.AI
                 var obj = Client.objectMgr.getObject(new WoWGuid(q.Guid));
                 if (obj != null)
                 {
+                    // If the object does not have a quest that we are ignoring, skip it
+                    if (!obj.HasAvailableQuestNotInList(Player.IgnoredQuests.ToList())) continue;
+
                     var distance = Client.movementMgr.CalculateDistance(obj.Position);
                     if (distance < closestDistance && distance < QuestConstants.MAX_TURNIN_DISTANCE)
                     {

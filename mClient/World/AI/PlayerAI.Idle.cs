@@ -208,6 +208,15 @@ namespace mClient.World.AI
                 if (Player.IssuedMoveCommand.Position == null)
                     return BehaviourTreeStatus.Failure;
 
+                // If the player issuing the command is mounted we do NOT follow them. This is IMPORTANT as it is the only we can ascertain whether or not the person who issued the 
+                // follow command is on a mount path. Until we find a different way this MUST be here or the bot will try to follow to their death!
+                if (Player.IssuedMoveCommand.IsMounted)
+                {
+                    // Remove the follow target just to make sure
+                    ClearFollowTarget();
+                    return BehaviourTreeStatus.Failure;
+                }
+
                 // If we are not close to them, teleport to them. Null position from the issuer probably means we are too far away.
                 if (Client.movementMgr.CalculateDistance(Player.IssuedMoveCommand.Position) >= MovementMgr.MAXIMUM_FOLLOW_DISTANCE)
                 {

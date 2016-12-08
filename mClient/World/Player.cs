@@ -407,6 +407,14 @@ namespace mClient.World
             }
         }
 
+        /// <summary>
+        /// Gets all quests that are being ignored by the player
+        /// </summary>
+        public IEnumerable<uint> IgnoredQuests
+        {
+            get { return mPlayerSettings.IgnoredQuests.ToList(); }
+        }
+
         #endregion
 
         #region Public Methods 
@@ -575,6 +583,9 @@ namespace mClient.World
         {
             this.mMoveCommand = command;
             this.mIssuedMoveCommand = issuedFrom;
+            // Set the player issuing the command to unmounted. If the player is mounted they bot won't follow. And the player may be too far
+            // away for the bot to update the mount flag.
+            issuedFrom.Unmounted();
         }
 
         /// <summary>
@@ -589,6 +600,17 @@ namespace mClient.World
         }
 
         /// <summary>
+        /// Ignores a quest so it will not get accepted again. Also drops the quest if it is currently in the quest log
+        /// </summary>
+        /// <param name="questTitle"></param>
+        public void IgnoreQuest(string questTitle)
+        {
+            var quest = QuestManager.Instance.GetQuest(questTitle);
+            if (quest != null)
+                IgnoreQuest(quest.QuestId);
+        }
+
+        /// <summary>
         /// Drops a quest based on the id
         /// </summary>
         /// <param name="questId"></param>
@@ -596,6 +618,16 @@ namespace mClient.World
         {
             PlayerAI.Client.RemoveQuest(questId);
             PlayerObject.DropQuest(questId);
+        }
+
+        /// <summary>
+        /// Ignores a quest so it will not get accepted again. Also drops the quest if it is currently in the quest log
+        /// </summary>
+        /// <param name="questId"></param>
+        public void IgnoreQuest(UInt32 questId)
+        {
+            DropQuest(questId);
+            mPlayerSettings.AddIgnoredQuest(questId);
         }
 
         /// <summary>

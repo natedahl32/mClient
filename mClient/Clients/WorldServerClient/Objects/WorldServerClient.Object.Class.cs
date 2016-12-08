@@ -15,6 +15,9 @@ namespace mClient.Clients
         private Coordinate mPosition = null;
         private UInt32[] mFields = new UInt32[2000];
 
+        // GameObjects and Units could have quests available for us.
+        private List<uint> mQuestsAvailable = new List<uint>();
+
         #endregion
 
         #region Properties
@@ -55,6 +58,11 @@ namespace mClient.Clients
         {
             get { return new WoWGuid(ObjectFieldGuid); }
         }
+
+        /// <summary>
+        /// Gets all quests available from this object
+        /// </summary>
+        public IEnumerable<uint> AvailableQuests { get { return mQuestsAvailable.ToList(); } }
 
         #endregion
 
@@ -114,6 +122,42 @@ namespace mClient.Clients
         public void SetField(int x, UInt32 value)
         {
             SetField(null, x, value);
+        }
+
+        /// <summary>
+        /// Adds an available quest to the object
+        /// </summary>
+        /// <param name="questId"></param>
+        public void AddAvailableQuest(uint questId)
+        {
+            if (!mQuestsAvailable.Contains(questId))
+                mQuestsAvailable.Add(questId);
+        }
+
+        /// <summary>
+        /// Removes an available quest from the object
+        /// </summary>
+        /// <param name="questId"></param>
+        public void RemoveAvailableQuest(uint questId)
+        {
+            if (mQuestsAvailable.Contains(questId))
+                mQuestsAvailable.Remove(questId);
+        }
+
+        /// <summary>
+        /// Whether or not the object has an available quest that is not on the ignore list
+        /// </summary>
+        /// <param name="questsToIgnore"></param>
+        public bool HasAvailableQuestNotInList(List<uint> questsToIgnore)
+        {
+            // If there are no available quests, return true. We assume we don't have available quests for this object yet.
+            if (mQuestsAvailable.Count == 0) return true;
+
+            // We do have available quests, check if they are on the ignore list
+            foreach (var q in mQuestsAvailable)
+                if (!questsToIgnore.Contains(q))
+                    return true;
+            return false;
         }
 
         #region Converstion Methods for Fields

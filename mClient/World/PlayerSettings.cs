@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -20,6 +21,7 @@ namespace mClient.World
 
         // Member variables
         private int mSpecId;
+        private List<uint> mIgnoredQuests = new List<uint>();
 
         #endregion
 
@@ -52,6 +54,15 @@ namespace mClient.World
         }
 
         /// <summary>
+        /// Gets or sets quests that are ignored by the player
+        /// </summary>
+        public List<uint> IgnoredQuests
+        {
+            get { return mIgnoredQuests; }
+            set { mIgnoredQuests = value; }
+        }
+
+        /// <summary>
         /// Gets the spec information that is assigned to this player. Null if the player has not been assigned a spec yet.
         /// </summary>
         [JsonIgnore]
@@ -66,6 +77,19 @@ namespace mClient.World
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// Add a quest to the ignored list
+        /// </summary>
+        /// <param name="questId"></param>
+        public void AddIgnoredQuest(uint questId)
+        {
+            if (!mIgnoredQuests.Contains(questId))
+            {
+                mIgnoredQuests.Add(questId);
+                Serialize();
+            }
+        }
 
         /// <summary>
         /// Serializes quests to file

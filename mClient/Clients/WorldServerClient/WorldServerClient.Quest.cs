@@ -29,6 +29,11 @@ namespace mClient.Clients
             var guid = packet.ReadUInt64(); // Quest giver guid
             var questId = packet.ReadUInt32();
 
+            // Add the quest to the object
+            var obj = objectMgr.getObject(new WoWGuid(guid));
+            if (obj != null)
+                obj.AddAvailableQuest(questId);
+
             // Send message to activities
             var message = new QuestListMessage() { FromEntityGuid = guid, QuestIdList = new List<uint>() { questId }  };
             player.PlayerAI.SendMessageToAllActivities(message);
@@ -282,6 +287,9 @@ namespace mClient.Clients
             var entityGuid = packet.ReadUInt64();
             packet.ReadUInt32();    // title text id
 
+            // Get object so we can add available quests to it
+            var obj = objectMgr.getObject(new WoWGuid(entityGuid));
+
             var gossipMenuCount = packet.ReadUInt32();
             for (int i = 0; i < gossipMenuCount; i++)
             {
@@ -301,6 +309,9 @@ namespace mClient.Clients
                 packet.ReadUInt32();    // Quest level
                 packet.ReadString();    // Quest title
                 quests.Add(questId);
+
+                // Add available quest to object
+                if (obj != null) obj.AddAvailableQuest(questId);
             }
 
             // Send message to activities
@@ -320,6 +331,9 @@ namespace mClient.Clients
             packet.ReadUInt32();    // Player emote
             packet.ReadUInt32();    // NPC emote
 
+            // Get object so we can add available quests to it
+            var obj = objectMgr.getObject(new WoWGuid(entityGuid));
+
             var questCount = packet.ReadByte();
             var quests = new List<UInt32>();
             for (int i = 0; i < questCount; i++)
@@ -329,6 +343,9 @@ namespace mClient.Clients
                 packet.ReadUInt32();    // Quest level
                 packet.ReadString();    // Quest title
                 quests.Add(questId);
+
+                // Add available quest to object
+                if (obj != null) obj.AddAvailableQuest(questId);
             }
 
             // Send message to activities
@@ -375,22 +392,6 @@ namespace mClient.Clients
             // Send a message with the reward items to the activities
             var message = new QuestOfferRewards() { RewardItems = rewardItems, QuestId = questId, AutoComplete = (autoComplete == 1) };
             player.PlayerAI.SendMessageToAllActivities(message);
-
-            // I don't think we need anything below this. It is just for display purposes for a client.
-
-            // Rewards we get by default
-            //var rewardsCount = packet.ReadUInt32();
-            //for (int i = 0; i < rewardsCount; i++)
-            //{
-            //    var itemId = packet.ReadUInt32();
-            //    var itemCount = packet.ReadUInt32();
-            //    packet.ReadUInt32();    // Display Info
-            //}
-
-            //var moneyReward = packet.ReadUInt32();
-            //packet.ReadUInt32();        // Rewards spell, do we need this?
-            //packet.ReadUInt32();        // Casted spell on us, do we need this?
-
         }
 
         /// <summary>
@@ -406,20 +407,6 @@ namespace mClient.Clients
             // Send message to all activities
             var message = new QuestCompleteMessage() { QuestId = questId };
             player.PlayerAI.SendMessageToAllActivities(message);
-
-            // Not sure that we need anything below here or not yet.
-
-            //var experienceAwarded = packet.ReadUInt32();
-            //var rewardedMoney = packet.ReadUInt32();
-
-            //var rewardItemsCount = packet.ReadUInt32();
-            //for (int i = 0; i < rewardItemsCount; i++)
-            //{
-            //    var itemId = packet.ReadUInt32();
-            //    var itemCount = packet.ReadUInt32();
-            //    // Note - I don't think we need these at all. We will get a SMSG_ITEM_PUSH_RESULT from
-            //    // the server for all rewards.
-            //}
         }
 
         /// <summary>

@@ -350,9 +350,33 @@ namespace mClient.Clients
             get { return mVendorItemsAvailable; }
         }
 
+        /// <summary>
+        /// Gets the id of the mount displayed for this unit
+        /// </summary>
+        public uint MoutDisplayId
+        {
+            get { return GetFieldValue((int)UnitFields.UNIT_FIELD_MOUNTDISPLAYID); }
+        }
+
+        /// <summary>
+        /// Gets whether or not this unit is mounted
+        /// </summary>
+        public bool IsMounted
+        {
+            get { return MoutDisplayId > 0; }
+        }
+
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// Sets the mouted flag to off for the unit
+        /// </summary>
+        public void Unmounted()
+        {
+            SetField((int)UnitFields.UNIT_FIELD_MOUNTDISPLAYID, 0);
+        }
 
         /// <summary>
         /// Adds a percentage to the movement speed modifier. 

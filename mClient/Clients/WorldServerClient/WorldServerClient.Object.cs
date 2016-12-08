@@ -175,6 +175,12 @@ namespace mClient.Clients
             {
                 newObject.Position = new Coordinate(movementBlock.Movement.Position.X, movementBlock.Movement.Position.Y, movementBlock.Movement.Position.Z, movementBlock.Movement.Facing);
             }
+
+            // Testing code only
+            if (player.CurrentGroup != null && player.CurrentGroup.IsInGroup(newObject.Guid.GetOldGuid()))
+            {
+                var i = 0;
+            }
         }
 
         public void HandleUpdateObjectFieldBlock(PacketIn packet, Object newObject)
