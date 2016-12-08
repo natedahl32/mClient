@@ -1,4 +1,5 @@
 ﻿using mClient.Shared;
+using mClient.World.AI.Activity.Quest;
 using mClient.World.Quest;
 using System;
 using System.Collections.Generic;
@@ -13,8 +14,9 @@ namespace mClient.World.AI
         private const string QUEST_DROP_COMMAND = "drop";
         private const string QUEST_LIST_COMMAND = "list";
         private const string QUEST_IGNORE_COMMAND = "ignore";
+        private const string QUEST_INTERACT_COMMAND = "interact";
 
-        private List<string> mAllQuestCommands = new List<string>() { QUEST_DROP_COMMAND, QUEST_LIST_COMMAND, QUEST_IGNORE_COMMAND };
+        private List<string> mAllQuestCommands = new List<string>() { QUEST_DROP_COMMAND, QUEST_LIST_COMMAND, QUEST_IGNORE_COMMAND, QUEST_INTERACT_COMMAND };
 
         /// <summary>
         /// Handles all quest commands
@@ -41,6 +43,9 @@ namespace mClient.World.AI
                 Player.PlayerAI.Client.SendChatMsg(Constants.ChatMsg.Party, Constants.Languages.Universal, usageCommands);
                 return true;
             }
+
+            // Get the sender object, if available.
+            var sender = Player.PlayerAI.Client.objectMgr.getObject(senderGuid) as Clients.Unit;
 
             string questTitle = string.Empty;
             switch (split[1].ToLower())
@@ -84,6 +89,20 @@ namespace mClient.World.AI
                         Player.PlayerAI.Client.SendChatMsg(Constants.ChatMsg.Party, Constants.Languages.Universal, "You must supply the full name of the quest you want me to ignore.");
                     else
                         Player.IgnoreQuest(questTitle.Trim());
+
+                    return true;
+
+                case QUEST_INTERACT_COMMAND:
+                    // If our sender cannot be found we can't carryout this command
+                    if (sender == null) return false;
+
+                    // Get the target of the sender
+                    var sendersTarget = Player.PlayerAI.Client.objectMgr.getObject(sender.TargetGuid) as Clients.Unit;
+                    if (sendersTarget == null)
+                        return false;
+
+                    // Goes through gossip menus of the target
+                    Player.PlayerAI.StartActivity(new GossipWithNpc(sendersTarget, Player.PlayerAI));
 
                     return true;
             }

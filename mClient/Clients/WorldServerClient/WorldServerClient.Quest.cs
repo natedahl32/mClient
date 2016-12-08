@@ -291,13 +291,14 @@ namespace mClient.Clients
             var obj = objectMgr.getObject(new WoWGuid(entityGuid));
 
             var gossipMenuCount = packet.ReadUInt32();
+            var gossipMenuItems = new List<GossipMenuItem>();
             for (int i = 0; i < gossipMenuCount; i++)
             {
-                // TODO: Might want to do something with these in the future
                 var menuIndex = packet.ReadUInt32();
-                packet.ReadUInt32();    // Menu icon
-                packet.ReadUInt32();    // Menu coded
-                packet.ReadString();    // Text for gossip item
+                packet.ReadByte();    // Menu icon
+                packet.ReadByte();    // Menu coded
+                var menuText = packet.ReadString();    // Text for gossip item
+                gossipMenuItems.Add(new GossipMenuItem() { GossipMenuIndex = menuIndex, GossipText = menuText });
             }
 
             var questMenuCount = packet.ReadUInt32();
@@ -317,6 +318,9 @@ namespace mClient.Clients
             // Send message to activities
             var message = new QuestListMessage() { FromEntityGuid = entityGuid, QuestIdList = quests };
             player.PlayerAI.SendMessageToAllActivities(message);
+
+            var gossipMessage = new GossipItemListMessage() { NpcGuid = entityGuid, GossipItems = gossipMenuItems };
+            player.PlayerAI.SendMessageToAllActivities(gossipMessage);
         }
 
         /// <summary>
@@ -518,6 +522,17 @@ namespace mClient.Clients
             }
         }
 
+        /// <summary>
+        /// Handles the gossip complete message
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_GOSSIP_COMPLETE)]
+        public void HandleGossipCompleteMessage(PacketIn packet)
+        {
+            var message = new GossipCompleteMessage();
+            player.PlayerAI.SendMessageToAllActivities(message);
+        }
+
         #endregion
 
         #region Actions
@@ -626,6 +641,30 @@ namespace mClient.Clients
             packet.Write(questGiverGuid);
             packet.Write(questId);
             packet.Write(itemChoiceIndex);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Start a gossip with an NPC
+        /// </summary>
+        /// <param name="npcGuid"></param>
+        public void Gossip(ulong npcGuid)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_GOSSIP_HELLO);
+            packet.Write(npcGuid);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Selects a gossip menu item from the npc. This assumes an uncoded gossip option.
+        /// </summary>
+        /// <param name="npcGuid"></param>
+        /// <param name="index"></param>
+        public void Gossip(ulong npcGuid, uint index)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_GOSSIP_SELECT_OPTION);
+            packet.Write(npcGuid);
+            packet.Write(index);
             Send(packet);
         }
 
