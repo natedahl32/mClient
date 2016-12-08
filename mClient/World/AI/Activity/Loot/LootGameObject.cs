@@ -14,8 +14,6 @@ namespace mClient.World.AI.Activity.Loot
     {
         #region Declarations
 
-        private const int OPEN_SPELL_ID = 6478;
-
         private mClient.Clients.Object mLootableObject;
         private bool mIsLooting;
         private List<LootItem> mItemsToLoot;
@@ -78,7 +76,7 @@ namespace mClient.World.AI.Activity.Loot
                 // We are close enough, now loot it
                 // TODO: I'm not sure this is the correct way to do it, I think what spell/how we open
                 // the chest has to do with one of the data fields and the Lock.dbc file, but I can't find a connection.
-                PlayerAI.Client.CastSpell(mLootableObject, OPEN_SPELL_ID);
+                PlayerAI.Client.CastSpell(mLootableObject, PlayerAI.Player.GetSpellToOpenLockedObject(mLootableObject as Clients.GameObject));
                 mIsLooting = true;
                 // Set expectation that we get loot
                 Expect(() => mItemsToLoot != null, 10000); // open spell is a 5 second cast, so wait at least double that

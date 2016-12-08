@@ -102,6 +102,8 @@ namespace mClient.DBC
             {
                 if (string.IsNullOrEmpty(Rank))
                     return 1;
+                if (Rank.Trim().ToLower() == "apprentice")
+                    return 1;
                 return Convert.ToInt32(Rank.Substring(Rank.Trim().Length - 1, 1));
             }
         }
