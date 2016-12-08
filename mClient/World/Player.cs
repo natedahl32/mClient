@@ -407,6 +407,14 @@ namespace mClient.World
             }
         }
 
+        /// <summary>
+        /// Gets all quests that are being ignored by the player
+        /// </summary>
+        public IEnumerable<uint> IgnoredQuests
+        {
+            get { return mPlayerSettings.IgnoredQuests.ToList(); }
+        }
+
         #endregion
 
         #region Public Methods 
@@ -575,6 +583,9 @@ namespace mClient.World
         {
             this.mMoveCommand = command;
             this.mIssuedMoveCommand = issuedFrom;
+            // Set the player issuing the command to unmounted. If the player is mounted they bot won't follow. And the player may be too far
+            // away for the bot to update the mount flag.
+            issuedFrom.Unmounted();
         }
 
         /// <summary>
@@ -589,6 +600,17 @@ namespace mClient.World
         }
 
         /// <summary>
+        /// Ignores a quest so it will not get accepted again. Also drops the quest if it is currently in the quest log
+        /// </summary>
+        /// <param name="questTitle"></param>
+        public void IgnoreQuest(string questTitle)
+        {
+            var quest = QuestManager.Instance.GetQuest(questTitle);
+            if (quest != null)
+                IgnoreQuest(quest.QuestId);
+        }
+
+        /// <summary>
         /// Drops a quest based on the id
         /// </summary>
         /// <param name="questId"></param>
@@ -596,6 +618,16 @@ namespace mClient.World
         {
             PlayerAI.Client.RemoveQuest(questId);
             PlayerObject.DropQuest(questId);
+        }
+
+        /// <summary>
+        /// Ignores a quest so it will not get accepted again. Also drops the quest if it is currently in the quest log
+        /// </summary>
+        /// <param name="questId"></param>
+        public void IgnoreQuest(UInt32 questId)
+        {
+            DropQuest(questId);
+            mPlayerSettings.AddIgnoredQuest(questId);
         }
 
         /// <summary>
@@ -1386,6 +1418,66 @@ namespace mClient.World
                 if (SpecChangedEvent != null)
                     SpecChangedEvent(this, new SpecChangedEventArgs(oldSpec));
             }
+        }
+
+        /// <summary>
+        /// Finds the spell for this player that will open the locked object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public uint GetSpellToOpenLockedObject(Clients.GameObject go)
+        {
+            // If we can't determine the GO, return generic open spell
+            if (go == null) return SpellConstants.OPEN_SPELL_ID;
+
+            // TODO: Handle non-chest objects
+            if (go.BaseInfo.GameObjectType == GameObjectType.Chest)
+            {
+                var chest = go.BaseInfo as Chest;
+                // if the chest has a lock type find the spell that has an open lock effect for this type
+                if (chest.LockId > 0)
+                {
+                    var lockEntry = LockTable.Instance.getById(chest.LockId);
+                    // TODO: Handle case for items that unlock chests
+                    for (int i = 0; i < LockEntry.MAX_LOCK_CASE; i++)
+                    {
+                        switch (lockEntry.Type[i])
+                        {
+                            //case LockKeyType.LOCK_KEY_ITEM:
+                            //    // Have the item or key required?
+                            //    if (lockEntry.LockTypeIndex[i] > 0 && !PlayerObject.HasItemInInventory(lockEntry.LockTypeIndex[i]))
+                            //        return false;
+                            //    break;
+                            case LockKeyType.LOCK_KEY_SKILL:
+                                if (lockEntry.LockTypeIndex[i] > 0)
+                                {
+                                    var lockType = (LockType)lockEntry.LockTypeIndex[i];
+                                    if ((int)lockType == 0) continue;
+
+                                    foreach (var spellId in Spells)
+                                    {
+                                        var spell = SpellTable.Instance.getSpell(spellId);
+                                        if (spell != null)
+                                        {
+                                            for (int j = 0; j < SpellConstants.MAX_EFFECT_INDEX; j++)
+                                            {
+                                                if (spell.Effect[j] == SpellEffects.SPELL_EFFECT_OPEN_LOCK)
+                                                {
+                                                    if (spell.EffectMiscValue[j] == (int)lockType)
+                                                        return spell.SpellId;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+
+            // Return the generic open spell
+            return SpellConstants.OPEN_SPELL_ID;
         }
 
         #endregion

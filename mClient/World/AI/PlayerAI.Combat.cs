@@ -84,8 +84,11 @@ namespace mClient.World.AI
             // If we are no longer in combat, fail out
             if (!Player.IsInCombat) return BehaviourTreeStatus.Failure;
 
+            // If we don't have a target selection than fail
+            if (mTargetSelection == null) return BehaviourTreeStatus.Failure;
+
             // If we are not attacking and we have a target selection then start doing some damage
-            if (!mIsAttackingTarget && mTargetSelection != null)
+            if (!mIsAttackingTarget)
             {
                 // Start attacking, this applies
                 Client.Attack(mTargetSelection.Guid.GetOldGuid());

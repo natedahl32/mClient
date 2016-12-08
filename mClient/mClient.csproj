@@ -212,6 +212,8 @@
     <Compile Include="World\AI\Activity\Loot\LootObject.cs" />
     <Compile Include="World\AI\Activity\Loot\RollForLoot.cs" />
     <Compile Include="World\AI\Activity\Messages\CorpseQueryMessage.cs" />
+    <Compile Include="World\AI\Activity\Messages\GossipCompleteMessage.cs" />
+    <Compile Include="World\AI\Activity\Messages\GossipItemListMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\InventoryChangeMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\ItemPushResultMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\LootMessage.cs" />
@@ -234,6 +236,7 @@
     <Compile Include="World\AI\Activity\Movement\Wait.cs" />
     <Compile Include="World\AI\Activity\Quest\AcceptQuest.cs" />
     <Compile Include="World\AI\Activity\Quest\CompleteQuest.cs" />
+    <Compile Include="World\AI\Activity\Quest\GossipWithNpc.cs" />
     <Compile Include="World\AI\Activity\Quest\TurnInQuests.cs" />
     <Compile Include="World\AI\Activity\Quest\UseInventoryItemOnGO.cs" />
     <Compile Include="World\AI\Activity\Trade\BeginTrade.cs" />
@@ -321,6 +324,7 @@
     <Compile Include="World\Player.Proficiency.cs" />
     <Compile Include="World\PlayerClassLogic.cs" />
     <Compile Include="World\PlayerSettings.cs" />
+    <Compile Include="World\Quest\GossipMenuItem.cs" />
     <Compile Include="World\Quest\QuestGiver.cs" />
     <Compile Include="World\Quest\QuestInfo.cs" />
     <Compile Include="World\Quest\QuestLogItem.cs" />

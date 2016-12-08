@@ -19,6 +19,8 @@ namespace mClient.Constants
         public const int MAX_SPELL_SCHOOL = 7;
         public const int MAX_EFFECT_INDEX = 3;
         public const int MAX_TALENT_RANK = 5;
+
+        public const int OPEN_SPELL_ID = 6478;
     }
 
     public enum SpellEffectIndex

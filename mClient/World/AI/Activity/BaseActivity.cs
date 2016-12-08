@@ -85,6 +85,14 @@ namespace mClient.World.AI.Activity
         }
 
         /// <summary>
+        /// Called when an activity is being resumed when the activity above it has completed. Activities CAN be completed in this method because it is now the current activity.
+        /// </summary>
+        public virtual void Resume()
+        {
+            Log.WriteLine(LogType.Debug, "Resuming activity {0}...", ActivityName);
+        }
+
+        /// <summary>
         /// Processes the activity. This method is only called if this activity is the current activity.
         /// </summary>
         public abstract void Process();

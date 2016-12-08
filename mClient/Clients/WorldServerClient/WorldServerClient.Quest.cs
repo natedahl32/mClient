@@ -29,6 +29,11 @@ namespace mClient.Clients
             var guid = packet.ReadUInt64(); // Quest giver guid
             var questId = packet.ReadUInt32();
 
+            // Add the quest to the object
+            var obj = objectMgr.getObject(new WoWGuid(guid));
+            if (obj != null)
+                obj.AddAvailableQuest(questId);
+
             // Send message to activities
             var message = new QuestListMessage() { FromEntityGuid = guid, QuestIdList = new List<uint>() { questId }  };
             player.PlayerAI.SendMessageToAllActivities(message);
@@ -282,14 +287,18 @@ namespace mClient.Clients
             var entityGuid = packet.ReadUInt64();
             packet.ReadUInt32();    // title text id
 
+            // Get object so we can add available quests to it
+            var obj = objectMgr.getObject(new WoWGuid(entityGuid));
+
             var gossipMenuCount = packet.ReadUInt32();
+            var gossipMenuItems = new List<GossipMenuItem>();
             for (int i = 0; i < gossipMenuCount; i++)
             {
-                // TODO: Might want to do something with these in the future
                 var menuIndex = packet.ReadUInt32();
-                packet.ReadUInt32();    // Menu icon
-                packet.ReadUInt32();    // Menu coded
-                packet.ReadString();    // Text for gossip item
+                packet.ReadByte();    // Menu icon
+                packet.ReadByte();    // Menu coded
+                var menuText = packet.ReadString();    // Text for gossip item
+                gossipMenuItems.Add(new GossipMenuItem() { GossipMenuIndex = menuIndex, GossipText = menuText });
             }
 
             var questMenuCount = packet.ReadUInt32();
@@ -301,11 +310,17 @@ namespace mClient.Clients
                 packet.ReadUInt32();    // Quest level
                 packet.ReadString();    // Quest title
                 quests.Add(questId);
+
+                // Add available quest to object
+                if (obj != null) obj.AddAvailableQuest(questId);
             }
 
             // Send message to activities
             var message = new QuestListMessage() { FromEntityGuid = entityGuid, QuestIdList = quests };
             player.PlayerAI.SendMessageToAllActivities(message);
+
+            var gossipMessage = new GossipItemListMessage() { NpcGuid = entityGuid, GossipItems = gossipMenuItems };
+            player.PlayerAI.SendMessageToAllActivities(gossipMessage);
         }
 
         /// <summary>
@@ -320,6 +335,9 @@ namespace mClient.Clients
             packet.ReadUInt32();    // Player emote
             packet.ReadUInt32();    // NPC emote
 
+            // Get object so we can add available quests to it
+            var obj = objectMgr.getObject(new WoWGuid(entityGuid));
+
             var questCount = packet.ReadByte();
             var quests = new List<UInt32>();
             for (int i = 0; i < questCount; i++)
@@ -329,6 +347,9 @@ namespace mClient.Clients
                 packet.ReadUInt32();    // Quest level
                 packet.ReadString();    // Quest title
                 quests.Add(questId);
+
+                // Add available quest to object
+                if (obj != null) obj.AddAvailableQuest(questId);
             }
 
             // Send message to activities
@@ -375,22 +396,6 @@ namespace mClient.Clients
             // Send a message with the reward items to the activities
             var message = new QuestOfferRewards() { RewardItems = rewardItems, QuestId = questId, AutoComplete = (autoComplete == 1) };
             player.PlayerAI.SendMessageToAllActivities(message);
-
-            // I don't think we need anything below this. It is just for display purposes for a client.
-
-            // Rewards we get by default
-            //var rewardsCount = packet.ReadUInt32();
-            //for (int i = 0; i < rewardsCount; i++)
-            //{
-            //    var itemId = packet.ReadUInt32();
-            //    var itemCount = packet.ReadUInt32();
-            //    packet.ReadUInt32();    // Display Info
-            //}
-
-            //var moneyReward = packet.ReadUInt32();
-            //packet.ReadUInt32();        // Rewards spell, do we need this?
-            //packet.ReadUInt32();        // Casted spell on us, do we need this?
-
         }
 
         /// <summary>
@@ -406,20 +411,6 @@ namespace mClient.Clients
             // Send message to all activities
             var message = new QuestCompleteMessage() { QuestId = questId };
             player.PlayerAI.SendMessageToAllActivities(message);
-
-            // Not sure that we need anything below here or not yet.
-
-            //var experienceAwarded = packet.ReadUInt32();
-            //var rewardedMoney = packet.ReadUInt32();
-
-            //var rewardItemsCount = packet.ReadUInt32();
-            //for (int i = 0; i < rewardItemsCount; i++)
-            //{
-            //    var itemId = packet.ReadUInt32();
-            //    var itemCount = packet.ReadUInt32();
-            //    // Note - I don't think we need these at all. We will get a SMSG_ITEM_PUSH_RESULT from
-            //    // the server for all rewards.
-            //}
         }
 
         /// <summary>
@@ -531,6 +522,17 @@ namespace mClient.Clients
             }
         }
 
+        /// <summary>
+        /// Handles the gossip complete message
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_GOSSIP_COMPLETE)]
+        public void HandleGossipCompleteMessage(PacketIn packet)
+        {
+            var message = new GossipCompleteMessage();
+            player.PlayerAI.SendMessageToAllActivities(message);
+        }
+
         #endregion
 
         #region Actions
@@ -639,6 +641,30 @@ namespace mClient.Clients
             packet.Write(questGiverGuid);
             packet.Write(questId);
             packet.Write(itemChoiceIndex);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Start a gossip with an NPC
+        /// </summary>
+        /// <param name="npcGuid"></param>
+        public void Gossip(ulong npcGuid)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_GOSSIP_HELLO);
+            packet.Write(npcGuid);
+            Send(packet);
+        }
+
+        /// <summary>
+        /// Selects a gossip menu item from the npc. This assumes an uncoded gossip option.
+        /// </summary>
+        /// <param name="npcGuid"></param>
+        /// <param name="index"></param>
+        public void Gossip(ulong npcGuid, uint index)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_GOSSIP_SELECT_OPTION);
+            packet.Write(npcGuid);
+            packet.Write(index);
             Send(packet);
         }
 

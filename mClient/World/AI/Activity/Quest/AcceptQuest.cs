@@ -94,6 +94,9 @@ namespace mClient.World.AI.Activity.Quest
                 var selectedQuest = mQuestsWeDoNotHave[0];
                 mQuestsWeDoNotHave.RemoveAt(0);
 
+                // If the selected quest is on our ignore list, ignore it
+                if (PlayerAI.Player.IgnoredQuests.Contains(selectedQuest)) return;
+
                 // Accept the quest
                 PlayerAI.Client.AcceptQuest(mAcceptingFromQuestGiver.Guid.GetOldGuid(), selectedQuest);
 

@@ -193,6 +193,9 @@ namespace mClient.World.AI
                 if (currentActivity != null)
                     currentActivity.Complete();
             }
+
+            // Peek the next activity in the list and resume it
+            mActivityStack.Peek().Resume();
         }
 
         /// <summary>
