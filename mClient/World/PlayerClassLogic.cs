@@ -3,6 +3,15 @@ using mClient.Constants;
 using mClient.DBC;
 using mClient.Terrain;
 using mClient.World.ClassLogic;
+using mClient.World.ClassLogic.Druid;
+using mClient.World.ClassLogic.Hunter;
+using mClient.World.ClassLogic.Mage;
+using mClient.World.ClassLogic.Paladin;
+using mClient.World.ClassLogic.Priest;
+using mClient.World.ClassLogic.Rogue;
+using mClient.World.ClassLogic.Shaman;
+using mClient.World.ClassLogic.Warlock;
+using mClient.World.ClassLogic.Warrior;
 using mClient.World.Items;
 using System;
 using System.Collections.Generic;
@@ -508,6 +517,129 @@ namespace mClient.World
                     return new WarlockLogic(player);
                 case Classname.Warrior:
                     return new WarriorLogic(player);
+                default:
+                    break;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Creats a class logic instance based on class
+        /// </summary>
+        /// <param name="class"></param>
+        /// <returns></returns>
+        public static PlayerClassLogic CreateClassLogic(MainSpec spec, Classname @class, Player player)
+        {
+            switch (@class)
+            {
+                case Classname.Druid:
+                    switch (spec)
+                    {
+                        case MainSpec.DRUID_SPEC_BALANCE:
+                            return new BalanceLogic(player);
+                        case MainSpec.DRUID_SPEC_FERAL:
+                            return new FeralLogic(player);
+                        case MainSpec.DRUID_SPEC_RESTORATION:
+                            return new ClassLogic.Druid.RestorationLogic(player);
+                        default:
+                            return new DruidLogic(player);
+                    }
+                case Classname.Hunter:
+                    switch (spec)
+                    {
+                        case MainSpec.HUNTER_SPEC_SURVIVAL:
+                            return new SurvivalLogic(player);
+                        case MainSpec.HUNTER_SPEC_BEASTMASTERY:
+                            return new BeastMasteryLogic(player);
+                        case MainSpec.HUNTER_SPEC_MARKSMANSHIP:
+                            return new MarksmanshipLogic(player);
+                        default:
+                            return new HunterLogic(player);
+                    }
+                case Classname.Mage:
+                    switch (spec)
+                    {
+                        case MainSpec.MAGE_SPEC_ARCANE:
+                            return new ArcaneLogic(player);
+                        case MainSpec.MAGE_SPEC_FIRE:
+                            return new FireLogic(player);
+                        case MainSpec.MAGE_SPEC_FROST:
+                            return new FrostLogic(player);
+                        default:
+                            return new MageLogic(player);
+                    }
+                case Classname.Paladin:
+                    switch (spec)
+                    {
+                        case MainSpec.PALADIN_SPEC_RETRIBUTION:
+                            return new RetributionLogic(player);
+                        case MainSpec.PALADIN_SPEC_PROTECTION:
+                            return new ClassLogic.Paladin.ProtectionLogic(player);
+                        case MainSpec.MAGE_SPEC_FROST:
+                            return new ClassLogic.Paladin.HolyLogic(player);
+                        default:
+                            return new PaladinLogic(player);
+                    }
+                case Classname.Priest:
+                    switch (spec)
+                    {
+                        case MainSpec.PRIEST_SPEC_DISCIPLINE:
+                            return new DisciplineLogic(player);
+                        case MainSpec.PRIEST_SPEC_HOLY:
+                            return new ClassLogic.Priest.HolyLogic(player);
+                        case MainSpec.PRIEST_SPEC_SHADOW:
+                            return new ShadowLogic(player);
+                        default:
+                            return new PriestLogic(player);
+                    }
+                case Classname.Rogue:
+                    switch (spec)
+                    {
+                        case MainSpec.ROGUE_SPEC_ASSASSINATION:
+                            return new AssassinationLogic(player);
+                        case MainSpec.ROGUE_SPEC_COMBAT:
+                            return new CombatLogic(player);
+                        case MainSpec.ROGUE_SPEC_SUBTELTY:
+                            return new SubtletyLogic(player);
+                        default:
+                            return new RogueLogic(player);
+                    }
+                case Classname.Shaman:
+                    switch (spec)
+                    {
+                        case MainSpec.SHAMAN_SPEC_ELEMENTAL:
+                            return new ElementalLogic(player);
+                        case MainSpec.SHAMAN_SPEC_ENHANCEMENT:
+                            return new EnhancementLogic(player);
+                        case MainSpec.SHAMAN_SPEC_RESTORATION:
+                            return new ClassLogic.Shaman.RestorationLogic(player);
+                        default:
+                            return new ShamanLogic(player);
+                    }
+                case Classname.Warlock:
+                    switch (spec)
+                    {
+                        case MainSpec.WARLOCK_SPEC_AFFLICTION:
+                            return new AfflictionLogic(player);
+                        case MainSpec.WARLOCK_SPEC_DEMONOLOGY:
+                            return new DemonologyLogic(player);
+                        case MainSpec.WARLOCK_SPEC_DESTRUCTION:
+                            return new DestructionLogic(player);
+                        default:
+                            return new WarlockLogic(player);
+                    }
+                case Classname.Warrior:
+                    switch (spec)
+                    {
+                        case MainSpec.WARRIOR_SPEC_ARMS:
+                            return new ArmsLogic(player);
+                        case MainSpec.WARRIOR_SPEC_FURY:
+                            return new FuryLogic(player);
+                        case MainSpec.WARRIOR_SPEC_PROTECTION:
+                            return new ClassLogic.Warrior.ProtectionLogic(player);
+                        default:
+                            return new WarriorLogic(player);
+                    }
                 default:
                     break;
             }

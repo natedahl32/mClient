@@ -105,10 +105,11 @@ namespace mClient.World
             this(playerObject)
         {
             this.mPlayerAI = new PlayerAI(this, client);
-            this.mClassLogic = PlayerClassLogic.CreateClassLogic((Classname)pClass, this);
             this.mGCD = new GlobalCooldown(this);
             this.mSpellCooldownManager = new SpellCooldownManager(this);
             this.mPlayerSettings = PlayerSettings.Load(playerObject.Name);
+            // Set after player settings are loaded
+            this.mClassLogic = PlayerClassLogic.CreateClassLogic(TalentSpec, (Classname)pClass, this);
 
             this.Race = race;
             this.Class = pClass;
@@ -1438,6 +1439,7 @@ namespace mClient.World
             if (newSpec != null)
             {
                 var oldSpec = TalentSpec;
+                mClassLogic = PlayerClassLogic.CreateClassLogic(newSpec.TalentSpec, (Classname)Class, this);
                 mPlayerSettings.SpecId = (int)specId;
                 if (SpecChangedEvent != null)
                     SpecChangedEvent(this, new SpecChangedEventArgs(oldSpec));

@@ -118,8 +118,12 @@ namespace mClient.World.ClassLogic
             {
                 var needBuffs = new Dictionary<SpellEntry, IList<Player>>();
                 // TODO: Need to check for other stances in certain cases
-                if (HasSpellAndCanCast(BATTLE_STANCE) && !Player.HasAura(BATTLE_STANCE))
+                if (Player.TalentSpec == MainSpec.WARRIOR_SPEC_ARMS && HasSpellAndCanCast(BATTLE_STANCE) && !Player.HasAura(BATTLE_STANCE))
                     needBuffs.Add(Spell(BATTLE_STANCE), new List<Player>() { Player });
+                else if (Player.TalentSpec == MainSpec.WARRIOR_SPEC_FURY && HasSpellAndCanCast(BERSERKER_STANCE) && !Player.HasAura(BERSERKER_STANCE))
+                    needBuffs.Add(Spell(BERSERKER_STANCE), new List<Player>() { Player });
+                else if (Player.TalentSpec == MainSpec.WARRIOR_SPEC_PROTECTION && HasSpellAndCanCast(DEFENSIVE_STANCE) && !Player.HasAura(DEFENSIVE_STANCE))
+                    needBuffs.Add(Spell(DEFENSIVE_STANCE), new List<Player>() { Player });
 
                 // Check each player in the group for buffs
                 if (Player.CurrentGroup != null && Player.CurrentGroup.PlayersInGroup.Count() > 0)
@@ -165,6 +169,15 @@ namespace mClient.World.ClassLogic
                 if (HasSpellAndCanCast(BATTLE_SHOUT) && !Player.HasAura(BATTLE_SHOUT)) return Spell(BATTLE_SHOUT);
 
                 // DPS abilities
+                if (Player.TalentSpec == MainSpec.WARRIOR_SPEC_ARMS)
+                    return ArmsDpsPriority();
+                else if (Player.TalentSpec == MainSpec.WARRIOR_SPEC_FURY)
+                    return FuryDpsPriority();
+                else if (Player.TalentSpec == MainSpec.WARRIOR_SPEC_PROTECTION)
+                    return ProtectionDpsPriority();
+                else
+                    return ArmsDpsPriority();
+
                 if (HasSpellAndCanCast(CHARGE)) return Spell(CHARGE);
                 if (HasSpellAndCanCast(HEROIC_STRIKE)) return Spell(HEROIC_STRIKE);
                     
@@ -312,6 +325,21 @@ namespace mClient.World.ClassLogic
                 mStatWeights[ItemModType.ITEM_MOD_MANA] = 0.01f;
                 mStatWeights[ItemModType.ITEM_MOD_HEALTH] = 0.55f;
             }
+        }
+
+        protected SpellEntry ArmsDpsPriority()
+        {
+
+        }
+
+        protected SpellEntry FuryDpsPriority()
+        {
+
+        }
+
+        protected SpellEntry ProtectionDpsPriority()
+        {
+
         }
 
         #endregion
