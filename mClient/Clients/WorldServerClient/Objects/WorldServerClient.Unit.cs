@@ -4,6 +4,7 @@ using mClient.Shared;
 using mClient.World;
 using mClient.World.Creature;
 using mClient.World.Items;
+using mClient.World.Spells;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,9 @@ namespace mClient.Clients
         private List<uint> mTrainerSpellsAvailable;
         private List<VendorItem> mVendorItemsAvailable;
         private System.Object mVendorItemsLock = new System.Object();
+
+        // Holds aura durations
+        protected uint[] mAuraDurations = new uint[SpellConstants.MAX_AURAS + 1];
 
         #endregion
 
@@ -149,6 +153,14 @@ namespace mClient.Clients
         }
 
         /// <summary>
+        /// Gets the current health percentage for this unit
+        /// </summary>
+        public float HealthPercentage
+        {
+            get { return (CurrentHealth * 100.0f) / MaxHealth; }
+        }
+
+        /// <summary>
         /// Gets the current mana value for this unit
         /// </summary>
         public uint CurrentMana
@@ -162,6 +174,14 @@ namespace mClient.Clients
         public uint MaximumMana
         {
             get { return GetMaximumPower(Powers.POWER_MANA); }
+        }
+
+        /// <summary>
+        /// Gets the current mana percentage for this unit
+        /// </summary>
+        public float ManaPercentage
+        {
+            get { return (CurrentMana * 100.0f) / MaximumMana; }
         }
 
         /// <summary>
@@ -240,14 +260,26 @@ namespace mClient.Clients
         /// <summary>
         /// Returns spell ids of the auras currently on a player
         /// </summary>
-        public IEnumerable<SpellEntry> Auras
+        public IEnumerable<AuraHolder> Auras
         {
             get
             {
-                var auras = new List<SpellEntry>();
+                var auras = new List<AuraHolder>();
                 for (int i = (int)UnitFields.UNIT_FIELD_AURA; i <= (int)UnitFields.UNIT_FIELD_AURA_LAST; i++)
+                {
                     if (GetFieldValue(i) > 0)
-                        auras.Add(SpellTable.Instance.getSpell(GetFieldValue(i)));
+                    {
+                        var holder = new AuraHolder();
+                        holder.Spell = SpellTable.Instance.getSpell(GetFieldValue(i));
+                        if (holder.Spell != null)
+                        {
+                            var auraSlot = i - (int)UnitFields.UNIT_FIELD_AURA;
+                            holder.Duration = mAuraDurations[auraSlot] / 1000.0f;
+                            holder.Stacks = GetAuraStacks((byte)auraSlot);
+                            auras.Add(holder);
+                        }
+                    }
+                }
                 return auras;
             }
         }
@@ -263,7 +295,7 @@ namespace mClient.Clients
                 // If we have no health left but we do have some max health (avoids death triggered when we login right away and haven't gotten data yet)
                 if (CurrentHealth <= 0 && MaxHealth > 0)
                     return true;
-                if (Auras.Any(a => a.SpellId == SpellAuras.GHOST_1 || a.SpellId == SpellAuras.GHOST_2 || a.SpellId == SpellAuras.GHOST_WISP))
+                if (Auras.Any(a => a.Spell.SpellId == SpellAuras.GHOST_1 || a.Spell.SpellId == SpellAuras.GHOST_2 || a.Spell.SpellId == SpellAuras.GHOST_WISP))
                     return true;
                 return false;
             }
@@ -369,6 +401,16 @@ namespace mClient.Clients
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// Checks if the unit has an aura defined by spell id
+        /// </summary>
+        /// <param name="spellId"></param>
+        /// <returns></returns>
+        public bool HasAura(uint spellId)
+        {
+            return Auras.Any(a => a.Spell.SpellId == spellId);
+        }
 
         /// <summary>
         /// Sets the mouted flag to off for the unit
@@ -491,6 +533,29 @@ namespace mClient.Clients
                 mVendorItemsAvailable = items.ToList();
         }
 
+        /// <summary>
+        /// Updates aura durations for the player
+        /// </summary>
+        /// <param name="slot"></param>
+        /// <param name="duration"></param>
+        /// <remarks>In Vanilla, we only know durations for our own auras</remarks>
+        public void UpdateAuraDuration(byte slot, uint duration)
+        {
+            mAuraDurations[slot] = duration;
+        }
+
+        /// <summary>
+        /// Updates our aura durations
+        /// </summary>
+        /// <param name="elapsed"></param>
+        /// <remarks>In Vanilla, we only know durations for our own auras</remarks>
+        public void UpdateAuras(uint elapsed)
+        {
+            for (int i = 0; i <= SpellConstants.MAX_AURAS; i++)
+                if (mAuraDurations[i] > 0)
+                    mAuraDurations[i] = Math.Max(0, mAuraDurations[i] - elapsed);
+        }
+
         #endregion
 
         #region Private Methods
@@ -564,6 +629,22 @@ namespace mClient.Clients
             if (powerCost < 0)
                 powerCost = 0;
             return (uint)powerCost;
+        }
+
+        /// <summary>
+        /// Get the number of stacks for an aura in a given slot
+        /// </summary>
+        /// <param name="auraSlot"></param>
+        /// <returns></returns>
+        protected byte GetAuraStacks(byte auraSlot)
+        {
+            // Aura stacks/applications are packed in bits of data in the AURAAPPLICATIONS field
+            int index = auraSlot / 4;
+            uint value = GetFieldValue((int)UnitFields.UNIT_FIELD_AURAAPPLICATIONS + index);
+            // Get the byte number to retrieve the data for
+            int byteNumber = (auraSlot % 4) * 8;
+            byte[] bytes = BitConverter.GetBytes(value);
+            return bytes[byteNumber];
         }
 
         #endregion

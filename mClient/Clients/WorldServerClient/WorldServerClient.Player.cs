@@ -48,7 +48,8 @@ namespace mClient.Clients
             var auraSlot = inpacket.ReadByte();
             var auraDuration = inpacket.ReadUInt32();
 
-            // TODO: Update the players auras
+            // Update the players auras
+            player.PlayerObject.UpdateAuraDuration(auraSlot, auraDuration);
         }
 
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_INITIAL_SPELLS)]

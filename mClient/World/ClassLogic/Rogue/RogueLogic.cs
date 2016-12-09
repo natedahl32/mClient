@@ -114,6 +114,13 @@ namespace mClient.World.ClassLogic
         {
             get
             {
+                var currentTarget = Player.PlayerAI.TargetSelection;
+                if (currentTarget == null)
+                    return null;
+
+                // Slice and Dice is our top priority, use it with any number of combo points if it is not up
+                if (Player.PlayerObject.ComboPoints > 0 && HasSpellAndCanCast(SLICE_DICE) && !Player.HasAura(SLICE_DICE)) return Spell(SLICE_DICE);
+
                 return null;
             }
         }

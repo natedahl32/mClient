@@ -21,6 +21,8 @@ namespace mClient.Constants
         public const int MAX_TALENT_RANK = 5;
 
         public const int OPEN_SPELL_ID = 6478;
+
+        public const int MAX_AURAS = UnitFields.UNIT_FIELD_AURA_LAST - UnitFields.UNIT_FIELD_AURA;
     }
 
     public enum SpellEffectIndex

@@ -282,6 +282,9 @@ namespace mClient.World.AI
                     // Wait 2 seconds before we start AI to make sure we are logged in to the game
                     if ((MM_GetTime() - lastUpdateTime) < 2000) continue;
 
+                    // Update auras
+                    mPlayer.PlayerObject.UpdateAuras(MM_GetTime() - lastUpdateTime);
+
                     // Update spell cooldowns
                     mPlayer.SpellCooldowns.UpdateCooldowns();
 
@@ -297,6 +300,9 @@ namespace mClient.World.AI
                     // Process the activity stack
                     if (mActivityStack.Count > 0)
                         mActivityStack.Peek().Process();
+
+                    // Update the last update time
+                    lastUpdateTime = MM_GetTime();
                 }
                 catch (Exception ex)
                 {

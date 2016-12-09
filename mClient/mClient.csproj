@@ -360,6 +360,7 @@
     <Compile Include="World\Quest\QuestManager.cs" />
     <Compile Include="World\Quest\QuestObjective.cs" />
     <Compile Include="World\Skill\SkillData.cs" />
+    <Compile Include="World\Spells\AuraHolder.cs" />
     <Compile Include="World\Spells\GlobalCooldown.cs" />
     <Compile Include="World\Spells\SpellCooldown.cs" />
     <Compile Include="World\Spells\SpellCooldownManager.cs" />

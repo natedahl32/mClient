@@ -154,6 +154,17 @@ namespace mClient.World.ClassLogic
         {
             get
             {
+                var currentTarget = Player.PlayerAI.TargetSelection;
+                if (currentTarget == null)
+                    return null;
+
+                // Corruption
+                if (HasSpellAndCanCast(CORRUPTION) && !currentTarget.HasAura(CORRUPTION)) return Spell(CORRUPTION);
+                // Immolate
+                if (HasSpellAndCanCast(IMMOLATE) && !currentTarget.HasAura(IMMOLATE)) return Spell(IMMOLATE);
+                // Shadow Bolt
+                if (HasSpellAndCanCast(SHADOW_BOLT)) return Spell(SHADOW_BOLT);
+
                 return null;
             }
         }

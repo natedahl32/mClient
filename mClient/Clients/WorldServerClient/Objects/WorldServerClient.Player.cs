@@ -295,6 +295,19 @@ namespace mClient.Clients
             get { return GetFieldValue((int)PlayerFields.PLAYER_CHARACTER_POINTS1); }
         }
 
+        /// <summary>
+        /// Gets the number of combo points for this player
+        /// </summary>
+        public uint ComboPoints
+        {
+            get
+            {
+                var value = GetFieldValue((int)PlayerFields.PLAYER_FIELD_BYTES);
+                byte[] bytes = BitConverter.GetBytes(value);
+                return bytes[1];
+            }
+        }
+
         #endregion
 
         #region Public Methods

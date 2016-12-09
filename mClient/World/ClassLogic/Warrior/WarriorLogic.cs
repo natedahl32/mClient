@@ -98,7 +98,7 @@ namespace mClient.World.ClassLogic
             get
             {
                 // Stances
-                if (BATTLE_STANCE > 0 || DEFENSIVE_STANCE > 0 || BERSERKER_STANCE > 0)
+                if (Stance() > 0)
                     return true;
                 // Battle Shout
                 if (BATTLE_SHOUT > 0)
@@ -117,13 +117,11 @@ namespace mClient.World.ClassLogic
             get
             {
                 var needBuffs = new Dictionary<SpellEntry, IList<Player>>();
-                // TODO: Need to check for other stances in certain cases
-                if (Player.TalentSpec == MainSpec.WARRIOR_SPEC_ARMS && HasSpellAndCanCast(BATTLE_STANCE) && !Player.HasAura(BATTLE_STANCE))
-                    needBuffs.Add(Spell(BATTLE_STANCE), new List<Player>() { Player });
-                else if (Player.TalentSpec == MainSpec.WARRIOR_SPEC_FURY && HasSpellAndCanCast(BERSERKER_STANCE) && !Player.HasAura(BERSERKER_STANCE))
-                    needBuffs.Add(Spell(BERSERKER_STANCE), new List<Player>() { Player });
-                else if (Player.TalentSpec == MainSpec.WARRIOR_SPEC_PROTECTION && HasSpellAndCanCast(DEFENSIVE_STANCE) && !Player.HasAura(DEFENSIVE_STANCE))
-                    needBuffs.Add(Spell(DEFENSIVE_STANCE), new List<Player>() { Player });
+
+                // Make sure we are in a stance
+                var stance = Stance();
+                if (HasSpellAndCanCast(stance) && !Player.HasAura(stance))
+                    needBuffs.Add(Spell(stance), new List<Player>() { Player });
 
                 // Check each player in the group for buffs
                 if (Player.CurrentGroup != null && Player.CurrentGroup.PlayersInGroup.Count() > 0)
@@ -168,16 +166,7 @@ namespace mClient.World.ClassLogic
                 // Buffs we should have before going into combat but maybe we don't because we didn't have enough rage
                 if (HasSpellAndCanCast(BATTLE_SHOUT) && !Player.HasAura(BATTLE_SHOUT)) return Spell(BATTLE_SHOUT);
 
-                // DPS abilities
-                if (Player.TalentSpec == MainSpec.WARRIOR_SPEC_ARMS)
-                    return ArmsDpsPriority();
-                else if (Player.TalentSpec == MainSpec.WARRIOR_SPEC_FURY)
-                    return FuryDpsPriority();
-                else if (Player.TalentSpec == MainSpec.WARRIOR_SPEC_PROTECTION)
-                    return ProtectionDpsPriority();
-                else
-                    return ArmsDpsPriority();
-
+                // Logic for no spec
                 if (HasSpellAndCanCast(CHARGE)) return Spell(CHARGE);
                 if (HasSpellAndCanCast(HEROIC_STRIKE)) return Spell(HEROIC_STRIKE);
                     
@@ -327,19 +316,14 @@ namespace mClient.World.ClassLogic
             }
         }
 
-        protected SpellEntry ArmsDpsPriority()
+        /// <summary>
+        /// Gets the correct stance to be in
+        /// </summary>
+        /// <returns></returns>
+        protected virtual uint Stance()
         {
-
-        }
-
-        protected SpellEntry FuryDpsPriority()
-        {
-
-        }
-
-        protected SpellEntry ProtectionDpsPriority()
-        {
-
+            // No spec we use battle stance
+            return BATTLE_STANCE;
         }
 
         #endregion

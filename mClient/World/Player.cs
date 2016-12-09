@@ -341,7 +341,7 @@ namespace mClient.World
             get
             {
                 foreach (var aura in PlayerObject.Auras)
-                    if (aura.AttributesEx2.HasFlag(SpellAttributesEx2.SPELL_ATTR_EX2_FOOD_BUFF))
+                    if (aura.Spell.AttributesEx2.HasFlag(SpellAttributesEx2.SPELL_ATTR_EX2_FOOD_BUFF))
                         return true;
                 return false;
             }
@@ -1135,7 +1135,7 @@ namespace mClient.World
         /// <returns></returns>
         public bool HasAura(uint spellId)
         {
-            return PlayerObject.Auras.Any(a => a.SpellId == spellId);
+            return PlayerObject.HasAura(spellId);
         }
 
         /// <summary>
