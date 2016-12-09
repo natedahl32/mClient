@@ -24,7 +24,7 @@ namespace mClient.Clients
         private System.Object mVendorItemsLock = new System.Object();
 
         // Holds aura durations
-        protected uint[] mAuraDurations = new uint[SpellConstants.MAX_AURAS + 1];
+        protected uint[] mAuraDurations = new uint[SpellConstants.MAX_AURAS];
 
         #endregion
 
@@ -549,11 +549,21 @@ namespace mClient.Clients
         /// </summary>
         /// <param name="elapsed"></param>
         /// <remarks>In Vanilla, we only know durations for our own auras</remarks>
-        public void UpdateAuras(uint elapsed)
+        public void UpdateAuraDurations(uint elapsed)
         {
             for (int i = 0; i <= SpellConstants.MAX_AURAS; i++)
                 if (mAuraDurations[i] > 0)
                     mAuraDurations[i] = Math.Max(0, mAuraDurations[i] - elapsed);
+        }
+
+        /// <summary>
+        /// Updates the aura
+        /// </summary>
+        /// <param name="slot"></param>
+        /// <param name="aura"></param>
+        public void UpdateAura(byte slot, uint aura)
+        {
+            SetField((int)UnitFields.UNIT_FIELD_AURA + slot, aura);
         }
 
         #endregion
@@ -644,7 +654,7 @@ namespace mClient.Clients
             // Get the byte number to retrieve the data for
             int byteNumber = (auraSlot % 4) * 8;
             byte[] bytes = BitConverter.GetBytes(value);
-            return bytes[byteNumber];
+            return (byte)(bytes[byteNumber] + 1);
         }
 
         #endregion

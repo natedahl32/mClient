@@ -35,6 +35,15 @@ namespace mClient.Clients
             var x = packet.ReadInt16();
             var y = packet.ReadInt16();
 
+            // Auras
+            var auraMask = packet.ReadUInt32();
+            var auras = new ushort[SpellConstants.MAX_AURAS];
+            for (var i = 0; i < SpellConstants.MAX_AURAS; i++)
+            {
+                if ((auraMask & (1 << i)) > 0)
+                    auras[i] = packet.ReadUInt16();
+            }
+
             // Find the party member and update their stats
             var member = player.CurrentGroup.GetPlayer(guid);
             if (member != null && member.PlayerObject != null)
@@ -42,6 +51,10 @@ namespace mClient.Clients
                 member.ZoneID = zoneId;
                 member.PlayerObject.Update(currentHP, maxHP, level, currentPower, maxPower);
                 member.PlayerObject.Position = new Coordinate(x, y, 0f);
+
+                // Update auras for the party member
+                for (var i = 0; i < SpellConstants.MAX_AURAS; i++)
+                    member.PlayerObject.UpdateAura((byte)i, auras[i]);
             }
         }
 
@@ -102,6 +115,18 @@ namespace mClient.Clients
                 var x = packet.ReadInt16();
                 var y = packet.ReadInt16();
                 partyMember.PlayerObject.Position = new Coordinate(x, y, (partyMember.PlayerObject.Position != null ? partyMember.PlayerObject.Position.Z : 0f));
+            }
+
+            // Aura
+            if (mask.HasFlag(GroupUpdateFlags.GROUP_UPDATE_FLAG_AURAS) && partyMember.PlayerObject != null)
+            {
+                var auraMask = packet.ReadUInt32();
+                // Only get positive auras here
+                for (var i = 0; i < SpellConstants.MAX_POSITIVE_AURAS; i++)
+                {
+                    if ((auraMask & (1 << i)) > 0)
+                        partyMember.PlayerObject.UpdateAura((byte)i, packet.ReadUInt16());
+                }
             }
 
             // TODO: Update other information for our player

@@ -283,7 +283,7 @@ namespace mClient.World.AI
                     if ((MM_GetTime() - lastUpdateTime) < 2000) continue;
 
                     // Update auras
-                    mPlayer.PlayerObject.UpdateAuras(MM_GetTime() - lastUpdateTime);
+                    mPlayer.PlayerObject.UpdateAuraDurations(MM_GetTime() - lastUpdateTime);
 
                     // Update spell cooldowns
                     mPlayer.SpellCooldowns.UpdateCooldowns();
