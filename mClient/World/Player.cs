@@ -245,6 +245,11 @@ namespace mClient.World
         public bool IsInCombat { get { return mEnemyList.Count > 0; } }
 
         /// <summary>
+        /// Gets whether or not the player is in a group
+        /// </summary>
+        public bool IsInGroup { get { return CurrentGroup != null; } }
+
+        /// <summary>
         /// Gets all enemies currently in combat with the player
         /// </summary>
         public IEnumerable<WoWGuid> EnemyList { get { return mEnemyList; } }

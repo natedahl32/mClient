@@ -54,6 +54,28 @@ namespace mClient.World.ClassLogic
                RIPOSTE,
                SAP;
 
+        // Poisons
+        protected static IList<uint> INSTANT_POISONS = new List<uint> { Poisons.INSTANT_POISON_6,
+                                                                 Poisons.INSTANT_POISON_5,
+                                                                 Poisons.INSTANT_POISON_4,
+                                                                 Poisons.INSTANT_POISON_3,
+                                                                 Poisons.INSTANT_POISON_2,
+                                                                 Poisons.INSTANT_POISON_1};
+        protected static IList<uint> DEADLY_POISONS = new List<uint> { Poisons.DEADLY_POISON_5,
+                                                                 Poisons.DEADLY_POISON_4,
+                                                                 Poisons.DEADLY_POISON_3,
+                                                                 Poisons.DEADLY_POISON_2,
+                                                                 Poisons.DEADLY_POISON_1};
+        protected static IList<uint> CRIPPLING_POISONS = new List<uint> { Poisons.CRIPPLING_POISON_2,
+                                                                 Poisons.CRIPPLING_POISON_1};
+        protected static IList<uint> MIND_NUMBING_POISONS = new List<uint> { Poisons.MIND_NUMBING_POISON_3,
+                                                                 Poisons.MIND_NUMBING_POISON_2,
+                                                                 Poisons.MIND_NUMBING_POISON_1};
+        protected static IList<uint> WOUND_POISONS = new List<uint> { Poisons.WOUND_POISON_4,
+                                                                 Poisons.WOUND_POISON_3,
+                                                                 Poisons.WOUND_POISON_2,
+                                                                 Poisons.WOUND_POISON_1};
+
         #endregion
 
         #region Constructors
@@ -81,6 +103,10 @@ namespace mClient.World.ClassLogic
         {
             get
             {
+                // Check for poisons
+                if (GetPoisonForMH() > 0 || GetPoisonForOH() > 0)
+                    return true;
+
                 return false;
             }
         }
@@ -92,6 +118,9 @@ namespace mClient.World.ClassLogic
         {
             get
             {
+                var needBuffs = new Dictionary<SpellEntry, IList<Player>>();
+
+
                 return new Dictionary<SpellEntry, IList<Player>>();
             }
         }
@@ -263,9 +292,96 @@ namespace mClient.World.ClassLogic
             mStatWeights[ItemModType.ITEM_MOD_HEALTH] = 0.5f;
         }
 
+        /// <summary>
+        /// Gets the poison to use for main hand
+        /// </summary>
+        /// <returns></returns>
+        protected virtual uint GetPoisonForMH()
+        {
+            uint poison = 0;
+            poison = GetPoison(INSTANT_POISONS);
+            // Don't use other poisons unless we are solo so we don't take up a debuff slot
+            if (!Player.IsInGroup)
+            {
+                if (poison == 0) poison = GetPoison(CRIPPLING_POISONS);
+                if (poison == 0) poison = GetPoison(DEADLY_POISONS);
+                if (poison == 0) poison = GetPoison(MIND_NUMBING_POISONS);
+                if (poison == 0) poison = GetPoison(WOUND_POISONS);
+            }
+            
+            return poison;
+        }
+
+        /// <summary>
+        /// Gets the poison to use for offhand
+        /// </summary>
+        /// <returns></returns>
+        protected virtual uint GetPoisonForOH()
+        {
+            uint poison = 0;
+            // If we are in group play, use instant poison in offhand as well. Otherwise don't use a poison in
+            // group play so we don't take up an unneeded debuff slot.
+            if (Player.IsInGroup)
+                poison = GetPoison(INSTANT_POISONS);
+            else
+            {
+                if (poison == 0) poison = GetPoison(CRIPPLING_POISONS);
+                if (poison == 0) poison = GetPoison(INSTANT_POISONS);
+                if (poison == 0) poison = GetPoison(DEADLY_POISONS);
+                if (poison == 0) poison = GetPoison(MIND_NUMBING_POISONS);
+                if (poison == 0) poison = GetPoison(WOUND_POISONS);
+            }
+
+            return poison;
+        }
+
+        /// <summary>
+        /// Gets the best poison type that we have and can cast
+        /// </summary>
+        /// <returns></returns>
+        protected uint GetPoison(IList<uint> poisons)
+        {
+            foreach (var p in poisons)
+            {
+                // TODO: Check if we can cast it? Maybe we have item in inventory but can't use it due to level?
+                if (Player.PlayerObject.HasItemInInventory(p))
+                    return p;
+            }
+
+            return 0;
+        }
+
         #endregion
 
         #region Rogue Constants
+
+        public static class Poisons
+        {
+            public const uint INSTANT_POISON_1 = 6947;
+            public const uint INSTANT_POISON_2 = 6949;
+            public const uint INSTANT_POISON_3 = 6950;
+            public const uint INSTANT_POISON_4 = 8926;
+            public const uint INSTANT_POISON_5 = 8927;
+            public const uint INSTANT_POISON_6 = 8928;
+
+            public const uint CRIPPLING_POISON_1 = 3775;
+            public const uint CRIPPLING_POISON_2 = 3776;
+
+            public const uint DEADLY_POISON_1 = 2892;
+            public const uint DEADLY_POISON_2 = 2893;
+            public const uint DEADLY_POISON_3 = 8984;
+            public const uint DEADLY_POISON_4 = 8985;
+            public const uint DEADLY_POISON_5 = 20844;
+
+            public const uint MIND_NUMBING_POISON_1 = 5237;
+            public const uint MIND_NUMBING_POISON_2 = 6951;
+            public const uint MIND_NUMBING_POISON_3 = 9186;
+
+            public const uint WOUND_POISON_1 = 10918;
+            public const uint WOUND_POISON_2 = 10920;
+            public const uint WOUND_POISON_3 = 10921;
+            public const uint WOUND_POISON_4 = 10922;
+        }
 
         public static class Spells
         {
