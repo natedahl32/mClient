@@ -571,6 +571,22 @@ namespace mClient.World
         }
 
         /// <summary>
+        /// Removes a spell from the players list
+        /// </summary>
+        /// <param name="spellId"></param>
+        public void RemoveSpell(ushort spellId)
+        {
+            if (mSpellList.Contains(spellId))
+            {
+                mSpellList.Remove(spellId);
+                // Check this spell for required items. 
+                var spell = SpellTable.Instance.getSpell(spellId);
+                if (spell != null)
+                    CheckSpellForRequiredItems(spell, true);
+            }
+        }
+
+        /// <summary>
         /// Updates all available spells that we can get but do not have yet. Called when logging in and when
         /// the player levels up.
         /// </summary>
@@ -1084,6 +1100,15 @@ namespace mClient.World
             if (equippedItems.Count() == 0)
                 return true;
 
+            // If this is a dual-spot inventory type and we only have one item currently equipped, we can equip it
+            if (item.BaseInfo.InventoryType == InventoryType.INVTYPE_TRINKET ||
+                item.BaseInfo.InventoryType == InventoryType.INVTYPE_FINGER ||
+                (item.BaseInfo.InventoryType == InventoryType.INVTYPE_WEAPON && HasSpell(SpellConstants.DUAL_WIELD)))
+            {
+                if (equippedItems.Count() == 1)
+                    return true;
+            }
+
             bool isUpgrade = false;
 
             // Loop through each item and check it against the item give to us. If we find an upgrade we break immediately.
@@ -1562,16 +1587,22 @@ namespace mClient.World
         }
 
         /// <summary>
-        /// Checks a spell for any items that are required to cast it. We add these items to our required items list so we can purchase them if needed and not sell them.
+        /// Checks a spell for any items that are required to cast it. We add/remove these items to our required items list so we can purchase them if needed and not sell them.
         /// </summary>
         /// <param name="spell"></param>
-        private void CheckSpellForRequiredItems(SpellEntry spell)
+        private void CheckSpellForRequiredItems(SpellEntry spell, bool remove = false)
         {
             // The totem fields for any spell are items that are required in inventory to cast the spell.
             for (int i = 0; i <= spell.Totem.GetUpperBound(0); i++)
             {
                 if (spell.Totem[i] > 0 && !mRequiredItems.ContainsKey(spell.Totem[i]))
-                    mRequiredItems.TryAdd(spell.Totem[i], new RequiredItemData { ItemId = spell.Totem[i], ItemCount = 1 });
+                    if (remove)
+                    {
+                        RequiredItemData outData;
+                        mRequiredItems.TryRemove(spell.Totem[i], out outData);
+                    }
+                    else
+                        mRequiredItems.TryAdd(spell.Totem[i], new RequiredItemData { ItemId = spell.Totem[i], ItemCount = 1 });
             }
 
             // Tradeskill spells have reagents but we don't add those to required items until we are actually doing tradeskill type things. Otherwise our inventory would fill up very quickly
@@ -1583,7 +1614,13 @@ namespace mClient.World
             for (int i = 0; i <= spell.Reagents.GetUpperBound(0); i++)
             {
                 if (spell.Reagents[i] > 0 && spell.ReagentsCount[i] > 0 && !mRequiredItems.ContainsKey((uint)spell.Reagents[i]))
-                    mRequiredItems.TryAdd((uint)spell.Reagents[i], new RequiredItemData { ItemId = (uint)spell.Reagents[i], ItemCount = spell.ReagentsCount[i] * 40 });
+                    if (remove)
+                    {
+                        RequiredItemData outData;
+                        mRequiredItems.TryRemove((uint)spell.Reagents[i], out outData);
+                    }
+                    else
+                        mRequiredItems.TryAdd((uint)spell.Reagents[i], new RequiredItemData { ItemId = (uint)spell.Reagents[i], ItemCount = spell.ReagentsCount[i] * 40 });
             }
         }
 

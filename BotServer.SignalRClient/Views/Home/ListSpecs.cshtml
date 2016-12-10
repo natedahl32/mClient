@@ -1,0 +1,51 @@
+﻿
+@{
+    ViewBag.Title = "List Talent Specs";
+}
+
+@section scripts {
+    <script type="text/javascript">
+        $(function () {
+            // connect to the server
+            SignalRServer.connect();
+
+            // add handlers here if needed
+            SignalRServer.addHandler('existingTalentSpecs', function (specs) {
+                // clear all table rows
+                $("#talentSpecs tbody tr").remove();
+
+                // go through all accounts and add data to the table
+                $.each(specs, function (index, value) {
+                    var row = $("<tr id='" + value.Id + "'><td>" + value.Name + "</td><td>" + value.Description + "</td><td>" + value.ForClass + "</td><td>" + value.PrimarySpec + "</td><td></td></tr>")
+                    $("#talentSpecs tbody").append(row);
+                });
+            });
+
+            // Start the signalR server
+            SignalRServer.start(
+                function () { // onDone callback
+                    // Request the existing talent specs
+                    SignalRServer.invoke('RequestTalentSpecs');
+                });
+        });
+    </script>
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>Existing Talent Specs</h3>
+        <table id="talentSpecs" class="table table-bordered table-striped table-responsive">
+            <thead>
+                <tr>
+                    <th>Spec Name</th>
+                    <th>Spec Description</th>
+                    <th>Class</th>
+                    <th>Primary Spec</th>
+                    <th>&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+

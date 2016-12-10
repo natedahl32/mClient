@@ -148,6 +148,23 @@ namespace mClient.BotServer
             SpecManager.Instance.Add(spec);
         }
 
+        /// <summary>
+        /// Lists all talent specs available
+        /// </summary>
+        /// <returns></returns>
+        public IList<TalentSpecView> ListTalentSpecs()
+        {
+            var specs = SpecManager.Instance.GetAll().ToList();
+            return specs.Select(ts => new TalentSpecView()
+            {
+                Id = ts.Id,
+                Name = ts.Name,
+                Description = ts.Description,
+                ForClass = ts.ForClass.GetDisplayName(),
+                PrimarySpec = ts.TalentSpec.GetDisplayName()
+            }).ToList();
+        }
+
         #endregion
 
         #region Private Methods

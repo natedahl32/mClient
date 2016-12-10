@@ -94,6 +94,17 @@ namespace mClient.World.AI
             foreach (var invItem in Player.PlayerObject.InventoryItems)
                 if (invItem != null && invItem.Item != null && invItem.Item.BaseInfo != null && Player.IsItemAnUpgrade(invItem.Item))
                 {
+                    // If the item is a dual-spot inventory type, we can't autoequip it or it will always go to the first slot of the inventory type.
+                    // In this case we need to equip it to a specific slot
+                    if (invItem.Item.BaseInfo.InventoryType == InventoryType.INVTYPE_TRINKET ||
+                        invItem.Item.BaseInfo.InventoryType == InventoryType.INVTYPE_FINGER ||
+                        (invItem.Item.BaseInfo.InventoryType == InventoryType.INVTYPE_WEAPON && Player.HasSpell(SpellConstants.DUAL_WIELD)))
+                    {
+                        StartActivity(new EquipItemFromInventory(invItem, this));
+                        return BehaviourTreeStatus.Success;
+                    }
+
+                    // Otherwise we can auto equip
                     StartActivity(new AutoEquipItemFromInventory(invItem, this));
                     return BehaviourTreeStatus.Success;
                 }

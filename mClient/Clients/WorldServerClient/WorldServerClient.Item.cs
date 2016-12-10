@@ -428,6 +428,19 @@ namespace mClient.Clients
         }
 
         /// <summary>
+        /// Equips an item from inventory to a specific slot
+        /// </summary>
+        /// <param name="itemGuid"></param>
+        /// <param name="destinationSlot"></param>
+        public void EquipItem(ulong itemGuid, byte destinationSlot)
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_AUTOEQUIP_ITEM_SLOT);
+            packet.Write(itemGuid);
+            packet.Write(destinationSlot);
+            Send(packet);
+        }
+
+        /// <summary>
         /// Starts the loot sequence for an object
         /// </summary>
         /// <param name="guid"></param>
