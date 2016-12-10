@@ -24,6 +24,8 @@ namespace mClient.Constants
 
         public const int MAX_AURAS = 48;
         public const int MAX_POSITIVE_AURAS = 32;
+
+        public const int DUAL_WIELD = 674;
     }
 
     public enum SpellEffectIndex

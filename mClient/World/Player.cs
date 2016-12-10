@@ -1095,6 +1095,15 @@ namespace mClient.World
             if (equippedItems.Count() == 0)
                 return true;
 
+            // If this is a dual-spot inventory type and we only have one item currently equipped, we can equip it
+            if (item.BaseInfo.InventoryType == InventoryType.INVTYPE_TRINKET ||
+                item.BaseInfo.InventoryType == InventoryType.INVTYPE_FINGER ||
+                (item.BaseInfo.InventoryType == InventoryType.INVTYPE_WEAPON && HasSpell(SpellConstants.DUAL_WIELD)))
+            {
+                if (equippedItems.Count() == 1)
+                    return true;
+            }
+
             bool isUpgrade = false;
 
             // Loop through each item and check it against the item give to us. If we find an upgrade we break immediately.

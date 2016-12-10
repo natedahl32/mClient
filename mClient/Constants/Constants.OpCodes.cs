@@ -288,7 +288,7 @@ namespace mClient.Constants
         CMSG_SWAP_ITEM = 268,  //(0x10C)
         CMSG_SWAP_INV_ITEM = 269,  //(0x10D)
         CMSG_SPLIT_ITEM = 270,  //(0x10E)
-        CMSG_PICKUP_ITEM = 271,  //(0x10F)
+        CMSG_AUTOEQUIP_ITEM_SLOT = 271,  //(0x10F)
         CMSG_DROP_ITEM = 272,  //(0x110)
         CMSG_DESTROYITEM = 273,  //(0x111)
         SMSG_INVENTORY_CHANGE_FAILURE = 274,  //(0x112)
