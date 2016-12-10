@@ -196,6 +196,7 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\AddExistingAccount.cshtml" />
     <Content Include="Views\Home\Talents.cshtml" />
+    <Content Include="Views\Home\ListSpecs.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

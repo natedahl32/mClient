@@ -76,6 +76,14 @@ namespace BotServer.SignalRServer
             Server.SaveTalentSpec(specName, specDescription, className, talents);
         }
 
+        /// <summary>
+        /// Requests the list of talent specs available
+        /// </summary>
+        public void RequestTalentSpecs()
+        {
+            SendTalentSpecs(Context.ConnectionId);
+        }
+
         #endregion
 
         #region Server Methods
@@ -97,6 +105,16 @@ namespace BotServer.SignalRServer
         public static void SendBotAccountUpdate(BotAccountView account)
         {
             mHubContext.Clients.All.botAccountUpdate(account);
+        }
+
+        /// <summary>
+        /// Sends the list of current talents specs to a connection
+        /// </summary>
+        /// <param name="connectionId"></param>
+        public static void SendTalentSpecs(string connectionId)
+        {
+            var specs = Server.ListTalentSpecs().ToList();
+            mHubContext.Clients.Client(connectionId).existingTalentSpecs(specs);
         }
 
         #endregion

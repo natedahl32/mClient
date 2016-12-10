@@ -125,6 +125,39 @@ namespace mClient.Clients
                 player.HandleSpellGo(message);
         }
 
+        /// <summary>
+        /// Handles an update that a spell was learned
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_LEARNED_SPELL)]
+        public void HandleLearnedSpell(PacketIn packet)
+        {
+            var spellId = packet.ReadUInt32();
+
+            // Adds the spell to the player
+            player.AddSpell((ushort)spellId);
+
+            // Means a spell was learned, send a message
+            var message = new SpellLearnedMessage()
+            {
+                SpellId = spellId
+            };
+            player.PlayerAI.SendMessageToAllActivities(message);
+        }
+
+        /// <summary>
+        /// Handles an update that a spell was removed
+        /// </summary>
+        /// <param name="packet"></param>
+        [PacketHandlerAtribute(WorldServerOpCode.SMSG_REMOVED_SPELL)]
+        public void HandleRemoveSpell(PacketIn packet)
+        {
+            var spellId = packet.ReadUInt16();
+
+            // Remove the spell from the players list
+            player.RemoveSpell(spellId);
+        }
+
         #endregion
 
         #region Actions

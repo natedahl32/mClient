@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 
@@ -7,16 +8,25 @@ namespace mClient.Constants
 {
     public enum Classname : uint
     {
+        [Display(Name = "Warrior")]
         Warrior = 1,
+        [Display(Name = "Paladin")]
         Paladin = 2,
+        [Display(Name = "Hunter")]
         Hunter = 3,
+        [Display(Name = "Rogue")]
         Rogue = 4,
+        [Display(Name = "Priest")]
         Priest = 5,
         //DeathKnight = 6,
+        [Display(Name = "Shaman")]
         Shaman = 7,
+        [Display(Name = "Mage")]
         Mage = 8,
+        [Display(Name = "Warlock")]
         Warlock = 9,
         //??	= 10
+        [Display(Name = "Druid")]
         Druid = 11
     }
 

@@ -17,5 +17,10 @@ namespace BotServer.SignalRClient.Controllers
         {
             return View();
         }
+
+        public ActionResult ListSpecs()
+        {
+            return View();
+        }
     }
 }

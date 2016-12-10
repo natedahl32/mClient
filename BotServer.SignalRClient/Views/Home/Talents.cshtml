@@ -12,11 +12,7 @@
             // add handlers here if needed
 
             // Start the signalR server
-            SignalRServer.start(
-                function () { // onDone callback
-                    // Request the existing bot accounts on the server
-                    SignalRServer.invoke('requestExistingBotAccounts');
-                });
+            SignalRServer.start();
 
             // save applied talent spec
             $("#SaveSpec").click(function () {

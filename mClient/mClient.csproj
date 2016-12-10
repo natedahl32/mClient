@@ -77,6 +77,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -188,6 +189,7 @@
     <Compile Include="Shared\Coordinate.cs" />
     <Compile Include="Shared\Coords3.cs" />
     <Compile Include="Shared\EntityId.cs" />
+    <Compile Include="Shared\Extensions.cs" />
     <Compile Include="Shared\HiLo.cs" />
     <Compile Include="Shared\QueryQueue.cs" />
     <Compile Include="Shared\UpdateMask.cs" />
@@ -228,6 +230,7 @@
     <Compile Include="World\AI\Activity\Messages\SpellCastFailedMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\SpellCastGoMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\SpellCastInterruptedMessage.cs" />
+    <Compile Include="World\AI\Activity\Messages\SpellLearnedMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\TeleportAckMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\TradeStatusMessage.cs" />
     <Compile Include="World\AI\Activity\Messages\TrainerBuySucceededMessage.cs" />

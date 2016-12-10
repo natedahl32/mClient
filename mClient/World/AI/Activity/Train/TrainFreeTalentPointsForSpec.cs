@@ -1,16 +1,16 @@
 ﻿using mClient.DBC;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using mClient.World.AI.Activity.Messages;
 
 namespace mClient.World.AI.Activity.Train
 {
+    /// <summary>
+    /// Activity that uses free talent points available to learn the next talent in the assign talent spec for the player. Uses talent points one at a time.
+    /// </summary>
     public class TrainFreeTalentPointsForSpec : BaseActivity
     {
         #region Declarations
 
+        private bool mDone = false;
         private uint mSpentFreePoint = 0;
 
         #endregion
@@ -37,7 +37,7 @@ namespace mClient.World.AI.Activity.Train
         public override void Process()
         {
             // If we don't have anymore free talent points we can exit out
-            if (PlayerAI.Player.PlayerObject.FreeTalentPoints == 0)
+            if (PlayerAI.Player.PlayerObject.FreeTalentPoints == 0 || mDone)
             {
                 PlayerAI.CompleteActivity();
                 return;
@@ -66,6 +66,20 @@ namespace mClient.World.AI.Activity.Train
             // Learn the talent now
             mSpentFreePoint = PlayerAI.Player.PlayerObject.FreeTalentPoints;
             PlayerAI.Client.LearnTalent(talentSpellPos.TalentId, (uint)(talentSpellPos.Rank - 1));
+        }
+
+        public override void HandleMessage(ActivityMessage message)
+        {
+            base.HandleMessage(message);
+
+            if (message.MessageType == Constants.WorldServerOpCode.SMSG_LEARNED_SPELL)
+            {
+                var learnedMessage = message as SpellLearnedMessage;
+                if (learnedMessage != null)
+                {
+                    mDone = true;
+                }
+            }
         }
 
         #endregion

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace mClient.Constants
 {
@@ -67,33 +68,61 @@ namespace mClient.Constants
 
     public enum MainSpec
     {
+        [Display(Name = "")]
         NONE = 0,
+        [Display(Name = "Fire")]
         MAGE_SPEC_FIRE = 41,
+        [Display(Name = "Frost")]
         MAGE_SPEC_FROST = 61,
+        [Display(Name = "Arcane")]
         MAGE_SPEC_ARCANE = 81,
+        [Display(Name = "Arms")]
         WARRIOR_SPEC_ARMS = 161,
+        [Display(Name = "Protection")]
         WARRIOR_SPEC_PROTECTION = 163,
+        [Display(Name = "Fury")]
         WARRIOR_SPEC_FURY = 164,
+        [Display(Name = "Combat")]
         ROGUE_SPEC_COMBAT = 181,
+        [Display(Name = "Assassination")]
         ROGUE_SPEC_ASSASSINATION = 182,
+        [Display(Name = "Subtelty")]
         ROGUE_SPEC_SUBTELTY = 183,
+        [Display(Name = "Discipline")]
         PRIEST_SPEC_DISCIPLINE = 201,
+        [Display(Name = "Holy")]
         PRIEST_SPEC_HOLY = 202,
+        [Display(Name = "Shadow")]
         PRIEST_SPEC_SHADOW = 203,
+        [Display(Name = "Elemental")]
         SHAMAN_SPEC_ELEMENTAL = 261,
+        [Display(Name = "Restoration")]
         SHAMAN_SPEC_RESTORATION = 262,
+        [Display(Name = "Enhancement")]
         SHAMAN_SPEC_ENHANCEMENT = 263,
+        [Display(Name = "Feral")]
         DRUID_SPEC_FERAL = 281,
+        [Display(Name = "Restoration")]
         DRUID_SPEC_RESTORATION = 282,
+        [Display(Name = "Balance")]
         DRUID_SPEC_BALANCE = 283,
+        [Display(Name = "Destruction")]
         WARLOCK_SPEC_DESTRUCTION = 301,
+        [Display(Name = "Affliction")]
         WARLOCK_SPEC_AFFLICTION = 302,
+        [Display(Name = "Demonology")]
         WARLOCK_SPEC_DEMONOLOGY = 303,
+        [Display(Name = "Beast Mastery")]
         HUNTER_SPEC_BEASTMASTERY = 361,
+        [Display(Name = "Survival")]
         HUNTER_SPEC_SURVIVAL = 362,
+        [Display(Name = "Marksmanship")]
         HUNTER_SPEC_MARKSMANSHIP = 363,
+        [Display(Name = "Retribution")]
         PALADIN_SPEC_RETRIBUTION = 381,
+        [Display(Name = "Holy")]
         PALADIN_SPEC_HOLY = 382,
+        [Display(Name = "Protection")]
         PALADIN_SPEC_PROTECTION = 383
     }
 

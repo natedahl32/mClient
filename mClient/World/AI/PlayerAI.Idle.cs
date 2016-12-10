@@ -77,6 +77,10 @@ namespace mClient.World.AI
             if (Player.TalentSpec == Constants.MainSpec.NONE)
                 return BehaviourTreeStatus.Failure;
 
+            // Make sure we have a next talent to spend on. We may have a partial talent spec applied
+            if (Player.NextTalentToPurchase == 0)
+                return BehaviourTreeStatus.Failure;
+
             // Apply talent points for our current spec
             StartActivity(new TrainFreeTalentPointsForSpec(this));
             return BehaviourTreeStatus.Success;
