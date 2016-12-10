@@ -5,17 +5,13 @@
 @section scripts {
     <!--SignalR script to update the chat page and send messages.-->
     <script>
-        var tryingToReconnect = false;
-        var shouldAutoReconnect = true;
-
         $(function () {
 
-            var connection = $.hubConnection();
-            connection.url = 'http://localhost:8080/signalr';
-            var botServerHubProxy = connection.createHubProxy('BotServerHub');
+            // connect to the server
+            SignalRServer.connect();
 
-            // Custom server message handlers
-            botServerHubProxy.on('existingBotAccounts', function (accounts) {
+            // Add handlers for the server
+            SignalRServer.addHandler('existingBotAccounts', function (accounts) {
                 // clear all table rows
                 $("#botAccounts tbody tr").remove();
 
@@ -25,40 +21,38 @@
                     $("#botAccounts tbody").append(row);
                 });
             });
-            botServerHubProxy.on('botAccountUpdate', function (account) {
+            SignalRServer.addHandler('botAccountUpdate', function (account) {
                 // Get the row for this bot account
                 var row = $("#botAccounts tbody").find("#" + account.ClientId);
                 // Update the row html for this bot account
                 $(row).html("<td>" + account.AccountName + "</td><td>" + account.CharacterName + "</td><td>" + account.CharacterLevel + "</td><td>" + account.ConnectionStatus + "</td><td>" + account.CurrentActivity + "</td><td>" + buildAccountDropdown() + "</td>");
             });
 
-            // Start the connection
-            // connection.logging = true; // turns on client side logging
-            connection.start()
-                .done(function () {
-                    console.log('Now connected, connection ID=' + connection.id);
+
+            // Start the signalR server
+            SignalRServer.start(
+                function () { // onDone callback
                     // Request the existing bot accounts on the server
-                    botServerHubProxy.invoke('requestExistingBotAccounts');
-                })
-                .fail(function () { console.log('Could not Connection!'); });
+                    SignalRServer.invoke('requestExistingBotAccounts');
+                });
 
             // add existing account handler
             $("#addExistingAccountSave").click(function () {
                 var accountName = $("#addExistingAccountForm input#accountName").val();
                 var password = $("#addExistingAccountForm input#accountPassword").val();
-                botServerHubProxy.invoke('addExistingBotAccount', accountName, password);
+                SignalRServer.invoke('addExistingBotAccount', accountName, password);
                 $('#addExistingAccount').modal('hide')
             });
 
             // connect all clients handler
             $("#connectAll").click(function () {
-                botServerHubProxy.invoke('connectAllClients');
+                SignalRServer.invoke('connectAllClients');
             });
 
             // login a specific account
             $(document).on("click", "a#loginAccount", function () {
                 var id = $(this).closest("tr").attr("id");
-                botServerHubProxy.invoke('ConnectAccount', id);
+                SignalRServer.invoke('ConnectAccount', id);
             });
         });
         // This optional function html-encodes messages for display in the page.

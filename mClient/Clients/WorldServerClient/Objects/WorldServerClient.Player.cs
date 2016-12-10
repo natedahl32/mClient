@@ -367,6 +367,8 @@ namespace mClient.Clients
                     equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_SHOULDERS);
                     break;
                 case InventoryType.INVTYPE_CHEST:
+                case InventoryType.INVTYPE_ROBE:
+                case InventoryType.INVTYPE_BODY:
                     equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_CHEST);
                     break;
                 case InventoryType.INVTYPE_WAIST:
@@ -402,6 +404,7 @@ namespace mClient.Clients
                     break;
                 case InventoryType.INVTYPE_SHIELD:
                 case InventoryType.INVTYPE_WEAPONOFFHAND:
+                case InventoryType.INVTYPE_HOLDABLE:
                     equipmentSlotsToCheck.Add(EquipmentSlots.EQUIPMENT_SLOT_OFFHAND);
                     break;
                 case InventoryType.INVTYPE_RANGED:

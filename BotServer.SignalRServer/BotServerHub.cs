@@ -64,6 +64,18 @@ namespace BotServer.SignalRServer
             Server.LogInClient(id);
         }
 
+        /// <summary>
+        /// Saves a talent spec from the ui to our server
+        /// </summary>
+        /// <param name="specName"></param>
+        /// <param name="specDescription"></param>
+        /// <param name="className"></param>
+        /// <param name="talents"></param>
+        public void SaveTalentSpec(string specName, string specDescription, byte className, uint[] talents)
+        {
+            Server.SaveTalentSpec(specName, specDescription, className, talents);
+        }
+
         #endregion
 
         #region Server Methods

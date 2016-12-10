@@ -1,5 +1,12 @@
 ﻿using mClient.BotServer.EventArgs;
 using mClient.BotServer.Views;
+using mClient.Constants;
+using mClient.World.Creature;
+using mClient.World.GameObject;
+using mClient.World.Guild;
+using mClient.World.Items;
+using mClient.World.Quest;
+using mClient.World.Talents;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
@@ -47,7 +54,7 @@ namespace mClient.BotServer
         #region Public Methods
 
         /// <summary>
-        /// Serializes quests to file
+        /// Serializes bot accounts to file
         /// </summary>
         public void Serialize()
         {
@@ -61,7 +68,7 @@ namespace mClient.BotServer
         }
 
         /// <summary>
-        /// Loads existing quests saved to file
+        /// Loads existing bot accounts from file
         /// </summary>
         public void Load()
         {
@@ -74,6 +81,14 @@ namespace mClient.BotServer
             // Initialize login server for each bot account that was loaded
             foreach (var account in mBotAccounts)
                 account.InitializeLoginServer();
+
+            // Load our caches
+            CreatureManager.Instance.Load();
+            GameObjectManager.Instance.Load();
+            QuestManager.Instance.Load();
+            ItemManager.Instance.Load();
+            GuildManager.Instance.Load();
+            SpecManager.Instance.Load();
         }
 
         /// <summary>
@@ -113,6 +128,24 @@ namespace mClient.BotServer
             var client = mBotAccounts.Where(a => a.ClientId.ToString() == clientId).SingleOrDefault();
             if (client != null)
                 LogInBotAccount(client);
+        }
+
+        /// <summary>
+        /// Saves a new talent spec to the spec manager
+        /// </summary>
+        /// <param name="specName"></param>
+        /// <param name="specDescription"></param>
+        /// <param name="className"></param>
+        /// <param name="talents"></param>
+        public void SaveTalentSpec(string specName, string specDescription, byte className, uint[] talents)
+        {
+            var spec = new Spec(specName)
+            {
+                Description = specDescription,
+                ForClass = (Classname)className,
+                Talents = talents
+            };
+            SpecManager.Instance.Add(spec);
         }
 
         #endregion

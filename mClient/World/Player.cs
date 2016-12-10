@@ -411,6 +411,17 @@ namespace mClient.World
         }
 
         /// <summary>
+        /// Gets the id of the spec we are currently assigned
+        /// </summary>
+        public int SpecId
+        {
+            get
+            {
+                return mPlayerSettings.SpecId;
+            }
+        }
+
+        /// <summary>
         /// Gets the spell id of the next talent we want to purchase based on our current spec
         /// </summary>
         public uint NextTalentToPurchase
@@ -1435,15 +1446,24 @@ namespace mClient.World
         /// <param name="specId"></param>
         public void SetTalentSpec(uint specId)
         {
+            MainSpec oldSpec;
             var newSpec = SpecManager.Instance.Get(specId);
             if (newSpec != null)
             {
-                var oldSpec = TalentSpec;
+                oldSpec = TalentSpec;
                 mClassLogic = PlayerClassLogic.CreateClassLogic(newSpec.TalentSpec, (Classname)Class, this);
                 mPlayerSettings.SpecId = (int)specId;
                 if (SpecChangedEvent != null)
                     SpecChangedEvent(this, new SpecChangedEventArgs(oldSpec));
+                return;
             }
+
+            // Clears the talent spec for the player (does not refund current talent points though)
+            oldSpec = TalentSpec;
+            mClassLogic = PlayerClassLogic.CreateClassLogic((Classname)Class, this);
+            mPlayerSettings.SpecId = 0;
+            if (SpecChangedEvent != null)
+                SpecChangedEvent(this, new SpecChangedEventArgs(oldSpec));
         }
 
         /// <summary>

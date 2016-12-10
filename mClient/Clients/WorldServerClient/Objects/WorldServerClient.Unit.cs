@@ -551,7 +551,7 @@ namespace mClient.Clients
         /// <remarks>In Vanilla, we only know durations for our own auras</remarks>
         public void UpdateAuraDurations(uint elapsed)
         {
-            for (int i = 0; i <= SpellConstants.MAX_AURAS; i++)
+            for (int i = 0; i < SpellConstants.MAX_AURAS; i++)
                 if (mAuraDurations[i] > 0)
                     mAuraDurations[i] = Math.Max(0, mAuraDurations[i] - elapsed);
         }
@@ -564,6 +564,16 @@ namespace mClient.Clients
         public void UpdateAura(byte slot, uint aura)
         {
             SetField((int)UnitFields.UNIT_FIELD_AURA + slot, aura);
+        }
+
+        /// <summary>
+        /// Gets the aura holder for a spell
+        /// </summary>
+        /// <param name="spell"></param>
+        /// <returns></returns>
+        public AuraHolder GetAuraForSpell(uint spell)
+        {
+            return Auras.Where(a => a.Spell.SpellId == spell).SingleOrDefault();
         }
 
         #endregion

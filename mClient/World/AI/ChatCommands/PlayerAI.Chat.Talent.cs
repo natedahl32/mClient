@@ -51,7 +51,10 @@ namespace mClient.World.AI
                     Player.PlayerAI.Client.SendChatMsg(Constants.ChatMsg.Party, Constants.Languages.Universal, "The talent specs available for my class are:");
 
                     foreach (var spec in talentSpecs)
-                        Player.PlayerAI.Client.SendChatMsg(Constants.ChatMsg.Party, Constants.Languages.Universal, $"{spec.Id}) {spec.Name}");
+                        if (spec.Id == Player.SpecId)
+                            Player.PlayerAI.Client.SendChatMsg(Constants.ChatMsg.Party, Constants.Languages.Universal, $"{spec.Id}) {spec.Name} [CURRENT SPEC]");
+                        else
+                            Player.PlayerAI.Client.SendChatMsg(Constants.ChatMsg.Party, Constants.Languages.Universal, $"{spec.Id}) {spec.Name}");
 
                     return true;
 

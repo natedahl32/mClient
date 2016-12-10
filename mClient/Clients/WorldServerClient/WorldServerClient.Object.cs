@@ -443,7 +443,7 @@ namespace mClient.Clients
             }
 
             // Get any query associated with this object and invoke the callbacks
-            var query = mQueryQueue.Where(q => q.Guid == obj.Guid.GetOldGuid() && q.QueryType == QueryQueueType.Name).SingleOrDefault();
+            var query = mQueryQueue.Where(q => q.Guid == obj.Guid.GetOldGuid() && q.QueryType == QueryQueueType.Name).FirstOrDefault();
             if (query != null)
             {
                 lock(mQueryQueueLock)

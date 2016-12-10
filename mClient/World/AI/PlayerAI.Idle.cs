@@ -24,6 +24,7 @@ namespace mClient.World.AI
                             return BehaviourTreeStatus.Success;
                         return BehaviourTreeStatus.Failure;
                     })
+                    .Do("Check Group Status", t => CheckGroupStatus())
                     .Sequence("Train New Skills")
                         .Do("Has Skills to Train", t => HasSkillsToTrain())
                         .Do("Find Class Trainer", t => FindClassTrainer())
@@ -39,6 +40,27 @@ namespace mClient.World.AI
                     .Do("Do I have a move command?", t => NoMoveCommand())
                  .End()
                  .Build();
+        }
+
+        /// <summary>
+        /// Checks status of the group
+        /// </summary>
+        /// <returns></returns>
+        private BehaviourTreeStatus CheckGroupStatus()
+        {
+            // If we are not in a group failure
+            if (Player.CurrentGroup == null)
+                return BehaviourTreeStatus.Failure;
+
+            // We are in a group, if everyone in our group is offline than leave the group
+            foreach (var groupMember in Player.CurrentGroup.PlayersInGroup)
+                if (groupMember.Guid.GetOldGuid() != Player.Guid.GetOldGuid() && groupMember.GroupData.OnlineState == 1)
+                    return BehaviourTreeStatus.Failure;
+
+            // All members in our group are offline, so leave the group
+            Client.DisbandFromGroup();
+            Player.RemoveFromGroup();
+            return BehaviourTreeStatus.Success;
         }
 
         /// <summary>

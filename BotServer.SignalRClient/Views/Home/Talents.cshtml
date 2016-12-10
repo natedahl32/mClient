@@ -1,0 +1,382 @@
+﻿
+@{
+    ViewBag.Title = "Talents";
+}
+
+@section scripts {
+    <script type="text/javascript">
+        $(function () {
+            // connect to the server
+            SignalRServer.connect();
+
+            // add handlers here if needed
+
+            // Start the signalR server
+            SignalRServer.start(
+                function () { // onDone callback
+                    // Request the existing bot accounts on the server
+                    SignalRServer.invoke('requestExistingBotAccounts');
+                });
+
+            // save applied talent spec
+            $("#SaveSpec").click(function () {
+                var specName = $("#specName").val();
+                var specDesc = $("#specDesc").val();
+                var forClass = $("#forClass").val();
+                var talents = [];
+
+                for (var i = 0; i < 51; i++) {
+                    var talentValue = $("#talent" + (i + 1)).val();
+                    talents[i] = talentValue;
+                }
+
+                // Send to the server
+                SignalRServer.invoke('SaveTalentSpec', specName, specDesc, forClass, talents);
+            });
+        });
+    </script>
+}
+
+<h3>Add New Talent Spec</h3>
+<div style="margin: auto; margin-top: 50px;">
+    <div class="row">
+        <div class="col-md-2">Spec Name:</div>
+        <div class="col-md-10">
+            <input type="text" id="specName" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Spec Description:</div>
+        <div class="col-md-10">
+            <input type="text" id="specDesc" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">For Class:</div>
+        <div class="col-md-10">
+            <select id="forClass">
+                <option value="11">Druid</option>
+                <option value="3">Hunter</option>
+                <option value="8">Mage</option>
+                <option value="2">Paladin</option>
+                <option value="5">Priest</option>
+                <option value="4">Rogue</option>
+                <option value="7">Shaman</option>
+                <option value="9">Warlock</option>
+                <option value="1">Warrior</option>
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 1:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent1" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 2:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent2" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 3:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent3" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 4:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent4" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 5:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent5" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 6:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent6" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 7:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent7" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 8:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent8" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 9:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent9" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 10:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent10" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 11:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent11" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 12:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent12" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 13:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent13" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 14:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent14" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 15:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent15" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 16:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent16" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 17:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent17" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 18:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent18" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 19:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent19" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 20:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent20" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 21:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent21" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 22:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent22" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 23:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent23" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 24:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent24" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 25:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent25" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 26:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent26" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 27:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent27" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 28:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent28" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 29:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent29" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 30:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent30" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 31:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent31" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 32:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent32" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 33:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent33" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 34:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent34" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 35:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent35" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 36:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent36" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 37:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent37" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 38:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent38" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 39:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent39" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 40:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent40" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 41:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent41" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 42:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent42" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 43:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent43" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 44:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent44" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 45:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent45" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 46:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent46" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 47:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent47" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 48:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent48" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 49:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent49" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 50:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent50" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2">Talent 51:</div>
+        <div class="col-md-10">
+            <input type="text" id="talent51" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <button id="SaveSpec" type="button" class="btn btn-primary">Save Spec</button>
+        </div>
+    </div>
+</div>
+

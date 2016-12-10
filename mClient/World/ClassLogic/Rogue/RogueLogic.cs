@@ -118,8 +118,50 @@ namespace mClient.World.ClassLogic
                 if (currentTarget == null)
                     return null;
 
+                var comboPoints = Player.PlayerObject.ComboPoints;
+                var currentEnergy = Player.PlayerObject.CurrentEnergy;
+
+                // If we are maxed on combo points but we don't have enough energy for a finisher, we need to wait for energy
+                if (comboPoints == 5 && currentEnergy < 25)
+                {
+                    // TODO: Can we do anything increase our eneryg? ability? item?
+                    return null;
+                }
+
                 // Slice and Dice is our top priority, use it with any number of combo points if it is not up
-                if (Player.PlayerObject.ComboPoints > 0 && HasSpellAndCanCast(SLICE_DICE) && !Player.HasAura(SLICE_DICE)) return Spell(SLICE_DICE);
+                if (comboPoints > 0 && HasSpellAndCanCast(SLICE_DICE) && !Player.HasAura(SLICE_DICE)) return Spell(SLICE_DICE);
+
+                // Get the slice and dice aura if it is up and evaluate time left on it
+                var sliceAndDiceAura = Player.PlayerObject.GetAuraForSpell(SLICE_DICE);
+                if (sliceAndDiceAura != null)
+                {
+                    // If we have a second or less left on slice and dice and we have combo points, refresh it
+                    if (sliceAndDiceAura.Duration <= 1.0f && comboPoints > 0)
+                        if (HasSpellAndCanCast(SLICE_DICE))
+                            return Spell(SLICE_DICE);
+                    
+                    if (sliceAndDiceAura.Duration <= 3.0f && currentEnergy < 25)
+                    {
+                        // If we don't have the energy to recast and we have 3 seconds or less left on it, just wait to regenerate some energy
+                        if (currentEnergy < 25) return null;
+                        // If we have 4 or more combo points, go ahead and refresh it early
+                        if (comboPoints >= 4)
+                            if (HasSpellAndCanCast(SLICE_DICE))
+                                return Spell(SLICE_DICE);
+                    }
+                }
+
+                // If we have 5 combo points, use a finisher
+                if (comboPoints == 5)
+                {
+                    // Eviscerate
+                    if (HasSpellAndCanCast(EVISCERATE)) return Spell(EVISCERATE);
+                    // TODO: Rupture? Maybe based on spec?
+                }
+
+                // Sinister Strike
+                if (HasSpellAndCanCast(SINISTER_STRIKE)) return Spell(SINISTER_STRIKE);
+                // TODO: Backstab? Maybye based on spec?
 
                 return null;
             }

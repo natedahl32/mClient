@@ -223,6 +223,15 @@ namespace mClient.Clients
         }
 
         /// <summary>
+        /// Disbands from the current group
+        /// </summary>
+        public void DisbandFromGroup()
+        {
+            PacketOut packet = new PacketOut(WorldServerOpCode.CMSG_GROUP_DISBAND);
+            Send(packet);
+        }
+
+        /// <summary>
         /// Requests stats for all party members in the group
         /// </summary>
         private void RequestEntirePartyStats()

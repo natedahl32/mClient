@@ -12,5 +12,10 @@ namespace BotServer.SignalRClient.Controllers
         {
             return View();
         }
+
+        public ActionResult Talents()
+        {
+            return View();
+        }
     }
 }
