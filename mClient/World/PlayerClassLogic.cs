@@ -15,11 +15,15 @@ using mClient.World.ClassLogic.Warrior;
 using mClient.World.Items;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace mClient.World
 {
     public abstract class PlayerClassLogic
     {
+        [DllImport("winmm.dll", EntryPoint = "timeGetTime")]
+        public static extern uint MM_GetTime();
+
         #region Declarations
 
         public const uint RECENTLY_BANDAGED = 11196;
@@ -246,6 +250,15 @@ namespace mClient.World
                 }
             }
             return score;
+        }
+
+        /// <summary>
+        /// Method is called from the client to notify us when we had a succesful/unsuccessful attack against our target. There are many cases
+        /// where we need know either that we attacked, or what the outcome of an attack was (Warrior abilities for example)
+        /// </summary>
+        public virtual void AttackUpdate(DamageInfo damageInfo)
+        {
+            // do nothing in default implementation
         }
 
         #endregion

@@ -33,7 +33,11 @@ namespace mClient.World.ClassLogic.Warrior
                 // Whirlwind
                 if (HasSpellAndCanCast(WHIRLWIND)) return Spell(WHIRLWIND);
                 // Heroic Strike
-                if (HasSpellAndCanCast(HEROIC_STRIKE)) return Spell(HEROIC_STRIKE);
+                if (!mHeroicStrikePrepared && HasSpellAndCanCast(HEROIC_STRIKE))
+                {
+                    mHeroicStrikePrepared = true;
+                    return Spell(HEROIC_STRIKE);
+                }
 
                 return null;
             }

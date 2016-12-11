@@ -307,6 +307,7 @@
     <Compile Include="World\ClassLogic\Warrior\WarriorLogic.cs" />
     <Compile Include="World\Creature\CreatureInfo.cs" />
     <Compile Include="World\Creature\CreatureManager.cs" />
+    <Compile Include="World\DamageInfo.cs" />
     <Compile Include="World\GameObject\AreaDamage.cs" />
     <Compile Include="World\GameObject\AuctionHouse.cs" />
     <Compile Include="World\GameObject\AuraGenerator.cs" />

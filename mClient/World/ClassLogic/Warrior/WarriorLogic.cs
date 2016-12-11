@@ -69,6 +69,9 @@ namespace mClient.World.ClassLogic
             SHOOT_GUN,
             SHOOT_XBOW;
 
+        // flag that determines if heroic strike was used or not
+        protected bool mHeroicStrikePrepared = false;
+
         #endregion
 
         #region Constructors
@@ -168,7 +171,12 @@ namespace mClient.World.ClassLogic
 
                 // Logic for no spec
                 if (HasSpellAndCanCast(CHARGE)) return Spell(CHARGE);
-                if (HasSpellAndCanCast(HEROIC_STRIKE)) return Spell(HEROIC_STRIKE);
+                if (!mHeroicStrikePrepared && HasSpellAndCanCast(HEROIC_STRIKE))
+                {
+                    mHeroicStrikePrepared = true;
+                    return Spell(HEROIC_STRIKE);
+                }
+                
                     
                 return null;
             }
@@ -284,6 +292,13 @@ namespace mClient.World.ClassLogic
 
             var newCompare = item1Score - item2Score;
             return baseCompare + newCompare;
+        }
+
+        public override void AttackUpdate(DamageInfo damageInfo)
+        {
+            // Heroic strike flag is reset on every attack that we make
+            if (damageInfo.Attacker.GetOldGuid() == Player.Guid.GetOldGuid())
+                mHeroicStrikePrepared = false;
         }
 
         #endregion

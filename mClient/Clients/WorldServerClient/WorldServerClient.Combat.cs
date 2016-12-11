@@ -8,6 +8,7 @@ using mClient.Network;
 using mClient.Crypt;
 using mClient.Constants;
 using mClient.Terrain;
+using mClient.World;
 
 namespace mClient.Clients
 {
@@ -158,29 +159,42 @@ namespace mClient.Clients
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_ATTACKERSTATEUPDATE)]
         public void HandleAttackerStateUpdate(PacketIn packet)
         {
-            var hitInfo = packet.ReadUInt32();
+            DamageInfo info = new DamageInfo();
+
+            info.HitInfo = (HitInfo)packet.ReadUInt32();
 
             // Attacker
-            WoWGuid attackerGuid = packet.ReadPackedGuidToWoWGuid();
+            info.Attacker = packet.ReadPackedGuidToWoWGuid();
 
             // Target
-            WoWGuid targetGuid = packet.ReadPackedGuidToWoWGuid();
+            info.Victim = packet.ReadPackedGuidToWoWGuid();
 
-            // Damage applied (full damage taking into account absorbs, resists, and blocks
-            var fullDamageApplied = packet.ReadUInt32();
+            // Damage applied (full damage taking into account absorbs, resists, and blocks)
+            info.FullDamage = packet.ReadUInt32();
+            packet.ReadByte();
+            var damageSchoolMask = packet.ReadUInt32();
+            var subDamageFloat = packet.ReadFloat();
+            var subDamage = packet.ReadUInt32();
+            info.Absorb = packet.ReadUInt32();
+            info.Resist = packet.ReadUInt32();
+            info.TargetState = (VictimState)packet.ReadUInt32();
 
             // Check if the target is us or someone in our party. If so, make sure the enemy is in our list
-            if (player.CurrentGroup != null && player.CurrentGroup.IsInGroup(targetGuid.GetOldGuid()))
+            if (player.CurrentGroup != null && player.CurrentGroup.IsInGroup(info.Victim.GetOldGuid()))
             {
-                player.CurrentGroup.GetGroupMember(targetGuid.GetOldGuid()).AddEnemy(attackerGuid);
-                player.AddEnemy(attackerGuid);
+                player.CurrentGroup.GetGroupMember(info.Victim.GetOldGuid()).AddEnemy(info.Attacker);
+                player.AddEnemy(info.Attacker);
             }
             // Check if someone in our group is attacking something
-            if (player.CurrentGroup != null && player.CurrentGroup.IsInGroup(attackerGuid.GetOldGuid()))
+            if (player.CurrentGroup != null && player.CurrentGroup.IsInGroup(info.Attacker.GetOldGuid()))
             {
-                player.CurrentGroup.GetGroupMember(attackerGuid.GetOldGuid()).AddEnemy(targetGuid);
-                player.AddEnemy(targetGuid);
+                player.CurrentGroup.GetGroupMember(info.Attacker.GetOldGuid()).AddEnemy(info.Victim);
+                player.AddEnemy(info.Victim);
             }
+
+            // Send to class logic for the player
+            if (player.ClassLogic != null)
+                player.ClassLogic.AttackUpdate(info);
         }
 
         #endregion
