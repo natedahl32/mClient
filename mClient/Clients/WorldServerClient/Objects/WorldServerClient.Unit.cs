@@ -662,7 +662,7 @@ namespace mClient.Clients
             int index = auraSlot / 4;
             uint value = GetFieldValue((int)UnitFields.UNIT_FIELD_AURAAPPLICATIONS + index);
             // Get the byte number to retrieve the data for
-            int byteNumber = (auraSlot % 4) * 8;
+            int byteNumber = (auraSlot % 4);
             byte[] bytes = BitConverter.GetBytes(value);
             return (byte)(bytes[byteNumber] + 1);
         }

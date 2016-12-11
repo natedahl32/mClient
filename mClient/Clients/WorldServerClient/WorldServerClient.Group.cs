@@ -45,16 +45,19 @@ namespace mClient.Clients
             }
 
             // Find the party member and update their stats
-            var member = player.CurrentGroup.GetPlayer(guid);
-            if (member != null && member.PlayerObject != null)
+            if (player.CurrentGroup != null)
             {
-                member.ZoneID = zoneId;
-                member.PlayerObject.Update(currentHP, maxHP, level, currentPower, maxPower);
-                member.PlayerObject.Position = new Coordinate(x, y, 0f);
+                var member = player.CurrentGroup.GetPlayer(guid);
+                if (member != null && member.PlayerObject != null)
+                {
+                    member.ZoneID = zoneId;
+                    member.PlayerObject.Update(currentHP, maxHP, level, currentPower, maxPower);
+                    member.PlayerObject.Position = new Coordinate(x, y, 0f);
 
-                // Update auras for the party member
-                for (var i = 0; i < SpellConstants.MAX_AURAS; i++)
-                    member.PlayerObject.UpdateAura((byte)i, auras[i]);
+                    // Update auras for the party member
+                    for (var i = 0; i < SpellConstants.MAX_AURAS; i++)
+                        member.PlayerObject.UpdateAura((byte)i, auras[i]);
+                }
             }
         }
 

@@ -13,6 +13,7 @@ using mClient.World.ClassLogic.Shaman;
 using mClient.World.ClassLogic.Warlock;
 using mClient.World.ClassLogic.Warrior;
 using mClient.World.Items;
+using mClient.World.Spells;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -257,6 +258,15 @@ namespace mClient.World
         /// where we need know either that we attacked, or what the outcome of an attack was (Warrior abilities for example)
         /// </summary>
         public virtual void AttackUpdate(DamageInfo damageInfo)
+        {
+            // do nothing in default implementation
+        }
+
+        /// <summary>
+        /// Method is called from the client to notify us when non melee damage was either hit/missed on us or our target.
+        /// </summary>
+        /// <param name="damageInfo"></param>
+        public virtual void SpellDamageUpdate(SpellDamageInfo damageInfo)
         {
             // do nothing in default implementation
         }

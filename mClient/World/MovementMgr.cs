@@ -13,6 +13,7 @@ using mClient.Constants;
 using mClient.Terrain;
 using PObject = mClient.Clients.Object;
 using mClient.Pathfinding;
+using mClient.DBC;
 
 namespace mClient.Clients
 {
@@ -233,7 +234,9 @@ namespace mClient.Clients
             {
 
                 Coordinate expected = new Coordinate(loc.X + predictedDX, loc.Y + predictedDY, player.Position.Z, player.Position.O);
-                expected = terrainMgr.getZ(expected);
+                // This fails miserably in instances, trying to comment it out and use the follow targets Z value instead below
+                //expected = terrainMgr.getZ(expected);
+
 
                 // If we have a follow target, check their Z value and if we are close enough to them change our Z value to reflect those. This is gigantic hack to make sure
                 // our bots stay above game objects. But it allows them to keep up with us withouth having to implement a 3D librar to do calculations.

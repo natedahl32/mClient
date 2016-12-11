@@ -143,7 +143,7 @@ namespace mClient.Clients
         private void HandleChatQuery(Object obj)
         {
             // Get the query for this object
-            var query = mQueryQueue.Where(q => q.Guid == obj.Guid.GetOldGuid() && q.QueryType == QueryQueueType.Name).SingleOrDefault();
+            var query = mQueryQueue.Where(q => q.Guid == obj.Guid.GetOldGuid() && q.QueryType == QueryQueueType.Name).FirstOrDefault();
 
             // Get the group member data stored in the query
             var data = query.ExtraData as ChatQueue;

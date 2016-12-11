@@ -49,6 +49,14 @@ namespace mClient.Constants
         GOLD = SILVER * 100
     }
 
+    public enum MapTypes
+    {
+        MAP_COMMON = 0,
+        MAP_INSTANCE = 1,
+        MAP_RAID = 2,
+        MAP_BATTLEGROUND = 3,
+    }
+
     public static class ConstantValues
     {
         public const int MAXIMUM_PLAYERS_IN_GROUP = 5;

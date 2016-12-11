@@ -4,6 +4,7 @@ using System.Text;
 using System.Linq;
 
 using mClient.Shared;
+using mClient.DBC;
 
 namespace mClient.Terrain
 {
@@ -144,9 +145,9 @@ namespace mClient.Terrain
         private MapTile loadTile(int x, int z)
         {
             //String mapname = BoogieCore.mapTable.getMapName(BoogieCore.world.getMapID());
-            MapTable map = MapTable.Instance;
+            MapEntry map = MapTable.Instance.getById(MapId);
 
-            string mapname = map.getMapName(MapId);
+            string mapname = map.Name;
             MapTile tile = new MapTile(mapname, x, z);
             lock (mMapTileLock)
             {

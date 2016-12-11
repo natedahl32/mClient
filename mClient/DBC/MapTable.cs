@@ -1,4 +1,6 @@
-﻿using System;
+﻿using mClient.Constants;
+using mClient.DBC;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,6 +9,8 @@ namespace mClient.Shared
 {
     public class MapTable : DBCFile
     {
+        private Dictionary<uint, MapEntry> mMapEntries = new Dictionary<uint, MapEntry>();
+
         #region Singleton
 
         static readonly MapTable instance = new MapTable();
@@ -20,15 +24,24 @@ namespace mClient.Shared
 
         #endregion
 
-        public string getMapName(uint mapId)
+        protected override void dataLoaded()
         {
-            for (uint x = 0; x < wdbc_header.nRecords; x++)
+            for (uint i = 0; i < Records; i++)
             {
-                uint id = getFieldAsUint32(x, 0);
+                var entry = new MapEntry();
+                entry.Id = getFieldAsUint32(i, 0);
+                entry.MapType = (MapTypes)getFieldAsUint32(i, 2);
+                entry.Name = getStringForField(i, 4);
+                entry.LinkedZone = getFieldAsUint32(i, 19);
 
-                if (id == mapId)
-                    return getStringForField(x, 1);
+                mMapEntries.Add(entry.Id, entry);
             }
+        }
+
+        public MapEntry getById(uint id)
+        {
+            if (mMapEntries.ContainsKey(id))
+                return mMapEntries[id];
             return null;
         }
     }

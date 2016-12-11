@@ -9,6 +9,7 @@ using mClient.Crypt;
 using mClient.Constants;
 using mClient.Terrain;
 using mClient.World;
+using mClient.World.Spells;
 
 namespace mClient.Clients
 {
@@ -99,7 +100,22 @@ namespace mClient.Clients
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_SPELLNONMELEEDAMAGELOG)]
         public void HandleSpellNonMeleeDamageLog(PacketIn packet)
         {
-            // TODO: Not sure if we want to handle this or not
+            SpellDamageInfo info = new SpellDamageInfo();
+            info.Victim = packet.ReadPackedGuidToWoWGuid();
+            info.Attacker = packet.ReadPackedGuidToWoWGuid();
+            info.SpellId = packet.ReadUInt32();
+            info.Damage = packet.ReadUInt32();
+            info.DamageSchool = packet.ReadByte();
+            info.Absorb = packet.ReadUInt32();
+            info.Resist = packet.ReadUInt32();
+            packet.ReadByte();
+            packet.ReadByte();
+            info.Blocked = packet.ReadUInt32();
+            info.HitInfo = (SpellHitType)packet.ReadUInt32();
+            packet.ReadByte();
+
+            if (player.ClassLogic != null)
+                player.ClassLogic.SpellDamageUpdate(info);
         }
 
         /// <summary>
@@ -153,7 +169,7 @@ namespace mClient.Clients
         }
 
         /// <summary>
-        /// Handle attack state updates to monitor health
+        /// Handle attack state updates
         /// </summary>
         /// <param name="packet"></param>
         [PacketHandlerAtribute(WorldServerOpCode.SMSG_ATTACKERSTATEUPDATE)]
