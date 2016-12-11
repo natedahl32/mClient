@@ -129,7 +129,6 @@ namespace mClient.World.ClassLogic
         {
             get
             {
-                // TODO: Dependant upon spec
                 return true;
             }
         }

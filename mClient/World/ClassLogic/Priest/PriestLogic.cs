@@ -95,6 +95,17 @@ namespace mClient.World.ClassLogic
         {
             get
             {
+                // Inner fire
+                if (INNER_FIRE > 0) return true;
+                // PW:F
+                if (POWER_WORD_FORTITUDE > 0) return true;
+                // Prayer of Fortitude
+                if (PRAYER_OF_FORTITUDE > 0) return true;
+                // Shadow protection
+                if (SHADOW_PROTECTION > 0) return true;
+                // Prayer of Shadow Protection
+                if (PRAYER_OF_SHADOW_PROTECTION > 0) return true;
+
                 return false;
             }
         }
@@ -106,7 +117,56 @@ namespace mClient.World.ClassLogic
         {
             get
             {
-                return new Dictionary<SpellEntry, IList<Player>>();
+                var needBuffs = new Dictionary<SpellEntry, IList<Player>>();
+
+                // Inner fire on self
+                if (HasSpellAndCanCast(INNER_FIRE) && !Player.HasAura(INNER_FIRE))
+                    needBuffs.Add(Spell(INNER_FIRE), new List<Player>() { Player });
+
+                // Check 
+                if (Player.CurrentGroup != null && Player.CurrentGroup.PlayersInGroup.Count() > 0)
+                    foreach (var groupMember in Player.CurrentGroup.PlayersInGroup)
+                    {
+                        // Prayer of Fortitude
+                        if (HasSpellAndCanCast(PRAYER_OF_FORTITUDE))
+                        {
+                            var pf = Spell(PRAYER_OF_FORTITUDE);
+                            // TODO: Make sure group member is in range of spell as well
+                            // TODO: Make sure group member does not have BETTER buff than the one we are casting
+                            if (!groupMember.HasAura(POWER_WORD_FORTITUDE) && !groupMember.HasAura(PRAYER_OF_FORTITUDE))
+                                needBuffs.AddOrUpdateDictionaryList(pf, groupMember);
+                        }
+                        // Power Word: Fortitude
+                        else if (HasSpellAndCanCast(POWER_WORD_FORTITUDE))
+                        {
+                            var pwf = Spell(POWER_WORD_FORTITUDE);
+                            // TODO: Make sure group member is in range of spell as well
+                            // TODO: Make sure group member does not have BETTER buff than the one we are casting
+                            if (!groupMember.HasAura(POWER_WORD_FORTITUDE) && !groupMember.HasAura(PRAYER_OF_FORTITUDE))
+                                needBuffs.AddOrUpdateDictionaryList(pwf, groupMember);
+                        }
+
+                        // Prayer of Shadow Protection
+                        if (HasSpellAndCanCast(PRAYER_OF_SHADOW_PROTECTION))
+                        {
+                            var psp = Spell(PRAYER_OF_SHADOW_PROTECTION);
+                            // TODO: Make sure group member is in range of spell as well
+                            // TODO: Make sure group member does not have BETTER buff than the one we are casting
+                            if (!groupMember.HasAura(SHADOW_PROTECTION) && !groupMember.HasAura(PRAYER_OF_SHADOW_PROTECTION))
+                                needBuffs.AddOrUpdateDictionaryList(psp, groupMember);
+                        }
+                        // Shadow Protection
+                        else if (HasSpellAndCanCast(SHADOW_PROTECTION))
+                        {
+                            var sp = Spell(SHADOW_PROTECTION);
+                            // TODO: Make sure group member is in range of spell as well
+                            // TODO: Make sure group member does not have BETTER buff than the one we are casting
+                            if (!groupMember.HasAura(SHADOW_PROTECTION) && !groupMember.HasAura(PRAYER_OF_SHADOW_PROTECTION))
+                                needBuffs.AddOrUpdateDictionaryList(sp, groupMember);
+                        }
+                    }
+
+                return needBuffs;
             }
         }
 
@@ -128,6 +188,15 @@ namespace mClient.World.ClassLogic
         {
             get
             {
+                var currentTarget = Player.PlayerAI.TargetSelection;
+                if (currentTarget == null)
+                    return null;
+
+                // Shadow Word Pain
+                if (HasSpellAndCanCast(SHADOW_WORD_PAIN) && !currentTarget.HasAura(SHADOW_WORD_PAIN)) return Spell(SHADOW_WORD_PAIN);
+                // Smite
+                if (HasSpellAndCanCast(SMITE) && !currentTarget.HasAura(SMITE)) return Spell(SMITE);
+
                 return null;
             }
         }

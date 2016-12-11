@@ -15,5 +15,20 @@ namespace mClient.World.ClassLogic.Paladin
         }
 
         #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets whether or not this player is a melee combatant
+        /// </summary>
+        public override bool IsMelee
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        #endregion
     }
 }

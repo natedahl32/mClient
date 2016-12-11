@@ -23,5 +23,19 @@ namespace mClient
                             .GetCustomAttribute<DisplayAttribute>()
                             .GetName();
         }
+
+        /// <summary>
+        /// Adds an item to a list in dictionary if the list already exists, otherwise creates a new list and adds the item.
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="dict"></param>
+        public static void AddOrUpdateDictionaryList<K, V>(this Dictionary<K, IList<V>> dict, K key, V value)
+        {
+            if (dict.ContainsKey(key))
+                dict[key].Add(value);
+            else
+                dict.Add(key, new List<V>() { value });
+        }
     }
 }

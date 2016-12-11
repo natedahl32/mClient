@@ -153,7 +153,7 @@ namespace mClient.World.ClassLogic
                 // If we are maxed on combo points but we don't have enough energy for a finisher, we need to wait for energy
                 if (comboPoints == 5 && currentEnergy < 25)
                 {
-                    // TODO: Can we do anything increase our eneryg? ability? item?
+                    // TODO: Can we do anything to increase our energy? ability? item?
                     return null;
                 }
 
